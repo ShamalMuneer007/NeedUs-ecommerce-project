@@ -1,0 +1,36 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: PasswordChanged@7
+    url: jdbc:mysql://localhost:3306/projectTrial
+    username: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 726314099163-vefdd5g6inr6il9p1qoprk1eo4e53b6l.apps.googleusercontent.com
+            client-secret: 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
+            scope: openid,profile,email
+  mail:
+    host: smtp.gmail.com
+    password: rwaj zucv bbkq kxgk
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    username: shamal20017@gmail.com
+  output:
+    ansi:
+      enabled: ALWAYS
+

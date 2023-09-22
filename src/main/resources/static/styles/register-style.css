@@ -1,0 +1,110 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.LOGO {
+    color: #191919;
+    font-family: "Inconsolata-Bold", Helvetica;
+    font-size: 44px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.logo-dot {
+    color: #E73C17;
+    font-family: "Inconsolata-Bold", Helvetica;
+    font-size: 44px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.login-card {
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
+    /* width: 35rem; */
+    padding-bottom: 40px;
+}
+
+.login-text {
+    margin-top: 50px;
+}
+
+.forgot-pass {
+    text-decoration: none;
+    color: rgb(86, 86, 86);
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.forgot-pass:hover {
+    color: black;
+}
+
+.login-button {
+    font-family: "Poppins-Bold", Helvetica;
+    background-color: #E73C17;
+    color: white;
+    border: none;
+    margin-top: 10px;
+    border-radius: 4px;
+    padding: 15px;
+    width: 100%;
+    transition: background-color 0.2s;
+}
+
+.login-button:hover {
+    background-color: #d33a14;
+}
+
+.ellipsis-button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 25rem;
+    height: 40px;
+    padding: 0;
+    border: 0.5px solid rgb(154, 154, 154);
+    border-radius: 20px;
+    background-color: white;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    font-size: 15px;
+    text-decoration: none;
+}
+
+.google-logo {
+    margin-left: 23px;
+    width: 20px;
+    height: 20px;
+}
+
+.sign-in-google {
+    margin-right: 133px;
+    text-decoration: none;
+}
+
+.register-link {
+    color: #E73C17;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.register-link:hover {
+    color: #d33a14;
+}
+
+
+@media(max-width :768px) {
+    .login-text {
+        text-align: center;
+    }
+    .pc-store-image{
+        display:none;
+    }
+}

@@ -1,0 +1,169 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.LOGO {
+    color: #191919;
+    font-family: "Inconsolata-Bold", Helvetica;
+    font-size: 44px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.logo-dot {
+    color: #E73C17;
+    font-family: "Inconsolata-Bold", Helvetica;
+    font-size: 44px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.login-card {
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
+    /* width: 35rem; */
+    padding-bottom: 40px;
+}
+
+.login-text {
+    margin-top: 50px;
+}
+
+.successful-msg {
+    margin-bottom: 20px;
+    background-color: rgb(10, 206, 10);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    border-radius: 8px;
+    height: 50px;
+    border: green;
+}
+
+.disabled-msg {
+    margin-bottom: 20px;
+    background-color: rgb(255, 57, 57);
+    color: white;
+    border: 0.5px red;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 14px;
+    height: 50px;
+}
+
+.usererr-msg {
+    background-color: rgb(255, 57, 57);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    border: 0.5px red;
+    border-radius: 8px;
+    font-size: 14px;
+    height: 50px;
+}
+
+.emailerr-msg {
+    background-color: rgb(255, 57, 57);
+    color: white;
+    border: 0.5px red;
+    font-size: 14px;
+    height: 50px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.forgot-pass {
+    text-decoration: none;
+    color: rgb(86, 86, 86);
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.forgot-pass:hover {
+    color: black;
+}
+
+.login-button {
+    font-family: "Poppins-Bold", Helvetica;
+    background-color: #E73C17;
+    color: white;
+    border: none;
+    margin-top: 10px;
+    border-radius: 4px;
+    padding: 15px;
+    width: 100%;
+    transition: background-color 0.2s;
+}
+
+.login-button:hover {
+    background-color: #d33a14;
+}
+
+.ellipsis-button {
+    background-color: red;
+    text-align: center;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 300px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    height: 40px;
+    padding: 0;
+    border: 0.5px solid rgb(154, 154, 154);
+    border-radius: 20px;
+    background-color: white;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    font-size: 15px;
+    text-decoration: none;
+}
+
+.oAuth {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.google-logo {
+    height: 20px;
+    width: 20px;
+}
+
+.sign-in-google {
+    margin-right: 50px;
+    text-decoration: none;
+    width: 150px;
+}
+
+.register-link {
+    color: #E73C17;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.register-link:hover {
+    color: #d33a14;
+}
+
+
+@media(max-width :1000px) {
+    .login-text {
+        text-align: center;
+    }
+
+    #pc-store-image {
+        display: none !important;
+    }
+}

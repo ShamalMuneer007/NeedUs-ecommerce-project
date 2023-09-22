@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/styles/admin/style.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <main class="container-fluid ms-sm-3 ps-5">
+        <div th:include="~{admin/fragments/navFragment :: navigation}"></div>
+        <h3>Add Products</h3>
+        <div class="d-flex justify-content-between">
+            <div class="directory">
+                <span class="dashboard-indicator">Dashboard > Add Product</span> > Products
+            </div>
+        </div>
+        <div class="container-fluid mt-5">
+            <h4>General Information</h4>
+            <form action="" class="">
+                <div class="col-8 mt-3">
+                    <label for="" class="form-label">Product Name</label>
+                    <input type="text" class="form-control bg-body-tertiary" placeholder="Enter your product name">
+                </div>
+                <div class="col-8 mb-5 mt-3">
+                    <label for="">Description</label>
+                    <textarea type="text" class="form-control bg-body-tertiary" name="" id=""
+                        placeholder="Enter product description"></textarea>
+                </div>
+                <h4>Media</h4>
+                <div class="col-8 mt-3 mb-5">
+                    <label class="form-label" for="customFile1">Product images</label>
+                    <input type="file" class="form-control" id="customFile1" multiple />
+                </div>
+                <h4>Pricing</h4>
+                <div class="col-8 mt-3 mb-5">
+                    <label class="form-label">Product price</label>
+                    <input type="number" class="form-control bg-body-tertiary"
+                        placeholder="Enter price for your product">
+                </div>
+                <h4>Category</h4>
+                <div class="col-3 mt-3 mb-5 item-key words">
+                    <select class="form-select" aria-label="Default select example">
+                        <option value="" disabled selected>Choose a category</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                    </select>
+                </div>
+                <h4>Brand</h4>
+                <div class="col-3 mt-3 mb-5 item-key words">
+                    <select class="form-select">
+                        <option value="" disabled selected>Choose a brand</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                    </select>
+                </div>
+                <h4>Filter tags</h4>
+                <div class="col-12 mt-3 mb-5 item-key words">
+                    <!--Ram filter-->
+                    <h6>RAM</h6>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        DDR4
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        DDR5
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        DDR3
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        4GB
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        8GB
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        16GB
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        32GB
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        64GB
+                    </label>
+                    <!-- Graphics card filter -->
+                    <h6 class="mt-3">Graphics Cards</h6>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        GDDR5
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        GDDR6
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        GDDR6X
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        4GB
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        6GB
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        8GB
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        12GB
+                    </label>
+                    <!-- NVIDIA -->
+                    <h6 class="mt-3">Nvidia Series</h6>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        3000
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        2000
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        1000
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Quadro
+                    </label>
+                    <!-- AMD  -->
+                    <h6 class="mt-3">AMD Series</h6>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        RX4000
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        RX5000
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        RX7000
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Radeon Pro
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        RX 580
+                    </label>
+                    <!-- Monitors -->
+                    <h6 class="mt-3">Monitors</h6>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Gaming monitors
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        OLED
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Micro Led
+                    </label>
+                    <!-- MotherBoard -->
+                    <h6 class="mt-3">Motherboards</h6>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        ATX
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        MICRO ATX
+                    </label>
+                    <!-- PSU's -->
+                    <h6 class="mt-3">PSU</h6>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        400W
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        700W
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        800W
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        1000W
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        1200W
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        1500W
+                    </label>
+                    <!-- Intel -->
+                    <h6 class="mt-3">Intel processors</h6>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        9th Gen
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        10th Gen
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        11th Gen
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        13th Gen
+                    </label>
+                    <!-- AMD Processors -->
+                    <h6 class="mt-3">AMD processors</h6>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        7000 Series
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        5000 Series
+                    </label>
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        3000 Series
+                    </label>
+
+                </div>
+                <div class="product-button-div mb-5">
+                    <input type="submit" value="Add Product" class="add-product-btn">
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+
+</html>
