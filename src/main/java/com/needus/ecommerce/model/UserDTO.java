@@ -1,6 +1,6 @@
 package com.needus.ecommerce.model;
 
-import com.needus.ecommerce.entity.Role;
+import com.needus.ecommerce.entity.user.Role;
 import lombok.*;
 
 import java.time.LocalDateTime;

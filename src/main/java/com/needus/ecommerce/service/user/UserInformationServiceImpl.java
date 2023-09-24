@@ -1,14 +1,18 @@
-package com.needus.ecommerce.service;
+package com.needus.ecommerce.service.user;
 
-import com.needus.ecommerce.entity.Role;
-import com.needus.ecommerce.entity.UserInformation;
-import com.needus.ecommerce.repository.ConfirmationTokenRepository;
-import com.needus.ecommerce.repository.UserInformationRepository;
+import com.needus.ecommerce.entity.user.Role;
+import com.needus.ecommerce.entity.user.UserInformation;
+import com.needus.ecommerce.repository.user.ConfirmationTokenRepository;
+import com.needus.ecommerce.repository.user.UserInformationRepository;
+import com.needus.ecommerce.service.EmailService;
+import com.needus.ecommerce.service.user.ConfirmationTokenService;
+import com.needus.ecommerce.service.user.UserInformationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -52,6 +56,49 @@ public class UserInformationServiceImpl implements UserInformationService {
 
             });
         return saved.get();
+    }
+
+    @Override
+    public List<UserInformation> findAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public UserInformation findUserById(UUID id) {
+        return userRepository.findById(id).get();
+    }
+
+    @Override
+    public void blockUser(UUID id) {
+        UserInformation user = userRepository.findById(id).get();
+        user.setEnabled(!user.isEnabled());
+        userRepository.save(user);
+    }
+
+    @Override
+    public void deleteUserById(UUID id) {
+        UserInformation user = userRepository.findById(id).get();
+        userRepository.delete(user);
+    }
+
+    @Override
+    public void updateUser(UUID id, UserInformation user) {
+        UserInformation updateInfo = userRepository.findById(id).get();
+        if(!user.getUsername().equals(updateInfo.getUsername())||!user.getUsername().isEmpty()){
+            updateInfo.setUsername(user.getUsername());
+        }
+        if(!user.getEmail().equals(updateInfo.getEmail())||!user.getEmail().isEmpty()){
+            updateInfo.setEmail(user.getEmail());
+        }
+        if(!user.getPhoneNumber().equals(updateInfo.getPhoneNumber())||!user.getPhoneNumber().isEmpty()){
+            updateInfo.setPhoneNumber(user.getPhoneNumber());
+        }
+        userRepository.save(updateInfo);
+    }
+
+    @Override
+    public UserInformation findUserByName(String username) {
+        return userRepository.findByUsername(username);
     }
 
     @Override

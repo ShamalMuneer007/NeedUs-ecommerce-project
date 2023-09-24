@@ -1,10 +1,9 @@
 package com.needus.ecommerce.config;
 
-import com.needus.ecommerce.entity.Role;
-import com.needus.ecommerce.entity.UserInformation;
-import com.needus.ecommerce.model.UserDTO;
-import com.needus.ecommerce.repository.UserInformationRepository;
-import com.needus.ecommerce.service.UserInformationService;
+import com.needus.ecommerce.entity.user.Role;
+import com.needus.ecommerce.entity.user.UserInformation;
+import com.needus.ecommerce.repository.user.UserInformationRepository;
+import com.needus.ecommerce.service.user.UserInformationService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,12 +15,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
 
 @Component
 public class CustomSuccessHandler implements AuthenticationSuccessHandler {
@@ -52,9 +48,8 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
                 service.save(userInformation);
             }
         }
-        System.out.println(roles);
         if(roles.contains(new SimpleGrantedAuthority(Role.ADMIN.name())))
-            response.sendRedirect("/admin/productlist");
+            response.sendRedirect("/admin/users");
         else
             response.sendRedirect("/shop/home");
     }

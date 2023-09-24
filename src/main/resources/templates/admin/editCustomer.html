@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/styles/admin/style.css}">
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" rel="stylesheet">
+</head>
+
+<body id="body-pd">
+    <div th:include=" ~{admin/fragments/navFragment :: navigation}">
+    </div>
+    <main class="container-fluid ms-sm-3 ps-5">
+        <h3>Edit User</h3>
+        <div class="d-flex justify-content-between">
+            <div class="directory">
+                <span class="dashboard-indicator">Dashboard > Users</span> > Edit Users
+            </div>
+        </div>
+        <div class="container-fluid mt-5">
+            <h4>General Information</h4>
+            <form id="validate" method="post" th:action="@{'/admin/users/edit/editConfirmed/' + ${user.userId}}" >
+                <div class="col-8 mt-3">
+                    <label class="form-label" for="username">Username</label>
+                    <input class="form-control bg-body-tertiary" id="username" name="username" th:value="${user.username}" type="text">
+                    <label class="form-label mt-3" for="email">Email</label>
+                    <input class="form-control bg-body-tertiary" id="email" name="email" th:value="${user.email}" type="email">
+                    <label class="form-label mt-3" for="phoneNumber">Phone Number</label>
+                    <input class="form-control bg-body-tertiary" id ="phoneNumber" name="phoneNumber" th:value="${user.phoneNumber}" type="text">
+                    <div id="error_msg"></div>
+                </div>
+                <div class="product-button-div mt-5">
+                    <input class="add-product-btn" type="submit" value="Confirm Edit">
+                </div>
+            </form>
+            <div class="bg-danger text-center fw-semibold" style="height:30px;border-radius:5px;" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+        </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" type="text/javascript"></script>
+    <script>
+         $(document).ready(function () {
+            $("#validate").click(function (e) {
+                e.preventDefault();
+                var mobileInputStr = $("#phoneNumber").val();
+                $("#error_msg").html("");
+                if (mobileInputStr.length !== 10) {
+                    $("#error_msg").html("Enter valid mobile number");
+                } else {
+                    $("#login-form").submit();
+                }
+    </script>
+</body>
+
+</html>

@@ -1,10 +1,9 @@
 package com.needus.ecommerce.service;
 
-import com.needus.ecommerce.entity.UserInformation;
-import com.needus.ecommerce.repository.UserInformationRepository;
+import com.needus.ecommerce.entity.user.UserInformation;
+import com.needus.ecommerce.repository.user.UserInformationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

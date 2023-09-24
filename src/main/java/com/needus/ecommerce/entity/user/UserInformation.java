@@ -1,14 +1,13 @@
-package com.needus.ecommerce.entity;
+package com.needus.ecommerce.entity.user;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -31,9 +30,13 @@ public class UserInformation{
     @Column(nullable = true)
     private String password;
     @Column(nullable = false)
+    @CreatedDate
     private LocalDateTime userCreatedAt;
+    @Column(name = "isEnabled")
     private boolean isEnabled = true;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+    @Column(nullable = false,name = "isDeleted")
+    private boolean isDeleted = false;
 }

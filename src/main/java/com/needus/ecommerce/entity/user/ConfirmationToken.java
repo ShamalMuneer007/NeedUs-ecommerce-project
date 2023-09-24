@@ -1,13 +1,12 @@
-package com.needus.ecommerce.entity;
+package com.needus.ecommerce.entity.user;
 
+import com.needus.ecommerce.entity.user.UserInformation;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Data

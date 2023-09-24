@@ -1,6 +1,6 @@
 package com.needus.ecommerce.service;
 
-import com.needus.ecommerce.entity.UserInformation;
+import com.needus.ecommerce.entity.user.UserInformation;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

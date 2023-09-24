@@ -1,6 +1,6 @@
 package com.needus.ecommerce.config;
 
-import com.needus.ecommerce.entity.Role;
+import com.needus.ecommerce.entity.user.Role;
 import com.needus.ecommerce.service.UserInfoDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

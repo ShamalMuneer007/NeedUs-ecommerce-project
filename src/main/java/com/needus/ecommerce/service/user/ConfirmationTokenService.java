@@ -1,8 +1,8 @@
-package com.needus.ecommerce.service;
+package com.needus.ecommerce.service.user;
 
-import com.needus.ecommerce.entity.ConfirmationToken;
-import com.needus.ecommerce.entity.UserInformation;
-import com.needus.ecommerce.repository.ConfirmationTokenRepository;
+import com.needus.ecommerce.entity.user.ConfirmationToken;
+import com.needus.ecommerce.entity.user.UserInformation;
+import com.needus.ecommerce.repository.user.ConfirmationTokenRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

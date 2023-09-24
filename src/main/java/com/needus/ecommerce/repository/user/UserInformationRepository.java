@@ -1,13 +1,13 @@
-package com.needus.ecommerce.repository;
+package com.needus.ecommerce.repository.user;
 
-import com.needus.ecommerce.entity.UserInformation;
+import com.needus.ecommerce.entity.user.UserInformation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
 @Repository
-public interface UserInformationRepository extends JpaRepository<UserInformation, Long> {
+public interface UserInformationRepository extends JpaRepository<UserInformation, UUID> {
     public boolean existsByUsername(String username);
     public UserInformation findByUsername(String username);
 
