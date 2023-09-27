@@ -1,5 +1,6 @@
 package com.needus.ecommerce.model;
 
+import com.needus.ecommerce.entity.product.ProductImages;
 import com.needus.ecommerce.entity.product.Products;
 import com.needus.ecommerce.entity.user.UserInformation;
 import com.needus.ecommerce.service.product.ProductService;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Data
 public class ProductDto {
+    private Long productId;
     private String productName;
     private UserInformation userInformation;
     private LocalDate publishedAt;
@@ -25,7 +27,9 @@ public class ProductDto {
     private int stock;
     private int averageRating;
     private String sellerName;
+    private String ImageFilePath;
     public ProductDto(Products product) {
+            this.productId = product.getProductId();
             this.userInformation = product.getUserInformation();
             this.averageRating = product.getAverageRating();
             this.productPrice = product.getProductPrice();
@@ -35,6 +39,7 @@ public class ProductDto {
             this.publishedAt = product.getPublishedAt();
             this.productStatus = product.isProductStatus();
             this.sellerName = userInformation.getUsername();
+            this.setImageFilePath("/uploads/"+product.getImages().get(0).getFileName());
     }
 
 

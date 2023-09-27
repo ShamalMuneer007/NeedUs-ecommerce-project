@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductFilterRepository extends JpaRepository<ProductFilters,Integer> {
+    ProductFilters findByCategory_CategoryIdAndFilterName(Long categoryId, String filterName);
 }

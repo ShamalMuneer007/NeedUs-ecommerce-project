@@ -29,4 +29,21 @@ public class BrandServiceImpl implements BrandService {
     public Brands findBrandById(Long brandId) {
         return brandRepository.findById(brandId).get();
     }
+
+    @Override
+    public boolean brandExists(String brandName) {
+        Brands brands = brandRepository.findByBrandName(brandName);
+        if(brandRepository.existsByBrandName(brandName)){
+            if(brands.getBrandName().equalsIgnoreCase(brandName)){
+                return true;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void deleteBrandById(Long brandId) {
+        brandRepository.deleteById(brandId);
+    }
 }

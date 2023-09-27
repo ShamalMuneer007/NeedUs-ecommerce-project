@@ -1,7 +1,7 @@
 package com.needus.ecommerce.config;
 
 import com.needus.ecommerce.entity.user.Role;
-import com.needus.ecommerce.service.UserInfoDetailsService;
+import com.needus.ecommerce.service.security.UserInfoDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +31,7 @@ public class SecurityConfiguration {
                     auth
                         .requestMatchers("/admin/**").hasAuthority(Role.ADMIN.name())
                         .requestMatchers("/seller/**").hasAuthority(Role.USER.name())
-                        .requestMatchers("/login","/signup","/register","/activation").permitAll()
+                        .requestMatchers("/**","/login","/signup","/register","/activation","/shop/home/**").permitAll()
                         .anyRequest().authenticated()
             )
             .formLogin(
@@ -57,7 +57,7 @@ public class SecurityConfiguration {
     }
     @Bean
     public WebSecurityCustomizer securityCustomizer(){
-        return (web) -> web.ignoring().requestMatchers("/img/**","/styles/**");
+        return (web) -> web.ignoring().requestMatchers("/img/**","/styles/**","/uploads/**");
     }
     @Bean
     public AuthenticationProvider daoAuthenticationProvide(){

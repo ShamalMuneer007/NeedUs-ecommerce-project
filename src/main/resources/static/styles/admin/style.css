@@ -14,10 +14,10 @@
 *,
 ::before,
 ::after {
-  box-sizing: border-box
+  box-sizing: border-box;
 }
 
-body {
+ body {
   position: relative;
   margin: var(--header-height) 0 0 0;
   padding: 0 1rem;
@@ -25,7 +25,8 @@ body {
   font-family: var(--body-font);
   font-size: var(--normal-font-size);
   transition: .5s;
-  background-color: #f2f2f2;
+    background-color  : #f9f9fc;
+
 }
 
 a {
@@ -49,7 +50,7 @@ main {
   align-items: center;
   justify-content: space-between;
   padding: 0 1rem;
-  background-color: white;
+    background-color  : #f9f9fc;
   z-index: var(--z-fixed);
   transition: .5s;
 }
@@ -92,10 +93,7 @@ main {
 .header_img img {
   width: 40px;
 }
- .box {
-     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-     background-color: #fffff;
-  }
+
 .l-navbar {
   position: fixed;
   top: 0;
@@ -211,6 +209,7 @@ main {
     margin: calc(var(--header-height) + 1rem) 0 0 0;
     padding-left: calc(var(--nav-width) + 6.7rem);
   }
+
 
   main {
     /* background-color: #f4f4f4; */

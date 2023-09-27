@@ -10,8 +10,6 @@ public interface UserInformationService {
     public UserInformation save(UserInformation user);
     public UserInformation register(UserInformation user);
 
-    public List<UserInformation> findAllUsers();
-
     UserInformation findUserById(UUID id);
 
     void blockUser(UUID id);
@@ -21,4 +19,6 @@ public interface UserInformationService {
     void updateUser(UUID id, UserInformation user);
 
     UserInformation findUserByName(String username);
+
+    public List<UserInformation> findAllUsers();
 }

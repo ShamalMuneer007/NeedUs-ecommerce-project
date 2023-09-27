@@ -16,8 +16,16 @@ public class ProductFilterServiceImpl implements ProductFilterService {
     }
 
     @Override
-    public void saveFilter(ProductFilters filters) {
-        filterRepository.save(filters);
+    public boolean variantExistInCategory(Long categoryId , String filterName)
+    {
+        ProductFilters existingVariant =
+            filterRepository.findByCategory_CategoryIdAndFilterName(categoryId, filterName);
+        return existingVariant!=null;
+    }
+
+    @Override
+    public ProductFilters saveFilter(ProductFilters filters) {
+        return filterRepository.save(filters);
     }
 
     @Override

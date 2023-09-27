@@ -11,4 +11,8 @@ public class CustomExceptionHandler{
     public String handleDisabledException(DisabledException ex) {
         return "redirect:/login?disabled=true";
     }
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public String handleResourceNotFoundException(ResourceNotFoundException ex){
+        return "404";
+    }
 }

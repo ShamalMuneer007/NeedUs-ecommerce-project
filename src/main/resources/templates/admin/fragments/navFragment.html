@@ -27,7 +27,7 @@
     </header>
     <div class="l-navbar collapse show" id="nav-bar">
       <nav class="nav">
-        <div>
+        <div class="">
           <a class="nav_logo" href="#"> <span class="nav_logo-name">Needus</span><span class="logo-dot">.</span> </a>
         </div>
         <div class="nav_list">
@@ -36,22 +36,22 @@
           </a>
           <a class="nav_link"
             th:classappend="${requestURI == '/admin/users' || requestURI == '/admin/users/edit' ? 'active' : ''}"
-            th:href="@{/admin/users}"> <i class='bx bx-user nav_icon'></i><span class="nav_name">Users</span> </a>
+            th:href="@{/admin/users/list}"> <i class='bx bx-user nav_icon'></i><span class="nav_name">Users</span> </a>
           <a class="nav_link"
-            th:classappend="${requestURI == '/admin/products' || requestURI == '/admin/products/addProduct' ? 'active' : ''}"
-            th:href="@{/admin/products}"> <i class="bx bx-shopping-bag"></i><span>Products</span> </a>
+            th:classappend="${requestURI == '/admin/products/list' || requestURI == '/admin/products/addProduct' ? 'active' : ''}"
+            th:href="@{/admin/products/list}"> <i class="bx bx-shopping-bag"></i><span>Products</span> </a>
           <a class="nav_link" href="#"><i class='bx bxs-dollar-circle nav_icon'></i><span
               class="nav_name">Sellers</span>
           </a>
           <a class="nav_link" href="#"> <i class='bx bx-cart nav_icon'></i><span class="nav_name">Orders</span></a>
           <a class="nav_link"
-            th:classappend="${requestURI == '/admin/categories' || requestURI == '/admin/categories/add' ? 'active' : ''}"
-            th:href="@{/admin/categories}">
-            <i class='bx bx-category-alt nav_icon'></i> <span class="nav_name">Categories</span>
+            th:classappend="${requestURI == '/admin/categories/list' || requestURI == '/admin/categories/add' ? 'active' : ''}"
+            th:href="@{/admin/categories/list}">
+            <i class='bx bx-category-alt nav_icon'></i> <span class="nav_name">Categories & Brands</span>
           </a>
           <a class="nav_link"
-            th:classappend="${requestURI == '/admin/variants' || requestURI == '/admin/variants/add' ? 'active' : ''}"
-            th:href="@{/admin/variants}">
+            th:classappend="${requestURI == '/admin/variants/list' || requestURI == '/admin/variants/add' ? 'active' : ''}"
+            th:href="@{/admin/variants/list}">
             <i class='bx bx-dice-2 nav_icon'></i> <span class="nav_name">Variants</span>
           </a>
           <a class="nav_link" href="#"> <i class='bx bxs-coupon nav_icon'></i><span class="nav_name">Coupons</span></a>

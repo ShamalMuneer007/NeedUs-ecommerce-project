@@ -20,8 +20,39 @@ public class ProductServiceImpl implements ProductService {
         return repository.save(product);
     }
 
+
+    @Override
+    public Products findProductById(Long productId) {
+        return repository.findById(productId).get();
+    }
+
+    @Override
+    public void blockProduct(Long productId) {
+        Products products = findProductById(productId);
+        products.setProductStatus(!products.isProductStatus());
+        repository.save(products);
+    }
+
     @Override
     public List<Products> findAllProducts() {
-        return repository.findAll();
+        return repository.findAllNonDeleted();
     }
+
+    @Override
+    public void deleteProduct(Long productId) {
+        Products product = repository.findById(productId).get();
+        product.setDeleted(true);
+        repository.save(product);
+    }
+
+    @Override
+    public List<Products> findAllNonBlockedProducts() {
+        return repository.findByIsDeletedFalseAndProductStatusTrue();
+    }
+
+    @Override
+    public boolean existsById(Long productId) {
+        return repository.existsById(productId);
+    }
+
 }

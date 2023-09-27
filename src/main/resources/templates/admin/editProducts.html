@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/styles/admin/style.css}">
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        .box {
+            box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+            background-color: white;
+
+        }
+    </style>
+</head>
+
+<body id="body-pd" style="background-color  : #f9f9fc;">
+    <div th:include="~{admin/fragments/navFragment :: navigation}"></div>
+    <main class="container-fluid ms-sm-3 ps-5">
+        <h3>Edit Products</h3>
+        <div class="d-flex justify-content-between">
+            <div class="directory">
+                <span class="dashboard-indicator">Dashboard > Edit Product</span> > Products
+            </div>
+            <div class="bg-success mt-2 pt-1 text-white text-center fw-semibold" style="height:30px;border-radius:5px;"
+                th:if="${message}" th:text="${message}"></div>
+        </div>
+        <div class="container-fluid mt-5">
+            <form enctype="multipart/form-data" method="post"
+                th:action="@{'/admin/products/editProduct/edit/' + ${product.productId}}">
+                <div class="box p-5">
+                    <h4>General Information</h4>
+                    <div class="col-8 mt-3">
+                        <label class="form-label" for="product_name">Product Name</label>
+                        <input class="form-control bg-body-tertiary" id="product_name" name="productName"
+                            placeholder="Enter your product name" th:value="${product.productName}" type="text">
+                    </div>
+                    <div class="col-8 mb-5 mt-3">
+                        <label for="description">Description</label>
+                        <textarea class="form-control bg-body-tertiary" id="description" name="description"
+                            placeholder="Enter product description" th:value="${product.description}"
+                            type="text"></textarea>
+                    </div>
+                </div>
+                <div class="box p-5 mt-5">
+                    <h4>Media</h4>
+                    <div class="col-8 mt-3 mb-5">
+                        <label class="form-label" for="customFile1">Product images</label>
+                        <input accept="image/*" class="form-control" id="customFile1" multiple name="productImages"
+                            type="file" />
+                    </div>
+                </div>
+                <div class="box p-5 mt-5">
+                    <h4>Pricing</h4>
+                    <div class="col-8 mt-3 mb-5">
+                        <label class="form-label" for="price">Product price</label>
+                        <input class="form-control bg-body-tertiary" id="price" name="productPrice"
+                            placeholder="Enter price for your product" step="0.01" th:value="${product.productPrice}"
+                            type="number">
+                    </div>
+                </div>
+                <div class="box p-5 mt-5">
+                    <h4>Stock</h4>
+                    <div class="col-8 mt-3 mb-5">
+                        <label class="form-label" for="stock">Product Quantity</label>
+                        <input class="form-control bg-body-tertiary" id="stock" name="productStock"
+                            placeholder="Enter price for your product" th:value="${product.stock}" type="number">
+                    </div>
+                </div>
+                <div class="box p-5 mt-5">
+                    <h4>Brand</h4>
+                    <div class="col-3 mt-3 mb-5 item-key words">
+                        <label class="form-label" for="brand">Product brand</label>
+                        <select aria-label="Default select example" class="form-select" id="brand" name="brandId">
+                            <option selected="selected" th:each="brand, iterStat : ${brand}"
+                                th:if="${iterStat.index == 0}" th:text="${productBrand.brandName}"
+                                th:value="${productBrand.brandId}">
+                            </option>
+                            <option th:each="brand : ${brand}" th:text="${brand.brandName}"
+                                th:unless="${brand.brandName == productBrand.brandName}" th:value="${brand.brandId}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="box p-5 mt-5">
+                    <h4>Category</h4>
+                    <div class="col-3 mt-3 mb-5 item-key words">
+                        <label class="form-label" for="category">Product category</label>
+                        <select aria-label="Default select example" class="form-select" id="category" name="categoryId">
+                            <option selected="selected" th:each="category, iterStat : ${category}"
+                                th:if="${iterStat.index == 0}" th:text="${productCategory.categoryName}"
+                                th:value="${productCategory.categoryId}">
+                            </option>
+                            <option th:each="category : ${category}" th:text="${category.categoryName}"
+                                th:unless="${category.categoryName == productCategory.categoryName}"
+                                th:value="${category.categoryId}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="box p-5 mt-5">
+                    <h4>Filter tags</h4>
+                    <div class="col-3 mt-3 mb-5 item-key words">
+                        <label class="form-label" for="filters">Product filter tags</label>
+                        <select aria-label="Default select example" class="form-select" id="filters"
+                            name="productFilters" multiple>
+                            <option disabled="disabled" selected="selected" th:each="filter, iterStat : ${filter}"
+                                th:if="${iterStat.index == 0}">
+                                Choose one or multiple filters
+                            </option>
+                            <option th:each="filter : ${filter}" th:text="${filter.filterName}"
+                                th:value="${filter.filterId}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="product-button-div ms-2 mb-5 mt-5">
+                    <input class="add-product-btn" type="submit" value="Confirm Edit">
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+
+</html>

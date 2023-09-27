@@ -3,7 +3,7 @@ package com.needus.ecommerce.controllers;
 import com.needus.ecommerce.entity.user.ConfirmationToken;
 import com.needus.ecommerce.entity.user.UserInformation;
 import com.needus.ecommerce.repository.user.UserInformationRepository;
-import com.needus.ecommerce.service.user.ConfirmationTokenService;
+import com.needus.ecommerce.service.verification.ConfirmationTokenService;
 import com.needus.ecommerce.service.user.UserInformationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

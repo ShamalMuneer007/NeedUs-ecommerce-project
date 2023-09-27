@@ -10,4 +10,8 @@ public interface BrandService {
     List<Brands> findAllBrands();
 
     Brands findBrandById(Long brandId);
+
+    boolean brandExists(String brandName);
+
+    void deleteBrandById(Long brandId);
 }

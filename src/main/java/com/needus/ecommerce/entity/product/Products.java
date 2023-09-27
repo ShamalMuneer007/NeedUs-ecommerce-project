@@ -35,6 +35,7 @@ public class Products {
     @Column(name="product_status")
     private boolean productStatus;
     private int stock;
+    private boolean isDeleted = false;
     @Column(name = "average_rating")
     private int averageRating;
     @ManyToOne

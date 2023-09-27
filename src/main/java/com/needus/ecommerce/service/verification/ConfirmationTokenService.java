@@ -1,4 +1,4 @@
-package com.needus.ecommerce.service.user;
+package com.needus.ecommerce.service.verification;
 
 import com.needus.ecommerce.entity.user.ConfirmationToken;
 import com.needus.ecommerce.entity.user.UserInformation;

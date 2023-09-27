@@ -4,9 +4,8 @@ import com.needus.ecommerce.entity.user.Role;
 import com.needus.ecommerce.entity.user.UserInformation;
 import com.needus.ecommerce.repository.user.ConfirmationTokenRepository;
 import com.needus.ecommerce.repository.user.UserInformationRepository;
-import com.needus.ecommerce.service.EmailService;
-import com.needus.ecommerce.service.user.ConfirmationTokenService;
-import com.needus.ecommerce.service.user.UserInformationService;
+import com.needus.ecommerce.service.verification.ConfirmationTokenService;
+import com.needus.ecommerce.service.verification.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -59,11 +58,6 @@ public class UserInformationServiceImpl implements UserInformationService {
     }
 
     @Override
-    public List<UserInformation> findAllUsers() {
-        return userRepository.findAll();
-    }
-
-    @Override
     public UserInformation findUserById(UUID id) {
         return userRepository.findById(id).get();
     }
@@ -78,7 +72,8 @@ public class UserInformationServiceImpl implements UserInformationService {
     @Override
     public void deleteUserById(UUID id) {
         UserInformation user = userRepository.findById(id).get();
-        userRepository.delete(user);
+        user.setDeleted(true);
+        userRepository.save(user);
     }
 
     @Override
@@ -99,6 +94,11 @@ public class UserInformationServiceImpl implements UserInformationService {
     @Override
     public UserInformation findUserByName(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    @Override
+    public List<UserInformation> findAllUsers() {
+        return userRepository.findAllNonDeleted();
     }
 
     @Override

@@ -9,12 +9,11 @@
     integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" rel="stylesheet">
     <style>
-            body {
-      font-family: 'nunito', sans-serif;
-      /* border: 0.5px solid rgb(192, 192, 192);
-      /* border-collapse: collapse; */
-    }
+            body{
+        background-color  : #f9f9fc;
+  font-family: 'nunito', sans-serif;
 
+    }
     table {
       border: 1px solid gray;
       box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
@@ -35,6 +34,11 @@
     .delete:hover {
       color: red;
     }
+     .box {
+     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+      background-color: white;
+
+  }
     </style>
 </head>
 
@@ -53,40 +57,76 @@
       </a>
     </div>
     <div class="search mt-4">
-      <form action="">
-        <label class="form-label">Search</label>
-        <input class="form-control-md d-block" type="text">
+      <form method="post" th:action="@{/admin/products/search}">
+          <input class="form-control-md d-block" id="search" name="search" placeholder="Search Product ID"
+                 style="border-radius: 5px; border: 1px solid gray; padding-left: 10px; height: 35px;" type="text">
       </form>
     </div>
+      <div class="bg-success mt-2 pt-1 text-white text-center fw-semibold" style="height:30px;border-radius:5px;" th:if="${message}" th:text="${message}"></div>
+      <div class="table-responsive">
     <table class="table mt-5 text-center">
       <thead>
         <tr>
+            <th class="bg-body-secondary" scope="col"></th>
           <th class="bg-body-secondary" scope="col">Product</th>
           <th class="bg-body-secondary" scope="col">Product_ID</th>
+            <th class="bg-body-secondary" scope="col">Unit Price</th>
           <th class="bg-body-secondary" scope="col">Stock</th>
-          <th class="bg-body-secondary" scope="col">Price</th>
+          <th class="bg-body-secondary" scope="col">Published At</th>
           <th class="bg-body-secondary" scope="col">Seller Name</th>
+            <th class="bg-body-secondary" scope="col">Status</th>
           <th class="bg-body-secondary col-2" scope="col">Action</th>
         </tr>
       </thead>
       <tbody class="text-center" th:each="product : ${products}">
         <tr>
-          <td th:text="${product.productName}"></td>
-          <td th:text="${product.productPrice}"></td>
+            <td>
+                <img height="60px" style="display: inline-block;"  th:src="@{${product.ImageFilePath}}" width="60px">
+            </td>
+          <td>
+              <div style="display: inline-block;"  th:text="${product.productName}"></div>
+          </td>
+          <td th:text="${product.productId}"></td>
+            <td th:text="${product.productPrice}"></td>
           <td th:text="${product.stock}"></td>
           <td th:text="${product.publishedAt}"></td>
           <td th:text="${product.sellerName}"></td>
+            <td class="">
+                <div class="fw-semibold ms-2 p-1 mt-2" style="background-color:rgba(158, 238, 158, 0.7); font-size: 13px; color:#013220; border-radius:10px; width:80%;"
+                     th:if="${product.productStatus}">
+                    ACTIVE
+                </div>
+                <div class="fw-semibold ms-2 p-1 mt-2" style="background-color: rgba(255, 204, 203, 0.7); font-size: 13px; color:#8B0000; border-radius:10px; width:80%;"
+                     th:unless="${product.productStatus}">
+                    DISABLED
+                </div>
+            </td>
           <td>
-            <button class="btn edit"><i class="bx bx-edit"></i></button>
-            <button class="btn block"><i class="bx bx-block"></i></button>
-              <a class="delete" href=""><button class="btn"><i class="bx bx-trash"></i></button></a>
+              <a class="edit" th:href="@{'/admin/products/editProduct/'+ ${product.productId}}"><button class="btn"><i
+                      class="bx bx-edit"></i></button></a>
+              <form class="d-inline" method="post" th:action="@{'/admin/products/block/' + ${product.productId}}">
+                <span class=""><button class="block btn" type="submit">
+                     <i class="bx bx-block" th:if="${product.productStatus}"></i>
+                    <i class="bx bx-user-check" th:unless="${product.productStatus}"></i>
+                </button></span>
+              </form>
+              <form class="d-inline" method="post" th:action="@{'/admin/products/deleteProduct/' + ${product.productId}}">
+                <span class=""><button class="delete btn" id="delete" type="submit">
+                    <i class="bx bx-trash"></i>
+                  </button></span>
+              </form>
           </td>
         </tr>
       </tbody>
     </table>
+      </div>
   </main>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script>
+    let del = document.getElementById("delete")
+        del.addEventListener(click,function(){
+           confirm("Do you want to delete this product")
+        });
     document.addEventListener("DOMContentLoaded", function (event) {
 
       const showNavbar = (toggleId, navId, bodyId, headerId) => {

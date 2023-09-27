@@ -18,7 +18,7 @@ public class ProductFilters {
     @Column(name = "filterName")
     private String filterName;
     @ManyToOne
-    @JoinColumn(name="category_id",unique = false)
+    @JoinColumn(name="categoryId")
     private Categories category;
 
 }

@@ -108,3 +108,19 @@
         display:none;
     }
 }
+@media(max-width : 1200px){
+    #pc-store-image {
+         width: 400px !important;
+         height: 400px !important;
+         margin-top: 100px !important;
+    }
+}
+@media(max-width :1024px) {
+    .login-text {
+        text-align: center;
+    }
+
+    #pc-store-image {
+       display: none !important;
+    }
+}

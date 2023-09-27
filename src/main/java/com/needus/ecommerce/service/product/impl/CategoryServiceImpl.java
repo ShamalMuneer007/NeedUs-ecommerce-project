@@ -26,4 +26,20 @@ public class CategoryServiceImpl implements CategoryService {
     public List<Categories> findAllCategories() {
         return categoryRepository.findAll();
     }
+
+    @Override
+    public boolean categoryExists(String categoryName) {
+        if(categoryRepository.existsByCategoryName(categoryName)){
+            if(categoryRepository.findByCategoryName(categoryName).getCategoryName().equalsIgnoreCase(categoryName)){
+                return true;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void deleteCategoryById(Long categoryId) {
+        categoryRepository.deleteById(categoryId);
+    }
 }

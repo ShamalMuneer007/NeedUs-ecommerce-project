@@ -10,4 +10,8 @@ public interface CategoryService {
     Categories findCatgeoryById(Long categoryId);
 
     List<Categories> findAllCategories();
+
+    boolean categoryExists(String categoryName);
+
+    void deleteCategoryById(Long categoryId);
 }

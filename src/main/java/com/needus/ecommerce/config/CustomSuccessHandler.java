@@ -49,7 +49,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
             }
         }
         if(roles.contains(new SimpleGrantedAuthority(Role.ADMIN.name())))
-            response.sendRedirect("/admin/users");
+            response.sendRedirect("/admin/users/list");
         else
             response.sendRedirect("/shop/home");
     }
