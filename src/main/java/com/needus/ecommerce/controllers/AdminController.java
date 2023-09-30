@@ -5,6 +5,7 @@ import com.needus.ecommerce.repository.product.ProductsRepository;
 import com.needus.ecommerce.service.product.*;
 import com.needus.ecommerce.service.user.UserInformationService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -31,8 +32,9 @@ public class AdminController {
         return "admin/customerList";
     }
     @PostMapping("/users/block/{id}")
-    public String userBlock(@PathVariable(name = "id")UUID id, RedirectAttributes redirectAttributes){
-        userInformationService.blockUser(id);
+    public String userBlock(@PathVariable(name = "id")UUID id, RedirectAttributes redirectAttributes,
+    HttpServletRequest request, HttpServletResponse response){
+        userInformationService.blockUser(id,request,response);
         if(userInformationService.findUserById(id).isEnabled()) {
             redirectAttributes.addFlashAttribute("successMsg", "User is enabled");
         }

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8">
+	<meta content="IE=edge" http-equiv="X-UA-Compatible">
+	<meta content="width=device-width, initial-scale=1" name="viewport">
+
+	<title>Needus | 404</title>
+
+	<link href="https://fonts.googleapis.com/css?family=Cabin:400,700" rel="stylesheet">
+
+	<link rel="stylesheet" th:href="@{/styles/404style.css}" type="text/css" />
+
+
+</head>
+
+<body>
+
+	<div id="notfound">
+		<div class="notfound">
+			<div class="notfound-404">
+				<div></div>
+				<h1>404</h1>
+			</div>
+			<h2>Page not found</h2>
+			<p>The page you are looking for might have been removed had its name changed or is temporarily unavailable.
+			</p>
+			<a th:href="@{/shop/home}">home page</a>
+		</div>
+	</div>
+
+</body>
+
+</html>

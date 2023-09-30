@@ -1,3 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200&display=swap');
+body{
+font-family: 'Poppins', sans-serif;
+}
+.brand-name{
+    font-size : 16px;
+    font-weight : 600;
+}
+.reg:hover{
+    color : #E73C17;
+}
+.add-cart-btn{
+    background-color: #E73C17;
+    color:white;
+}
+.add-cart-btn:hover{
+    background-color: #E71C00;
+    color:white;
+}
 .icon-hover:hover {
   border-color: #3b71ca !important;
   background-color: white !important;
@@ -7,3 +26,24 @@
 .icon-hover:hover i {
   color: #3b71ca !important;
 }
+
+        /* Container for the cropped and zoomed image */
+        .image-container {
+            width: 300px; /* Set the desired width */
+            height: 200px; /* Set the desired height */
+            overflow: hidden; /* Hide any overflowing content */
+        }
+
+        /* Style for the cropped and zoomed image */
+        .zoomed-image {
+            width: 100%; /* Make the image take the full width of the container */
+            height: 100%; /* Make the image take the full height of the container */
+            object-fit: cover; /* Crop the image to fit the container */
+            transform: scale(1.2); /* Zoom in by scaling the image */
+            transition: transform 0.3s ease-in-out; /* Add a smooth transition effect */
+        }
+
+        /* Hover effect to zoom in further */
+        .image-container:hover .zoomed-image {
+            transform: scale(1.5); /* Zoom in further on hover */
+        }

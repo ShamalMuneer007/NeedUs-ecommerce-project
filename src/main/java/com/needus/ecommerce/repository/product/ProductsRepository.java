@@ -13,4 +13,6 @@ public interface ProductsRepository extends JpaRepository<Products,Long> {
     List<Products> findAllNonDeleted();
 
     List<Products> findByIsDeletedFalseAndProductStatusTrue();
+
+    List<Products> findByCategories_CategoryIdAndIsDeletedFalse(Long categoryId);
 }

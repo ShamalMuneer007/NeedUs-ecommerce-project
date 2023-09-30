@@ -5,4 +5,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductImageService {
     ProductImages save(ProductImages productImage);
+
+    boolean existsById(Long imageId);
+
+    ProductImages findImageById(Long imageId);
 }

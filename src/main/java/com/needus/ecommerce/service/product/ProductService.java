@@ -20,4 +20,6 @@ public interface ProductService {
     List<Products> findAllNonBlockedProducts();
 
     boolean existsById(Long productId);
+
+    List<Products> findProductsOfCategory(Long categoryId);
 }

@@ -3,6 +3,7 @@ package com.needus.ecommerce.controllers;
 import com.needus.ecommerce.entity.product.*;
 import com.needus.ecommerce.entity.user.UserInformation;
 import com.needus.ecommerce.exceptions.ResourceNotFoundException;
+import com.needus.ecommerce.exceptions.TechnicalIssueException;
 import com.needus.ecommerce.model.ProductDto;
 import com.needus.ecommerce.repository.product.ProductsRepository;
 import com.needus.ecommerce.service.product.*;
@@ -52,25 +53,51 @@ public class ProductController {
     private ProductsRepository productsRepository;
 
     @GetMapping("/list")
-    public String products(Model model, HttpServletRequest request){
-        List<ProductDto> productDto =  new ArrayList<>();
-        List<Products> products = productService.findAllProducts();
-        for(Products product : products){
+    public String products(Model model, HttpServletRequest request) throws TechnicalIssueException {
+        List<ProductDto> productDto = new ArrayList<>();
+        List<Products> products;
+        try {
+            products = productService.findAllProducts();
+        } catch (Exception e) {
+            log.error("An error occurred while fetching the products",e);
+            throw new TechnicalIssueException("An error occurred while fetching products", e);
+        }
+        for (Products product : products) {
             productDto.add(new ProductDto(product));
         }
         model.addAttribute("requestURI", request.getRequestURI());
-        model.addAttribute("products",productDto);
+        model.addAttribute("products", productDto);
         return "admin/products";
     }
     @GetMapping("/addProduct")
-    public String addProducts(Model model, HttpServletRequest request){
-        List<Categories> categories = categoryService.findAllCategories();
-        List<Brands> brands = brandService.findAllBrands();
-        List<ProductFilters> filters = filterService.findAllFilters();
+    public String addProducts(Model model, HttpServletRequest request) {
+        List<Categories> categories;
+        try{
+            categories = categoryService.findAllCategories();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new TechnicalIssueException("An error occurred while fetching the categories from the CategoryService", e);
+        }
+        List<Brands> brands;
+        try {
+            brands = brandService.findAllBrands();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new TechnicalIssueException("An error occurred while fetching the brands from the BrandService", e);
+        }
+        List<ProductFilters> filters;
+        try {
+            filters = filterService.findAllFilters();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new TechnicalIssueException("An error occurred while fetching the filter tags from the ProductFilterService", e);
+        }
         model.addAttribute("requestURI", request.getRequestURI());
-        model.addAttribute("category",categories);
-        model.addAttribute("brand",brands);
-        model.addAttribute("filter",filters);
+        model.addAttribute("category", categories);
+        model.addAttribute("brand", brands);
+        model.addAttribute("filter", filters);
         return "admin/add_product";
     }
     @PostMapping("/addProduct/save")
@@ -87,16 +114,24 @@ public class ProductController {
     ) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = auth.getName();
-        UserInformation currentUserInfo = userInformationService.findUserByName(currentUser);
-        Brands brand = brandService.findBrandById(brandId);
-        Categories category = categoryService.findCatgeoryById(categoryId);
+        Brands brand;
+        Categories category;
+        UserInformation currentUserInfo;
+        try {
+            currentUserInfo = userInformationService.findUserByName(currentUser);
+            brand = brandService.findBrandById(brandId);
+            category = categoryService.findCatgeoryById(categoryId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new TechnicalIssueException("Something went wrong while fetching information", e);
+        }
         Products product = new Products();
         product.setProductName(productName);
         Products tempProduct = productService.save(product);
         List<ProductImages> images = new ArrayList<>();
-        for(MultipartFile imageFile : imageFiles){
+        for (MultipartFile imageFile : imageFiles) {
             String fileName = fileUploadDir(imageFile);
-            ProductImages imageObj =  new ProductImages(fileName,tempProduct);
+            ProductImages imageObj = new ProductImages(fileName, tempProduct);
             imageObj = productImageService.save(imageObj);
             images.add(imageObj);
         }
@@ -109,9 +144,15 @@ public class ProductController {
         product.setUserInformation(currentUserInfo);
         product.setStock(stock);
         product.setProductFilters(filters);
-
-        productService.save(product);
-        ra.addFlashAttribute("message","Product added successfully");
+        try {
+            productService.save(product);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            log.error("Something went wrong while saving the product",e);
+            throw new TechnicalIssueException("Something went wrong while saving the product",e);
+        }
+        ra.addFlashAttribute("message", "Product added successfully");
         return "redirect:/admin/products/list";
     }
 

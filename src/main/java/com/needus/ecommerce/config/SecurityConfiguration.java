@@ -2,6 +2,7 @@ package com.needus.ecommerce.config;
 
 import com.needus.ecommerce.entity.user.Role;
 import com.needus.ecommerce.service.security.UserInfoDetailsService;
+import jakarta.servlet.http.HttpSessionListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,9 +11,12 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @Configuration
 @EnableWebSecurity
@@ -22,6 +26,15 @@ public class SecurityConfiguration {
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler(){
         return new CustomSuccessHandler();
+    }
+
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
+    }
+    @Bean
+    public SessionRegistry sessionRegistry(){
+        return new SessionRegistryImpl();
     }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -39,6 +52,14 @@ public class SecurityConfiguration {
                     form
                         .loginPage("/login").permitAll()
                         .successHandler(authenticationSuccessHandler())
+            )
+            .sessionManagement(
+                httpSecuritySessionManagementConfigurer ->
+                    httpSecuritySessionManagementConfigurer
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(true)
+                        .sessionRegistry(sessionRegistry())
+                        .expiredUrl("/login?sessionExpired")
             )
             .oauth2Login(
                 oauth ->

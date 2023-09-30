@@ -21,7 +21,8 @@ public class CategoryController {
     @Autowired
     private BrandService brandService;
     @GetMapping("/list")
-    public String listCategories(Model model){
+    public String listCategories(Model model,HttpServletRequest request){
+        model.addAttribute("requestURI",request.getRequestURI());
         model.addAttribute("categories",categoryService.findAllCategories());
         model.addAttribute("brands",brandService.findAllBrands());
         return "admin/categoryList";

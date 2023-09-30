@@ -14,6 +14,21 @@
           background-color: white;
 
   }
+  #imagePreview {
+    max-width: 300px;
+    max-height: 300px;
+    margin-top: 10px;
+}
+
+/* Style the file input */
+#imageInput {
+    margin-top: 10px;
+}
+
+/* Style the form container */
+#imageForm {
+    text-align: center;
+}
     </style>
 </head>
 
@@ -48,6 +63,7 @@
                         <label class="form-label" for="customFile1">Product images</label>
                         <input accept="image/*" class="form-control" id="customFile1" multiple name="productImages"
                             type="file" />
+                        <img alt="Preview" id="imagePreview" src="#">
                     </div>
                 </div>
                 <div class="box p-5 mt-5">
@@ -116,6 +132,44 @@
             </form>
         </div>
     </main>
+<script>
+  // Get references to HTML elements
+const imageInput = document.getElementById('customFile1');
+const imagePreviews = document.getElementById('imagePreviews');
+
+// Add an event listener to the file input
+imageInput.addEventListener('change', function () {
+    // Clear previous previews
+    imagePreviews.innerHTML = '';
+
+    const files = this.files;
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+
+        // Create a FileReader object for each file
+        const reader = new FileReader();
+
+        // Create a new image element for the preview
+        const img = document.createElement('img');
+        img.className = 'image-preview';
+
+        // Set up a function to run when the file is loaded
+        reader.onload = function (e) {
+            // Set the source of the image element to the data URL of the loaded file
+            img.src = e.target.result;
+        };
+
+        // Read the file as a data URL
+        reader.readAsDataURL(file);
+
+        // Append the image element to the imagePreviews div
+        imagePreviews.appendChild(img);
+    }
+});
+
+
+</script>
 </body>
 
 </html>

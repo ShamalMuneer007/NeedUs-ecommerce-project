@@ -48,10 +48,11 @@
                 <div class="box p-5 mt-5">
                     <h4>Media</h4>
                     <div class="col-8 mt-3 mb-5">
-                        <label class="form-label" for="customFile1">Product images</label>
-                        <input accept="image/*" class="form-control" id="customFile1" multiple name="productImages"
+                        <label class="form-label" for="imageInput">Product images</label>
+                        <input accept="image/*" class="form-control" id="imageInput" multiple name="productImages"
                             type="file" />
                     </div>
+<!--                    <div id="imagePreview"></div>-->
                 </div>
                 <div class="box p-5 mt-5">
                     <h4>Pricing</h4>
@@ -106,7 +107,7 @@
                     <div class="col-3 mt-3 mb-5 item-key words">
                         <label class="form-label" for="filters">Product filter tags</label>
                         <select aria-label="Default select example" class="form-select" id="filters"
-                            name="productFilters" multiple>
+                            multiple name="productFilters">
                             <option disabled="disabled" selected="selected" th:each="filter, iterStat : ${filter}"
                                 th:if="${iterStat.index == 0}">
                                 Choose one or multiple filters
@@ -123,6 +124,7 @@
             </form>
         </div>
     </main>
+    <script th:src="@{/scripts/editProductScript.js}" type="text/javascript"></script>
 </body>
 
 </html>

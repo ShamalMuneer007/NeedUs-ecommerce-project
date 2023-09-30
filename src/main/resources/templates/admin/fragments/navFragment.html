@@ -35,7 +35,7 @@
               class="nav_name">Dashboard</span>
           </a>
           <a class="nav_link"
-            th:classappend="${requestURI == '/admin/users' || requestURI == '/admin/users/edit' ? 'active' : ''}"
+            th:classappend="${requestURI == '/admin/users/list' || requestURI == '/admin/users/edit' ? 'active' : ''}"
             th:href="@{/admin/users/list}"> <i class='bx bx-user nav_icon'></i><span class="nav_name">Users</span> </a>
           <a class="nav_link"
             th:classappend="${requestURI == '/admin/products/list' || requestURI == '/admin/products/addProduct' ? 'active' : ''}"
@@ -45,7 +45,7 @@
           </a>
           <a class="nav_link" href="#"> <i class='bx bx-cart nav_icon'></i><span class="nav_name">Orders</span></a>
           <a class="nav_link"
-            th:classappend="${requestURI == '/admin/categories/list' || requestURI == '/admin/categories/add' ? 'active' : ''}"
+            th:classappend="${requestURI == '/admin/categories/list' || requestURI == '/admin/categories/addCategory' ? 'active' : ''}"
             th:href="@{/admin/categories/list}">
             <i class='bx bx-category-alt nav_icon'></i> <span class="nav_name">Categories & Brands</span>
           </a>

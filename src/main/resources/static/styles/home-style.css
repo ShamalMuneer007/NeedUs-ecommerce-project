@@ -19,8 +19,7 @@
 
 body {
     position: relative;
-    margin: 1.5rem 0 0 0;
-    padding: 0 1rem;
+    margin: 0rem 0 0 0;
     font-family: var(--body-font);
     font-size: var(--normal-font-size);
     transition: .5s;
@@ -34,7 +33,20 @@ nav{
     padding-left 20px;
     background-color:#ffffff;
 }
-
+.navigation{
+    margin-left: -130px;
+}
+.welcome-strip{
+    margin-top : -10px;
+    margin-bottom : 10px;
+    background-color: #2F333A;
+}
+.navbar-nav > .active > a {
+   color: #E73C17;
+}
+.reg:hover{
+    color : #E73C17;
+}
 .container .product-item {
     min-height: 450px;
     border: none;

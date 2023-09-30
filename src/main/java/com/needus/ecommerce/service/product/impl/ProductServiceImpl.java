@@ -55,4 +55,9 @@ public class ProductServiceImpl implements ProductService {
         return repository.existsById(productId);
     }
 
+    @Override
+    public List<Products> findProductsOfCategory(Long categoryId) {
+        return repository.findByCategories_CategoryIdAndIsDeletedFalse(categoryId);
+    }
+
 }

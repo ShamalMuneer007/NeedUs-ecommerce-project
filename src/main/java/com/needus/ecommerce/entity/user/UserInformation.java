@@ -37,6 +37,12 @@ public class UserInformation{
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+    @OneToOne
+    @JoinColumn(name = "user_wishlist")
+    private Wishlist userWishlist;
+    @OneToOne
+    @JoinColumn(name = "user_cart")
+    private Cart cart;
     @Column(nullable = false,name = "isDeleted")
     private boolean isDeleted = false;
 }

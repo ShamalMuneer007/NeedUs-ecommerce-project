@@ -4,11 +4,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
+
 public class EcommerceApplication {
+//    @Autowired
+//    private TwilioConfig twilioConfig;
 
 	public static void main(String[] args) {
 
-     SpringApplication.run(EcommerceApplication.class, args);
+        SpringApplication.run(EcommerceApplication.class, args);
 //     System.out.println(" ____  _____   ________   ________   ______     _____  _____    ______       \n" +
 //         "|_   \\|_   _| |_   __  | |_   __  | |_   _ `.  |_   _||_   _| .' ____ \\      \n" +
 //         "  |   \\ | |     | |_ \\_|   | |_ \\_|   | | `. \\   | |    | |   | (___ \\_|     \n" +
@@ -24,6 +27,11 @@ public class EcommerceApplication {
 //         ".----)   |   |  |____ |  |\\  \\----.  \\    /    |  |____ |  |\\  \\----.   .----)   |      |  |     /  _____  \\  |  |\\  \\----.   |  |     |  |____ |  '--'  |\n" +
 //         "|_______/    |_______|| _| `._____|   \\__/     |_______|| _| `._____|   |_______/       |__|    /__/     \\__\\ | _| `._____|   |__|     |_______||_______/ \n" +
 //         "                                                                                                                                                          ");
-	}
-
+//	}
+//
+//    @PostConstruct
+//    public void initTwilio(){
+//        Twilio.init(twilioConfig.getAccountSid(),twilioConfig.getAuthToken());
+//
+    }
 }

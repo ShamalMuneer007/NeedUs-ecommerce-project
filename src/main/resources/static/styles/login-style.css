@@ -39,9 +39,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 5px;
     font-size: 14px;
-    border-radius: 8px;
     height: 50px;
+    margin-left : -3.2%;
+    margin-right : -3.2%;
     border: green;
 }
 
@@ -53,33 +56,44 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 5px;
     font-size: 14px;
     height: 50px;
+    margin-left : -3.2%;
+    margin-right : -3.2%;
 }
 
 .usererr-msg {
+    margin-bottom: 20px;
     background-color: rgb(255, 57, 57);
+    color: white;
+    border: 0.5px red;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    border: 0.5px red;
-    border-radius: 8px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 5px;
     font-size: 14px;
     height: 50px;
+    margin-left : -3.2%;
+    margin-right : -3.2%;
 }
 
 .emailerr-msg {
-    background-color: rgb(255, 57, 57);
-    color: white;
-    border: 0.5px red;
-    font-size: 14px;
-    height: 50px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+     margin-bottom: 20px;
+     background-color: rgb(255, 57, 57);
+     color: white;
+     border: 0.5px red;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     border-top-left-radius: 8px;
+     border-top-right-radius: 5px;
+     font-size: 14px;
+     height: 50px;
+     margin-left : -3.2%;
+     margin-right : -3.2%;
 }
 
 .forgot-pass {

@@ -2,6 +2,10 @@ package com.needus.ecommerce.controllers;
 
 import com.needus.ecommerce.entity.user.ConfirmationToken;
 import com.needus.ecommerce.entity.user.UserInformation;
+import com.needus.ecommerce.exceptions.TechnicalIssueException;
+import com.needus.ecommerce.model.OtpRequest;
+import com.needus.ecommerce.model.OtpResponseDto;
+import com.needus.ecommerce.model.OtpValidationRequest;
 import com.needus.ecommerce.repository.user.UserInformationRepository;
 import com.needus.ecommerce.service.verification.ConfirmationTokenService;
 import com.needus.ecommerce.service.user.UserInformationService;
@@ -11,10 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.Timestamp;
@@ -30,6 +31,7 @@ public class MainController {
     ConfirmationTokenService tokenService;
     @Autowired
     UserInformationRepository repository;
+
 //    @Bean
 //    public AuthenticationProvider authenticationProvider(){
 //        return new CustomAuthenticationManager();
@@ -50,27 +52,39 @@ public class MainController {
     }
     @GetMapping("/login")
     public String login(){
+        log.info("Inside login");
         return "login";
     }
     @GetMapping("/signup")
     public String signup(){
+        log.info("Inside signup");
         return "register";
     }
     @PostMapping ("/register")
     public String register
         (@ModelAttribute UserInformation user, Model model, RedirectAttributes ra)
     {
+        log.info("registering the user");
         if(repository.existsByUsername(user.getUsername())){
             return "redirect:/signup?userNameError=true";
         }
         if(repository.existsByEmail(user.getEmail())){
             return "redirect:/signup?emailError=true";
         }
-        ra.addFlashAttribute("message","Success! A verification email has been sent to you email");
-        userInformationService.register(user);
+        try {
+            userInformationService.register(user);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            throw new TechnicalIssueException("Something went wrong while saving the user in the userService side",e);
+        }
+        log.info("user registered");
+        ra.addFlashAttribute("message","Success! A verification email has been sent to your email");
         return "redirect:/login?registrationSuccess=true";
     }
-    @GetMapping("/activation")
+//    @PostMapping("/user-forgot-password")
+//    public String
+//    @GetMapping("/activation")
     public String activation(@RequestParam("token") String token,Model model){
         ConfirmationToken confirmationToken = tokenService.findByToken(token);
         if(confirmationToken == null){
@@ -96,5 +110,50 @@ public class MainController {
             }
         }
         return "activation";
+    }
+//    @GetMapping("/change-password")
+//    public String changePassword(){
+//        return "changePasswordForm";
+//    }
+//
+//
+//    @PostMapping("/send-otp")
+//    public String sendOtp(
+//        @RequestParam(name="username") String username,
+//        RedirectAttributes ra
+//    ) {
+//        log.info("inside sendOtp :: " + username);
+//        if(!userInformationService.usersExistsByUsername(username){
+//            ra.addFlashAttribute("message","Username is not found");
+//            return "redirect:/change-password";
+//        }
+//        String phoneNumber = userInformationService.findUserByName(username).getPhoneNumber();
+//        smsService.sendSMS(phoneNumber);
+//        return "redirect:/otp-submission";
+//    }
+//    @GetMapping("/otp-submission")
+//    public String otpSubmission(){
+//        return "otpSubmission";
+//    }
+//    @PostMapping("/validate-otp")
+//    public String validateOtp(
+//        @RequestParam(name="otpCode") String otpCode
+//    ) {
+//        log.info("inside validateOtp :: "+otpValidationRequest.getUsername()+" "+otpValidationRequest.getOtpNumber());
+//        if(smsService.validateOtp(otpValidationRequest)){
+//            return "redirect:/changePassword";
+//        }
+//        else {
+//            return "redirect:/otp-submission";
+//        }
+//    }
+
+    @RequestMapping("/error/404")
+    public String handleExternalError() {
+        return "404";
+    }
+    @RequestMapping("/error/500")
+    public String handleInternalError() {
+        return "404";
     }
 }

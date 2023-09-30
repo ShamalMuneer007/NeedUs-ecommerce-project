@@ -16,4 +16,14 @@ public class ProductImageServiceImpl implements ProductImageService {
     public ProductImages save(ProductImages productImage) {
         return repository.save(productImage);
     }
+
+    @Override
+    public boolean existsById(Long imageId) {
+        return repository.existsById(imageId);
+    }
+
+    @Override
+    public ProductImages findImageById(Long imageId) {
+        return repository.findById(imageId).get();
+    }
 }
