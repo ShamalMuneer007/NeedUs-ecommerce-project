@@ -17,4 +17,6 @@ public interface UserInformationRepository extends JpaRepository<UserInformation
 
     @Query(value = "SELECT * FROM Users WHERE is_deleted = false",nativeQuery = true)
     public List<UserInformation> findAllNonDeleted();
+
+    UserInformation findByEmail(String email);
 }

@@ -33,6 +33,9 @@ nav{
     padding-left 20px;
     background-color:#ffffff;
 }
+#home-nav:hover{
+    color : #E73C17 !important;
+}
 .navigation{
     margin-left: -130px;
 }

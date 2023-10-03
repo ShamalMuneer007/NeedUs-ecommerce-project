@@ -1,16 +1,16 @@
-package com.needus.ecommerce.entity.product;
+package com.needus.ecommerce.model;
 
+import com.needus.ecommerce.entity.product.Products;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartDro {
+public class CartDto {
     private long cartId;
     private List<Products> productsList;
 }

@@ -60,17 +60,18 @@
                         <div th:if="${#authorization.expression('isAuthenticated()')}">
                             <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
                                role="button">
-                                <span th:text="${#authentication.principal.username}"></span>
-                            </a>
+                                <span th:text="${username}"></span></a>
                             <ul class="dropdown-menu">
                                 <li>
                                     <a class="dropdown-item">Profile settings</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="#">Cart</a>
+                                    <a class="dropdown-item" th:href="@{/user/cart-items}">Cart</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="#"><button>Logout</button></a>
+                                    <form method="post" th:action="@{/logout}">
+                                        <input class="btn" type="submit" value="Logout">
+                                    </form>
                                 </li>
                             </ul>
                         </div>
@@ -85,14 +86,21 @@
             <span class="fw-semibold text-muted">Discover</span>
             <h3>Our Brand New Products</h3>
         </div>
+        <div th:if="${message}" th:text="${message}"></div>
         <div class="row ms-5 ps-5 me-0 border">
 
             <div class="col-lg-3  col-sm-6 col-6 d-flex flex-column align-items-center justify-content-center product-item" th:each="product : ${products}">
                 <a style="text-decoration:none; color:black;" th:href="@{'/shop/home/product-details/' + ${product.productId}}">
                 <div class="product col-md-6"> <img alt="" class="img-fluid" style="object-fit: contain;" th:src="${product.imageFilePath}">
                     <ul class="d-flex align-items-center justify-content-center list-unstyled icons">
-                        <li class="icon"><span><i class="bx bx-heart"></i></span></li>
-                        <li class="icon mx-3"><span><i class="bx bx-cart"></i></span></li>
+                        <li>
+                            <form method="post" th:action="@{'/user/add-to-cart/' + ${product.productId}}">
+                                <button class="icon" style="border:none;" type="submit">
+                                    <i  class="bx bx-cart" ></i>
+                                </button>
+                            </form>
+                        </li>
+                        <li class="icon mx-3"><span><i class="bx bx-heart"></i></span></li>
                     </ul>
                 </div>
                 <div class="title pt-4 pb-1" th:text="${product.productName}"></div>

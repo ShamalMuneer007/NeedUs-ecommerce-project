@@ -27,5 +27,7 @@ public class CustomExceptionHandler implements ErrorController {
     public String handleNoHandlerFoundException(NoHandlerFoundException ex){
         return "404";
     }
+    @ExceptionHandler({UnknownException.class})
+    public String unknownException(UnknownException ex){return "UnknownError";}
 
 }

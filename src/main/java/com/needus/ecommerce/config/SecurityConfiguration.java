@@ -1,6 +1,7 @@
 package com.needus.ecommerce.config;
 
 import com.needus.ecommerce.entity.user.Role;
+import com.needus.ecommerce.service.security.CustomOidUserService;
 import com.needus.ecommerce.service.security.UserInfoDetailsService;
 import jakarta.servlet.http.HttpSessionListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 public class SecurityConfiguration {
     @Autowired
     UserInfoDetailsService userInfoDetailsService;
+    @Autowired
+    CustomOidUserService customOidUserService;
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler(){
         return new CustomSuccessHandler();
@@ -43,7 +46,8 @@ public class SecurityConfiguration {
                 auth ->
                     auth
                         .requestMatchers("/admin/**").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers("/seller/**").hasAuthority(Role.USER.name())
+                        .requestMatchers("/seller/**").hasAuthority(Role.SELLER.name())
+                        .requestMatchers("/user/**").hasAnyAuthority(Role.USER.name(),Role.ADMIN.name(),Role.SELLER.name(),"OIDC_USER")
                         .requestMatchers("/**","/login","/signup","/register","/activation","/shop/home/**").permitAll()
                         .anyRequest().authenticated()
             )
@@ -66,6 +70,7 @@ public class SecurityConfiguration {
                     oauth
                         .loginPage("/login")
                         .successHandler(authenticationSuccessHandler())
+                        .userInfoEndpoint().userService(customOidUserService)
             )
             .logout(logout ->
                     logout
@@ -73,7 +78,9 @@ public class SecurityConfiguration {
                         .logoutSuccessUrl("/login?logout")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
-            );
+            )
+
+            .cors().and().csrf().disable();
         return http.build();
     }
     @Bean

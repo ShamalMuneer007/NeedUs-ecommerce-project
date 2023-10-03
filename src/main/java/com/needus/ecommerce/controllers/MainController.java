@@ -84,7 +84,7 @@ public class MainController {
     }
 //    @PostMapping("/user-forgot-password")
 //    public String
-//    @GetMapping("/activation")
+    @GetMapping("/activation")
     public String activation(@RequestParam("token") String token,Model model){
         ConfirmationToken confirmationToken = tokenService.findByToken(token);
         if(confirmationToken == null){

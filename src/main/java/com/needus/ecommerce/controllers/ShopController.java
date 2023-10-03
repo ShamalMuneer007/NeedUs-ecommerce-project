@@ -11,6 +11,7 @@ import com.needus.ecommerce.service.product.ProductImageService;
 import com.needus.ecommerce.service.product.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +33,8 @@ public class ShopController {
     ProductImageService productImageService;
     @GetMapping("/home")
     public String landingPage(Model model){
-        log.info("Inside Landing Page");
+//        log.info("Authenticated user : "+ SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        log.info("Inside Landing Page : ");
         List<ProductDto> productsDto = new ArrayList<>();
         List<Categories> categories = categoryService.findAllCategories();
         log.info("fetched categories");
@@ -49,6 +51,7 @@ public class ShopController {
         log.info("fetched products");
         model.addAttribute("categories",categories);
         model.addAttribute("products",productsDto);
+        model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         return "shop/home";
     }
     @GetMapping("/home/product-details/{id}")
@@ -63,6 +66,7 @@ public class ShopController {
         Products product = productService.findProductById(productId);
         List<ProductImages> images = product.getImages();
         log.info("fetched images");
+        model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         model.addAttribute("image",images.get(0));
         model.addAttribute("images",images);
         model.addAttribute("product",product);
@@ -79,6 +83,7 @@ public class ShopController {
             productDto.add(new ProductDto(product));
         }
         model.addAttribute("empty",products.isEmpty());
+        model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         model.addAttribute("category",category);
         model.addAttribute("categories",categories);
         model.addAttribute("products",productDto);

@@ -64,17 +64,18 @@
                         <div th:if="${#authorization.expression('isAuthenticated()')}">
                             <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
                                role="button">
-                                <span th:text="${#authentication.principal.username}"></span>
-                            </a>
+                                <span th:text="${username}"></span></a>
                             <ul class="dropdown-menu">
                                 <li>
                                     <a class="dropdown-item">Profile settings</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="#">Cart</a>
+                                    <a class="dropdown-item" th:href="@{/user/cart-items}">Cart</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="#"><button>Logout</button></a>
+                                    <form method="post" th:action="@{/logout}">
+                                    <input class="btn" type="submit" value="Logout">
+                                    </form>
                                 </li>
                             </ul>
                         </div>

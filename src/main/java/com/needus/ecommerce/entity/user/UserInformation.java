@@ -21,7 +21,6 @@ public class UserInformation{
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID userId;
     @NonNull
-//    @Column(nullable = false)
     private String email;
     @Column(nullable = false)
     private String username;
@@ -45,4 +44,7 @@ public class UserInformation{
     private Cart cart;
     @Column(nullable = false,name = "isDeleted")
     private boolean isDeleted = false;
+    @OneToMany
+    @JoinColumn(name = "addressId")
+    private UserAddress userAddress;
 }

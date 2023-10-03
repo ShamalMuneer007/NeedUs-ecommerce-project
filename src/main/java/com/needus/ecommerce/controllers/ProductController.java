@@ -202,7 +202,6 @@ public class ProductController {
         @RequestParam(name="productStock",required = false) Integer stock,
         @RequestParam(name="productFilters",required = false) List<ProductFilters> filters,
         Model model,RedirectAttributes ra
-
     ) throws IOException {
         if(!productService.existsById(productId)){
             throw new ResourceNotFoundException("Product not found");

@@ -1,4 +1,4 @@
-package com.needus.ecommerce.service.user;
+package com.needus.ecommerce.service.user.Impl;
 
 import com.needus.ecommerce.entity.user.Cart;
 import com.needus.ecommerce.entity.user.Wishlist;
@@ -6,6 +6,9 @@ import com.needus.ecommerce.entity.user.Role;
 import com.needus.ecommerce.entity.user.UserInformation;
 import com.needus.ecommerce.repository.user.ConfirmationTokenRepository;
 import com.needus.ecommerce.repository.user.UserInformationRepository;
+import com.needus.ecommerce.service.user.CartService;
+import com.needus.ecommerce.service.user.UserInformationService;
+import com.needus.ecommerce.service.user.WishlistService;
 import com.needus.ecommerce.service.verification.ConfirmationTokenService;
 import com.needus.ecommerce.service.verification.EmailService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,17 +39,21 @@ public class UserInformationServiceImpl implements UserInformationService {
     private final EmailService emailService;
 
     private final SessionRegistry sessionRegistry;
+    private final CartService cartService;
+    private final WishlistService wishlistService;
     @Autowired
     public UserInformationServiceImpl(
         BCryptPasswordEncoder encoder, UserInformationRepository userRepository,
         ConfirmationTokenRepository confirmationTokenRepository, ConfirmationTokenService confirmationTokenService,
-        EmailService emailService, SessionRegistry sessionRegistry){
+        EmailService emailService, SessionRegistry sessionRegistry, CartService cartService, WishlistService wishlistService){
         this.encoder = encoder;
         this.userRepository = userRepository;
         this.confirmationTokenRepository = confirmationTokenRepository;
         this.confirmationTokenService = confirmationTokenService;
         this.emailService = emailService;
         this.sessionRegistry = sessionRegistry;
+        this.cartService = cartService;
+        this.wishlistService = wishlistService;
     }
 
 
@@ -54,8 +61,8 @@ public class UserInformationServiceImpl implements UserInformationService {
     public UserInformation register(UserInformation user) {
         Wishlist wishlist =  new Wishlist();
         Cart cart = new Cart();
-        user.setRole(Role.USER);
-        user.setUserCreatedAt(LocalDateTime.now());
+        cartService.createCart(cart);
+        wishlistService.createWishlist(wishlist);
         user.setPassword(encoder.encode(user.getPassword()));
         user.setEnabled(false);
         user.setUserWishlist(wishlist);
@@ -142,6 +149,10 @@ public class UserInformationServiceImpl implements UserInformationService {
         if(userRepository.count()<1){
             user.setRole(Role.ADMIN);
         }
+        else {
+            user.setRole(Role.USER);
+        }
+        user.setUserCreatedAt(LocalDateTime.now());
         return userRepository.save(user);
     }
 
