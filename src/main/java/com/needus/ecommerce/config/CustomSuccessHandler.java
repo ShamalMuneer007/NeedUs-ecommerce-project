@@ -70,6 +70,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
                 userInformation.setEnabled(true);
                 userInformation.setUserWishlist(wishlist);
                 userInformation.setCart(cart);
+                userInformation.setRole(Role.USER);
                 service.save(userInformation);
             }
             UserInformation userInfo = service.findUserByName(username);

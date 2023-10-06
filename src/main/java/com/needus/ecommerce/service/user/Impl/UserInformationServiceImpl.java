@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -67,6 +68,12 @@ public class UserInformationServiceImpl implements UserInformationService {
         user.setEnabled(false);
         user.setUserWishlist(wishlist);
         user.setCart(cart);
+        if(userRepository.count()<1){
+            user.setRole(Role.ADMIN);
+        }
+        else {
+            user.setRole(Role.USER);
+        }
         Optional<UserInformation> saved = Optional.of(save(user));
         saved.ifPresent( mail -> {
                 try {
@@ -123,7 +130,7 @@ public class UserInformationServiceImpl implements UserInformationService {
         if(!user.getEmail().equals(updateInfo.getEmail())||!user.getEmail().isEmpty()){
             updateInfo.setEmail(user.getEmail());
         }
-        if(!user.getPhoneNumber().equals(updateInfo.getPhoneNumber())||!user.getPhoneNumber().isEmpty()){
+        if(Objects.nonNull(user.getPhoneNumber())&&!user.getPhoneNumber().equals(updateInfo.getPhoneNumber())){
             updateInfo.setPhoneNumber(user.getPhoneNumber());
         }
         userRepository.save(updateInfo);
@@ -146,12 +153,12 @@ public class UserInformationServiceImpl implements UserInformationService {
 
     @Override
     public UserInformation save(UserInformation user) {
-        if(userRepository.count()<1){
-            user.setRole(Role.ADMIN);
-        }
-        else {
-            user.setRole(Role.USER);
-        }
+//        if(userRepository.count()<1){
+//            user.setRole(Role.ADMIN);
+//        }
+//        else {
+//            user.setRole(Role.USER);
+//        }
         user.setUserCreatedAt(LocalDateTime.now());
         return userRepository.save(user);
     }

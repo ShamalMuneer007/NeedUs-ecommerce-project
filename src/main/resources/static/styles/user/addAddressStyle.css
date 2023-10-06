@@ -1,0 +1,166 @@
+body{
+    padding-bottom : 40px;
+}
+
+
+.heading{
+    margin-left : 18%;
+    margin-top : 100px;
+}
+icon-shape {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.icon-sm {
+    width: 2rem;
+    height: 2rem;
+}
+
+
+.login-text {
+    margin-top: 50px;
+}
+
+.successful-msg {
+    margin-bottom: 20px;
+    background-color: rgb(10, 206, 10);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 5px;
+    font-size: 14px;
+    height: 50px;
+    margin-left : -3.2%;
+    margin-right : -3.2%;
+    border: green;
+}
+
+.disabled-msg {
+    margin-bottom: 20px;
+    background-color: rgb(255, 57, 57);
+    color: white;
+    border: 0.5px red;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 5px;
+    font-size: 14px;
+    height: 50px;
+    margin-left : -3.2%;
+    margin-right : -3.2%;
+}
+
+.usererr-msg {
+    margin-bottom: 20px;
+    background-color: rgb(255, 57, 57);
+    color: white;
+    border: 0.5px red;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 5px;
+    font-size: 14px;
+    height: 50px;
+    margin-left : -3.2%;
+    margin-right : -3.2%;
+}
+
+.emailerr-msg {
+     margin-bottom: 20px;
+     background-color: rgb(255, 57, 57);
+     color: white;
+     border: 0.5px red;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     border-top-left-radius: 8px;
+     border-top-right-radius: 5px;
+     font-size: 14px;
+     height: 50px;
+     margin-left : -3.2%;
+     margin-right : -3.2%;
+}
+
+.forgot-pass {
+    text-decoration: none;
+    color: rgb(86, 86, 86);
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.forgot-pass:hover {
+    color: black;
+}
+
+.login-button {
+    font-family: "Poppins-Bold", Helvetica;
+    background-color: #E73C17;
+    color: white;
+    border: none;
+    margin-top: 10px;
+    border-radius: px;
+    width: 20%;
+    transition: background-color 0.2s;
+}
+
+.login-button:hover {
+    color : white;
+    background-color: #d33a14;
+}
+
+.ellipsis-button {
+    background-color: red;
+    text-align: center;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 300px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    height: 40px;
+    padding: 0;
+    border: 0.5px solid rgb(154, 154, 154);
+    border-radius: 20px;
+    background-color: white;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    font-size: 15px;
+    text-decoration: none;
+}
+
+.oAuth {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.google-logo {
+    height: 20px;
+    width: 20px;
+}
+
+.sign-in-google {
+    margin-right: 50px;
+    text-decoration: none;
+    width: 150px;
+}
+
+.register-link {
+    color: #E73C17;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.register-link:hover {
+    color: #d33a14;
+}
+

@@ -3,6 +3,7 @@ package com.needus.ecommerce.service.user.Impl;
 import com.needus.ecommerce.entity.user.CartItem;
 import com.needus.ecommerce.repository.user.CartItemRepository;
 import com.needus.ecommerce.service.user.CartItemService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
+    @Transactional
     public void deleteItemById(Long itemId) {
         cartItemRepository.deleteById(itemId);
     }

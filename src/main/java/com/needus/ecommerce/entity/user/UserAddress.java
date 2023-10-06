@@ -28,7 +28,7 @@ public class UserAddress {
     @Column(nullable = false)
     private String state;
     @Column(nullable = false)
-    private Integer postalCode;
+    private String postalCode;
     @Column(nullable = false)
-    private Integer contactNumber;
+    private String contactNumber;
 }

@@ -5,6 +5,7 @@ import com.needus.ecommerce.entity.user.Cart;
 import com.needus.ecommerce.entity.user.UserInformation;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface CartService {
     Cart findUserCartById(Long cartId);
@@ -20,4 +21,5 @@ public interface CartService {
     Float calculateTotalAmount(UserInformation user);
 
     void removeAllCartItem(Cart cart);
+
 }

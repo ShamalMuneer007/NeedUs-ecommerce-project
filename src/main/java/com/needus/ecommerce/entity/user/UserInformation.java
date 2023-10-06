@@ -8,6 +8,7 @@ import lombok.NonNull;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -44,7 +45,6 @@ public class UserInformation{
     private Cart cart;
     @Column(nullable = false,name = "isDeleted")
     private boolean isDeleted = false;
-    @OneToMany
-    @JoinColumn(name = "addressId")
-    private UserAddress userAddress;
+    @OneToMany(mappedBy = "userInformation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserAddress> userAddresses;
 }

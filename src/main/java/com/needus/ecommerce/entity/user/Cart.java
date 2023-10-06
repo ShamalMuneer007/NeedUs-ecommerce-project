@@ -16,6 +16,6 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long cart_id;
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
-    @JoinColumn(name = "cartItems")
+    @JoinColumn(name = "cart_items")
     private List<CartItem> cartItems;
 }
