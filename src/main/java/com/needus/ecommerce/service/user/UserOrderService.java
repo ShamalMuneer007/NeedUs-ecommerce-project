@@ -22,4 +22,10 @@ public interface UserOrderService {
     List<OrderItem> findAllCanceledOrders(List<UserOrder> userOrderInfo);
 
     UserOrder findOrderDetailsById(Long orderId);
+
+    void cancelOrder(Long orderId);
+
+    List<UserOrder> findAllOrders();
+
+    void changeOrderStatus(String value, Long orderId);
 }

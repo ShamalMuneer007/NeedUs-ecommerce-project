@@ -2,7 +2,7 @@ package com.needus.ecommerce.service.user.Impl;
 
 import com.needus.ecommerce.entity.user.Cart;
 import com.needus.ecommerce.entity.user.Wishlist;
-import com.needus.ecommerce.entity.user.Role;
+import com.needus.ecommerce.entity.user.enums.Role;
 import com.needus.ecommerce.entity.user.UserInformation;
 import com.needus.ecommerce.repository.user.ConfirmationTokenRepository;
 import com.needus.ecommerce.repository.user.UserInformationRepository;

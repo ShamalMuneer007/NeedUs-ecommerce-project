@@ -1,9 +1,8 @@
 package com.needus.ecommerce.config;
 
-import com.needus.ecommerce.entity.user.Role;
+import com.needus.ecommerce.entity.user.enums.Role;
 import com.needus.ecommerce.service.security.CustomOidUserService;
 import com.needus.ecommerce.service.security.UserInfoDetailsService;
-import jakarta.servlet.http.HttpSessionListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

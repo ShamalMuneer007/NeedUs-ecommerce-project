@@ -1,5 +1,6 @@
 package com.needus.ecommerce.model;
 
+import com.needus.ecommerce.model.enums.OtpStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

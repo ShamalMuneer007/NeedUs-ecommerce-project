@@ -1,4 +1,4 @@
-package com.needus.ecommerce.model;
+package com.needus.ecommerce.model.enums;
 
 public enum OtpStatus {
 

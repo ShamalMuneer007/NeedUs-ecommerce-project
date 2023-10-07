@@ -1,15 +1,15 @@
 package com.needus.ecommerce.entity.user.order;
 
-import com.needus.ecommerce.entity.user.Cart;
 import com.needus.ecommerce.entity.user.UserAddress;
 import com.needus.ecommerce.entity.user.UserInformation;
+import com.needus.ecommerce.entity.user.enums.OrderStatus;
+import com.needus.ecommerce.entity.user.enums.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -30,6 +30,7 @@ public class UserOrder {
     private UserAddress userAddress;
     @CreatedDate
     private Date orderPlacedAt;
+    private Date orderShippedAt;
     private Date orderDeliveredAt;
     private Date orderCancelledAt;
     private Date orderRefundedAt;

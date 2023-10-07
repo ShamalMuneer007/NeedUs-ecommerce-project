@@ -22,4 +22,6 @@ public interface ProductService {
     boolean existsById(Long productId);
 
     List<Products> findProductsOfCategory(Long categoryId);
+
+    void reduceStock(Long productId,int quantity);
 }

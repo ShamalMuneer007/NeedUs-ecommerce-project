@@ -6,14 +6,12 @@ import com.needus.ecommerce.entity.user.CartItem;
 import com.needus.ecommerce.entity.user.UserAddress;
 import com.needus.ecommerce.entity.user.UserInformation;
 import com.needus.ecommerce.entity.user.order.OrderItem;
-import com.needus.ecommerce.entity.user.order.PaymentMethod;
 import com.needus.ecommerce.entity.user.order.UserOrder;
 import com.needus.ecommerce.exceptions.UnknownException;
 import com.needus.ecommerce.model.UserAddressDto;
 import com.needus.ecommerce.service.product.ProductService;
 import com.needus.ecommerce.service.user.*;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -23,7 +21,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Controller
@@ -194,6 +191,13 @@ public class UserController {
         Cart cart = cartService.findUserCartById(user.getCart().getCart_id());
         orderService.placeOrder(cart, user, addressId, payment);
         return "redirect:/shop/home";
+    }
+    @PostMapping("/order/cancel-order/{orderId}")
+    public String cancelOrder(@PathVariable(name = "orderId") Long orderId,
+                              RedirectAttributes ra){
+        orderService.cancelOrder(orderId);
+        ra.addFlashAttribute("message","Your order has been cancelled");
+        return "redirect:/user/my-orders/order-details/"+orderId;
     }
 
     @GetMapping("/my-orders")

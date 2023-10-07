@@ -60,4 +60,11 @@ public class ProductServiceImpl implements ProductService {
         return repository.findByCategories_CategoryIdAndIsDeletedFalse(categoryId);
     }
 
+    @Override
+    public void reduceStock(Long productId,int quantity) {
+        Products products = repository.findById(productId).get();
+        products.setStock(products.getStock()-quantity);
+        repository.save(products);
+    }
+
 }

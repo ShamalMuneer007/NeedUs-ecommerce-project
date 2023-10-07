@@ -4,10 +4,11 @@ import com.needus.ecommerce.entity.user.Cart;
 import com.needus.ecommerce.entity.user.CartItem;
 import com.needus.ecommerce.entity.user.UserInformation;
 import com.needus.ecommerce.entity.user.order.OrderItem;
-import com.needus.ecommerce.entity.user.order.OrderStatus;
-import com.needus.ecommerce.entity.user.order.PaymentMethod;
+import com.needus.ecommerce.entity.user.enums.OrderStatus;
+import com.needus.ecommerce.entity.user.enums.PaymentMethod;
 import com.needus.ecommerce.entity.user.order.UserOrder;
 import com.needus.ecommerce.repository.user.UserOrderRepository;
+import com.needus.ecommerce.service.product.ProductService;
 import com.needus.ecommerce.service.user.CartService;
 import com.needus.ecommerce.service.user.OrderItemService;
 import com.needus.ecommerce.service.user.UserAddressService;
@@ -26,6 +27,9 @@ public class UserOrderServiceImpl implements UserOrderService {
     UserOrderRepository orderRepository;
     @Autowired
     UserAddressService addressService;
+
+    @Autowired
+    ProductService productService;
 
     @Autowired
     CartService cartService;
@@ -56,6 +60,9 @@ public class UserOrderServiceImpl implements UserOrderService {
         order.setUserInformation(user);
         order.setTotalAmount(totalAmount);
         order.setOrderPlacedAt(new Date());
+        for(OrderItem item : orderItems){
+            productService.reduceStock(item.getProduct().getProductId(),item.getQuantity());
+        }
         cartService.removeAllCartItem(cart);
         orderRepository.save(order);
     }
@@ -108,5 +115,36 @@ public class UserOrderServiceImpl implements UserOrderService {
     @Override
     public UserOrder findOrderDetailsById(Long orderId) {
         return orderRepository.findById(orderId).get();
+    }
+
+    @Override
+    public void cancelOrder(Long orderId) {
+        UserOrder order = orderRepository.findById(orderId).get();
+        order.setOrderStatus(OrderStatus.CANCELLED);
+        order.setOrderCancelledAt(new Date());
+        orderRepository.save(order);
+    }
+
+    @Override
+    public List<UserOrder> findAllOrders() {
+        return orderRepository.findAll();
+    }
+
+    @Override
+    public void changeOrderStatus(String value, Long orderId) {
+        UserOrder order = orderRepository.findById(orderId).get();
+        if(value.equalsIgnoreCase("1")){
+            order.setOrderStatus(OrderStatus.PROCESSING);
+        }
+        else if(value.equalsIgnoreCase("2")){
+            order.setOrderStatus(OrderStatus.SHIPPED);
+        }
+        else if(value.equalsIgnoreCase("3")){
+            order.setOrderStatus(OrderStatus.DELIVERED);
+        }
+        else if(value.equalsIgnoreCase("4")){
+            order.setOrderStatus(OrderStatus.CANCELLED);
+        }
+        orderRepository.save(order);
     }
 }

@@ -1,4 +1,4 @@
-package com.needus.ecommerce.entity.user.order;
+package com.needus.ecommerce.entity.user.enums;
 
 public enum OrderStatus {
     PENDING,

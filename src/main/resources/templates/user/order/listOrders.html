@@ -138,6 +138,8 @@
                     <td style="text-align: center; vertical-align: middle;">
                         <div class="fw-bold" style="color: #BFA900" th:if="${order.orderStatus.name() == 'PENDING'}" th:text="${order.orderStatus}">
                         </div>
+                        <div class="fw-bold" style="color: red;" th:if="${order.orderStatus.name() == 'CANCELLED'}" th:text="${order.orderStatus}">
+                        </div>
                     </td>
                 </tr>
             </tbody>

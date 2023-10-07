@@ -1,7 +1,7 @@
 package com.needus.ecommerce.config;
 
 import com.needus.ecommerce.entity.user.Cart;
-import com.needus.ecommerce.entity.user.Role;
+import com.needus.ecommerce.entity.user.enums.Role;
 import com.needus.ecommerce.entity.user.UserInformation;
 import com.needus.ecommerce.entity.user.Wishlist;
 import com.needus.ecommerce.repository.user.UserInformationRepository;
@@ -18,12 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
