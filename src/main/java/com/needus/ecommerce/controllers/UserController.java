@@ -7,12 +7,15 @@ import com.needus.ecommerce.entity.user.UserAddress;
 import com.needus.ecommerce.entity.user.UserInformation;
 import com.needus.ecommerce.entity.user.order.OrderItem;
 import com.needus.ecommerce.entity.user.order.UserOrder;
+import com.needus.ecommerce.exceptions.TechnicalIssueException;
 import com.needus.ecommerce.exceptions.UnknownException;
 import com.needus.ecommerce.model.UserAddressDto;
+import com.needus.ecommerce.model.UserOrderDto;
 import com.needus.ecommerce.service.product.ProductService;
 import com.needus.ecommerce.service.user.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -131,6 +134,13 @@ public class UserController {
         }
         Cart cart = cartService.findUserCartById(user.getCart().getCart_id());
         List<CartItem> cartItems = cart.getCartItems();
+        for(CartItem cartItem : cartItems){
+            if(cartItem.getQuantity()>=cartItem.getProduct().getStock()){
+                log.error("cart item quantity exceeded stock : "+cartItem);
+                cartService.removeAllCartItem(cart);
+                throw new TechnicalIssueException("cart item quantity exceeded stock");
+            }
+        }
         float subTotalAmount = cartService.calculateTotalAmount(user);
         model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         model.addAttribute("addresses", userAddressDtoList);
@@ -201,10 +211,13 @@ public class UserController {
     }
 
     @GetMapping("/my-orders")
-    public String showOrders(Model model) {
+    public String showOrders( @RequestParam(defaultValue = "1") int page,
+                              @RequestParam(defaultValue = "10") int pageSize,
+                              Model model) {
         UserInformation userInformation = userService.getCurrentUser();
-        List<UserOrder> userOrderInfo = orderService.findUserOrderByUserId(userInformation.getUserId());
-        model.addAttribute("orders", userOrderInfo);
+        Page<UserOrder> userOrderInfo = orderService.findUserOrderByUserId(userInformation.getUserId(),page,pageSize);
+        Page<UserOrderDto> userOrderDtos = userOrderInfo.map(UserOrderDto::new);
+        model.addAttribute("orders", userOrderDtos);
         model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         return "user/order/listOrders";
     }
@@ -212,8 +225,9 @@ public class UserController {
     public String orderDetails(@PathVariable(name = "orderId") Long orderId,
                                Model model){
         UserOrder orderDetails = orderService.findOrderDetailsById(orderId);
+        UserOrderDto userOrderDto = new UserOrderDto(orderDetails);
         List<OrderItem> orderItems = orderDetails.getOrderItems();
-        model.addAttribute("orderDetails",orderDetails);
+        model.addAttribute("orderDetails",userOrderDto);
         model.addAttribute("orderItems",orderItems);
         model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         return "user/order/orderDetails";

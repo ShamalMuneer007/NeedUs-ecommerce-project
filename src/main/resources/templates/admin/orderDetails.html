@@ -97,10 +97,10 @@
                 <hr>
                 <div class="pt-3 fw-semibold">
                     <span style="color:#E73C17" th:if="${orderDetails.orderStatus.name() == 'SHIPPED'}">
-                        Order Shipped at : <span th:text="orderDetails.orderShippedAt"></span>
+                        Order Shipped at : <span th:text="${orderDetails.orderShippedAt}"></span>
                     </span>
                     <span style="color:#E73C17" th:if="${orderDetails.orderStatus.name() == 'DELIVERED'}">
-                        Order Delivered at : <span th:text="orderDetails.orderDeliveredAt"></span>
+                        Order Delivered at : <span th:text="${orderDetails.orderDeliveredAt}"></span>
                     </span>
                     <span style="color:#E73C17" th:if="${orderDetails.orderStatus.name() == 'CANCELLED'}">
                         Order Cancelled on : <span th:text="${orderDetails.orderCancelledAt}"></span>

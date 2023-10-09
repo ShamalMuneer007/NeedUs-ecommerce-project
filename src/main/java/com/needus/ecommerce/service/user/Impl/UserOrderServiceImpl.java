@@ -14,9 +14,15 @@ import com.needus.ecommerce.service.user.OrderItemService;
 import com.needus.ecommerce.service.user.UserAddressService;
 import com.needus.ecommerce.service.user.UserOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -33,10 +39,7 @@ public class UserOrderServiceImpl implements UserOrderService {
 
     @Autowired
     CartService cartService;
-    Calendar calendar =Calendar.getInstance();
-    Date currentDate = new Date();
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    String formattedDate = dateFormat.format(currentDate);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     @Override
     public void placeOrder(Cart cart, UserInformation user, long addressId, String payment) {
         float discounterPrice = 0;
@@ -49,17 +52,18 @@ public class UserOrderServiceImpl implements UserOrderService {
         float totalAmount = subTotalAmount + discounterPrice;
         UserOrder order =  new UserOrder();
         order.setOrderItems(orderItems);
-        order.setOrderStatus(OrderStatus.PENDING);
         if(payment.equalsIgnoreCase("cod")){
             order.setPaymentMethod(PaymentMethod.COD);
+            order.setOrderStatus(OrderStatus.PROCESSING);
         }
         else{
             order.setPaymentMethod(PaymentMethod.ONLINE_PAYMENT);
+            order.setOrderStatus(OrderStatus.PENDING);
         }
         order.setUserAddress(addressService.findAddressByAddressId(addressId));
         order.setUserInformation(user);
         order.setTotalAmount(totalAmount);
-        order.setOrderPlacedAt(new Date());
+        order.setOrderPlacedAt(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES));
         for(OrderItem item : orderItems){
             productService.reduceStock(item.getProduct().getProductId(),item.getQuantity());
         }
@@ -68,8 +72,9 @@ public class UserOrderServiceImpl implements UserOrderService {
     }
 
     @Override
-    public List<UserOrder> findUserOrderByUserId(UUID userId) {
-        return orderRepository.findByUserInformation_UserId(userId);
+    public Page<UserOrder> findUserOrderByUserId(UUID userId,int pageNo,int pageSize) {
+        PageRequest pageable = PageRequest.of(pageNo - 1, pageSize);
+        return orderRepository.findByUserInformation_UserId(userId,pageable);
     }
 
     @Override
@@ -121,13 +126,14 @@ public class UserOrderServiceImpl implements UserOrderService {
     public void cancelOrder(Long orderId) {
         UserOrder order = orderRepository.findById(orderId).get();
         order.setOrderStatus(OrderStatus.CANCELLED);
-        order.setOrderCancelledAt(new Date());
+        order.setOrderCancelledAt(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES));
         orderRepository.save(order);
     }
 
     @Override
-    public List<UserOrder> findAllOrders() {
-        return orderRepository.findAll();
+    public Page<UserOrder> findAllOrders(int pageNo , int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+        return orderRepository.findAll(pageable);
     }
 
     @Override
@@ -138,12 +144,15 @@ public class UserOrderServiceImpl implements UserOrderService {
         }
         else if(value.equalsIgnoreCase("2")){
             order.setOrderStatus(OrderStatus.SHIPPED);
+            order.setOrderShippedAt(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES));
         }
         else if(value.equalsIgnoreCase("3")){
             order.setOrderStatus(OrderStatus.DELIVERED);
+            order.setOrderDeliveredAt(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES));
         }
         else if(value.equalsIgnoreCase("4")){
             order.setOrderStatus(OrderStatus.CANCELLED);
+            order.setOrderCancelledAt(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES));
         }
         orderRepository.save(order);
     }

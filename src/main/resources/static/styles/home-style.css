@@ -18,20 +18,25 @@
 }
 
 body {
-    position: relative;
     margin: 0rem 0 0 0;
     font-family: var(--body-font);
     font-size: var(--normal-font-size);
     transition: .5s;
     background-color  : #f9f9fc;
 }
+main{
+    padding-top: 15px !important;
+    margin: 20px auto !important;
+}
 nav{
     margin-left: -20px;
     margin-right: -20px;
     margin-top: -25px;
     padding-top : 20px;
-    padding-left 20px;
     background-color:#ffffff;
+}
+.product-box{
+    padding-left : 5% !important;
 }
 #home-nav:hover{
     color : #E73C17 !important;

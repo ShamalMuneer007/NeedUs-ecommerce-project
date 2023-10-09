@@ -41,7 +41,7 @@ public class CategoryController {
         if(!categoryName.isEmpty()){
             if(categoryService.categoryExists(categoryName)){
                 ra.addFlashAttribute("message","Category already exists");
-                return "redirect:/admin/categories/list";
+                return "redirect:/admin/categories/addCategory";
             }
             Categories categories = new Categories();
             categories.setCategoryName(categoryName);
@@ -51,7 +51,7 @@ public class CategoryController {
         if(!brandName.isEmpty()){
             if(brandService.brandExists(brandName)){
                 ra.addFlashAttribute("message","Brand already exists");
-                return "redirect:/admin/categories/list";
+                return "redirect:/admin/categories/addCategory";
             }
             Brands brands = new Brands();
             brands.setBrandName(brandName);

@@ -20,7 +20,7 @@
 </head>
 <body>
 <header class="container-fluid">
-    <nav class="navbar navbar-expand-lg pt-5 pe-3 pb-2">
+    <nav class="container-fluid navbar navbar-expand-lg pt-5 pe-3 pb-2">
         <div class="container-fluid">
             <div class="navbar-brand">
                 <a class="nav_logo pe-5 ps-5" href="#"> <span class="nav_logo-name">Needus</span><span
@@ -89,7 +89,12 @@
         </div>
     </nav>
 </header>
-<main>
+<div class="fw-bold mt-5 pt-5" style="text-align:center; vertical-align: center; font-size : 40px;" th:if="${items.size()} == 0">
+    Zzzzz....<br>
+    No items in your cart currently
+
+</div>
+<main th:unless="${items.size()} == 0">
     <div>
     <h3 class="heading fw-semibold">Cart <span class="text-muted fw-thin" th:text="${items.size()}"></span></h3>
     </div>
@@ -117,8 +122,8 @@
                     <div class="input-group">
                         <form id="quantity-form" method="post" th:action="@{'/user/cart-items/add-quantity/' + ${item.getId()}}">
                             <input class="button-minus border rounded-circle btn icon-shape icon-sm me-2" data-field="quantity" type="button" value="-">
-                            <input class="quantity-input quantity-field border-0"  max="10"  min="0" th:id="'quantity-input-' + ${item.getId()}" th:value="${item.quantity}">
-                            <input class="button-plus border rounded-circle btn icon-shape icon-sm" data-field="quantity" type="button" value="+">
+                            <input class="quantity-input quantity-field border-0" max="10"  min="0"  readonly th:id="'quantity-input-' + ${item.getId()}" th:value="${item.quantity}">
+                            <input class="button-plus border rounded-circle btn icon-shape icon-sm" data-field="quantity" th:unless="${item.quantity} >= ${item.getProduct.stock}-1" type="button" value="+">
                         </form>
                     </div>
                 </td>
@@ -171,7 +176,6 @@
             var response = JSON.parse(xhr.responseText);
         }
     };
-
 $(document).ready(function() {
     // Decrease quantity button click event
     $('.button-minus').click(function() {

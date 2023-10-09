@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -20,7 +21,7 @@ public class ProductDto {
     private Long productId;
     private String productName;
     private UserInformation userInformation;
-    private LocalDate publishedAt;
+    private LocalDateTime publishedAt;
     private String description;
     private Float productPrice;
     private boolean productStatus;

@@ -26,12 +26,13 @@
                 <span class="dashboard-indicator">Dashboard </span> > Add Variants
             </div>
         </div>
+        <div class="mt-2 pt-1 text-danger text-center fw-semibold" style="height:30px;border-radius:5px;" th:if="${message}" th:text="${message}"></div>
         <div class="box mt-5">
             <h4 class="p-5 pb-4">Add Variants</h4>
             <form class="ps-5 pb-5 pt-0" method="post" th:action="@{/admin/variants/saveVariant}">
-                <p class="fw-semibold">Select a Category</p>
+                <p class="fw-semibold">Select the Category you want to add variant in</p>
                 <div class="col-3 mt-3 mb-5 item-key words">
-                    <select aria-label="Default select example" class="form-select" name="categoryId">
+                    <select aria-label="Default select example" class="form-select" name="categoryId" required>
                         <option disabled="disabled" selected="selected" th:each="category, iterStat : ${category}"
                             th:if="${iterStat.index == 0}">
                             Choose a category
@@ -44,7 +45,7 @@
                 <div class="col-8 mt-2">
                     <label class="form-label fw-semibold">Variant Tag</label>
                     <input class="form-control bg-body-tertiary" name="filterName" placeholder="Enter Variant Tag"
-                        type="text">
+                        required type="text">
                 </div>
                 <div class="product-button-div mt-5 mb-5">
                     <input class="add-product-btn" type="submit" value="Add Variant">

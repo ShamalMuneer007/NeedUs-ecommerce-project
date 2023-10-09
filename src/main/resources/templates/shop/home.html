@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -30,6 +30,18 @@
             font-weight : 800;
             padding-top : -20px;
         }
+        .blur-background {
+            filter: blur(5px);
+        }
+        .checkbox-columns {
+    column-count: 3; /* Adjust the number of columns as per your preference */
+    column-gap: 10px; /* Adjust the gap between columns */
+    list-style: none; /* Remove default list styles */
+}
+.checkbox-columns li {
+    display : block;
+    margin-bottom: 10px; /* Adjust the space between each checkbox and label */
+}
     </style>
 </head>
 
@@ -38,7 +50,7 @@
     <span class="text-light small">Welcome to Needus & get the best computer product for best price</span>
 </div>
     <header class="container-fluid">
-        <nav class="navbar navbar-expand-lg mt-0 pe-3 pb-2">
+        <nav class="container-fluid navbar navbar-expand-lg mt-0 pe-3 pb-2">
             <div class="container-fluid">
                 <div class="navbar-brand">
                     <a class="nav_logo pe-5 ps-5" href="#"> <span class="nav_logo-name">Needus</span><span
@@ -69,8 +81,8 @@
 
                     </ul>
                     <div class="d-flex gap-5 justify-content-between me-5">
-                    <form class="d-flex me-5 pe-5" role="search">
-                        <input aria-label="Search" class="form-control me-2" placeholder="Search" type="search">
+                    <form class="d-flex me-5 pe-5" method="get" role="search" th:action="@{/shop/home}">
+                        <input aria-label="Search" class="form-control me-2" name="search" placeholder="Search" type="search">
                     </form>
                     <div class="d-flex gap-3 nav-item dropdown">
                         <div th:if="${not #authorization.expression('isAuthenticated()')}">
@@ -106,19 +118,53 @@
             </div>
         </nav>
     </header>
-    <main class="mx-5 pt-5 container">
-        <div class="ps-5">
+    <main class="container">
+        <div class="" th:unless="${param.noSuchProducts}">
             <span class="fw-semibold text-muted">Discover</span>
             <h3>Our Brand New Products</h3>
         </div>
+        <div class="fw-bold mt-5" style="text-align:center; vertical-align:center; font-size:40px;" th:if="${param.noSuchProducts}">
+            No results for <span th:text="${param.searchKey}"></span>
+        </div>
         <div th:if="${message}" th:text="${message}"></div>
-        <div class="row ms-5 ps-5 me-0 border">
-
-            <div class="col-lg-3  col-sm-6 col-6 d-flex flex-column align-items-center justify-content-center product-item" th:each="product : ${products}">
+        <div class="">
+        <div class="row border" th:unless="${param.noSuchProducts}">
+            <div class=" pt-4 d-flex justify-content-end">
+                <a aria-expanded="false" class="dropdown-toggle pe-5" data-bs-toggle="dropdown" href="#"
+                   id="toggle" role="button" style="text-decoration:none; color:black;">
+                    <span class="fw-semibold">Filter <i class="bx bx-filter-alt" style="color:black; text-decoration:none;"></i></span></a>
+                <form th:action="@{/shop/filterProducts}">
+                <ul class="dropdown-menu container ps-4 me-5" style="width : 40%; min-width:40%; min-height : 40%; box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;">
+                    <li>
+                        <div class="fw-bold mb-1 mt-3">Enter your price Range :</div>
+                        <label class="form-label small" for="min">
+                            Minimum Price:
+                        </label>
+                        <input class="form-input" id="min" name="min-price" step="500" style="width:15%;" type="number" value="100">
+                        <label class="form-label small ps-3" for="max">
+                            Maximum Price:
+                        </label>
+                        <input class="form-input" id="max" name="max-price" step="500" style="width:15%;" type="number" value="100000">
+                        <hr>
+                    </li>
+                    <div class="fw-bold mb-2">Filter options : </div>
+                    <div class="checkbox-columns">
+                    <li class="" th:each="filter : ${filters}">
+                        <input  class="d-inline ps-2" name="filter" th:value="${filter.filterId}" type="checkbox">
+                        <span class="small me-2" th:text="${filter.filterName}"></span>
+                    </li>
+                    </div>
+                    <li class="d-flex justify-content-end mt-3 me-5">
+                        <button class="btn bg-success text-light fw-bold" type="submit">Apply</button>
+                    </li>
+                </ul>
+                </form>
+            </div>
+            <div class="product-box col-lg-3 col-sm-6 col-6 d-flex flex-column align-items-center justify-content-center product-item" th:each="product : ${products.content}">
                 <a style="text-decoration:none; color:black;" th:href="@{'/shop/home/product-details/' + ${product.productId}}">
                 <div class="product col-md-6"> <img alt="" class="img-fluid" style="object-fit: contain;" th:src="${product.imageFilePath}">
                     <ul class="d-flex align-items-center justify-content-center list-unstyled icons">
-                        <li>
+                        <li th:unless="${product.stock}<=1">
                             <form method="post" th:action="@{'/user/add-to-cart/' + ${product.productId}}">
                                 <button class="icon" style="border:none;" type="submit">
                                     <i  class="bx bx-cart" ></i>
@@ -128,12 +174,14 @@
                         <li class="icon mx-3"><span><i class="bx bx-heart"></i></span></li>
                     </ul>
                 </div>
-                <div class="title pt-4 pb-1">
+                    <span class="text-danger fw-bold" th:if="${product.stock}<=1">Out of stock</span>
+                    <span class="text-warning fw-bold" th:if="${product.stock}<10" th:unless="${product.stock}<=1">Low stock</span>
+                <div class="title pt-3 pb-1">
                     <span th:text="${product.productName}"></span>
                     <div>
                         <div class="price">₹ <span th:text="${product.productPrice}"></span></div>
-                        <div class="d-flex gap-3">
-                            <form method="post" th:action="@{'/user/add-to-cart/' + ${product.productId}}">
+                        <div class="d-flex gap-3" th:unless="${product.stock}<=1">
+                            <form method="post" th:action="@{'/user/add-to-cart/' + ${product.productId}}" >
                                 <button class="btn add-to-cart-btn" type="submit">
                                     <i  class="bx bx-cart" ></i>
                                 </button>
@@ -146,98 +194,28 @@
                         </div>
                     </div>
                 </div>
-                <!-- <div class="d-flex align-content-center justify-content-around"> <span><i
-                            class="bx bx-heart"></i></span> <span><i class="bx bx-cart"></i></span><span
-                        class="fas fa-star"></span>
-                </div> -->
                 </a>
             </div>
         </div>
-        <!-- <div class="row">
-            <div
-                class="col-lg-3 col-sm-6 d-flex flex-column align-items-center justify-content-center product-item my-3">
-                <div class="product"> <img
-                        src="https://images.pexels.com/photos/54203/pexels-photo-54203.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                        alt="">
-                    <ul class="d-flex align-items-center justify-content-center list-unstyled icons">
-                        <li class="icon"><span class="fas fa-expand-arrows-alt"></span></li>
-                        <li class="icon mx-3"><span class="far fa-heart"></span></li>
-                        <li class="icon"><span class="fas fa-shopping-bag"></span></li>
-                    </ul>
-                </div>
-                <div class="title pt-4 pb-1">Winter Sweater</div>
-                <div class="d-flex align-content-center justify-content-center"> <span class="fas fa-star"></span> <span
-                        class="fas fa-star"></span> <span class="fas fa-star"></span> <span class="fas fa-star"></span>
-                    <span class="fas fa-star"></span>
-                </div>
-                <div class="price">$ 60.0</div>
-            </div>
-            <div
-                class="col-lg-3 col-sm-6 d-flex flex-column align-items-center justify-content-center product-item my-3">
-                <div class="product"> <img
-                        src="https://images.pexels.com/photos/6764040/pexels-photo-6764040.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                        alt="">
-                    <ul class="d-flex align-items-center justify-content-center list-unstyled icons">
-                        <li class="icon"><span class="fas fa-expand-arrows-alt"></span></li>
-                        <li class="icon mx-3"><span class="far fa-heart"></span></li>
-                        <li class="icon"><span class="fas fa-shopping-bag"></span></li>
-                    </ul>
-                </div>
-                <div class="title pt-4 pb-1">Denim Dresses</div>
-                <div class="d-flex align-content-center justify-content-center"> <span class="fas fa-star"></span> <span
-                        class="fas fa-star"></span> <span class="fas fa-star"></span> <span class="fas fa-star"></span>
-                    <span class="fas fa-star"></span>
-                </div>
-                <div class="price">$ 55.0</div>
-            </div>
-            <div
-                class="col-lg-3 col-sm-6 d-flex flex-column align-items-center justify-content-center product-item my-3">
-                <div class="product"> <img
-                        src="https://images.pexels.com/photos/914668/pexels-photo-914668.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                        alt="">
-                    <ul class="d-flex align-items-center justify-content-center list-unstyled icons">
-                        <li class="icon"><span class="fas fa-expand-arrows-alt"></span></li>
-                        <li class="icon mx-3"><span class="far fa-heart"></span></li>
-                        <li class="icon"><span class="fas fa-shopping-bag"></span></li>
-                    </ul>
-                </div>
-                <div class="title pt-4 pb-1"> Empire Waist Dresses</div>
-                <div class="d-flex align-content-center justify-content-center"> <span class="fas fa-star"></span> <span
-                        class="fas fa-star"></span> <span class="fas fa-star"></span> <span class="fas fa-star"></span>
-                    <span class="fas fa-star"></span>
-                </div>
-                <div class="price">$ 70.0</div>
-            </div>
-            <div
-                class="col-lg-3 col-sm-6 d-flex flex-column align-items-center justify-content-center product-item my-3">
-                <div class="product"> <img
-                        src="https://images.pexels.com/photos/6311392/pexels-photo-6311392.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                        alt="">
-                    <ul class="d-flex align-items-center justify-content-center list-unstyled icons">
-                        <li class="icon"><span class="fas fa-expand-arrows-alt"></span></li>
-                        <li class="icon mx-3"><span class="far fa-heart"></span></li>
-                        <li class="icon"><span class="fas fa-shopping-bag"></span></li>
-                    </ul>
-                </div>
-                <div class="title pt-4 pb-1">Pinafore Dresses</div>
-                <div class="d-flex align-content-center justify-content-center"> <span class="fas fa-star"></span> <span
-                        class="fas fa-star"></span> <span class="fas fa-star"></span> <span class="fas fa-star"></span>
-                    <span class="fas fa-star"></span>
-                </div>
-                <div class="price">$ 60.0</div>
-            </div>
         </div>
-        </div> -->
-        <script crossorigin="anonymous"
-            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     </main>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-        $(document).ready(function () {
-        $('.dropdown-toggle').dropdown();
-    });
-</script>
+<div class="d-flex justify-content-center" th:if="${products.totalPages > 1}">
+    <ul class="pagination">
+        <li class="page-item" th:if="${!products.first}">
+            <a class="page-link" style="color:#E73C17;"  th:href="@{'/home?page=' + ${products.number}}">Previous</a>
+        </li>
+        <li class="page-item"  th:class="${i} == ${products.number}+1 ? 'page-item custom-active' : 'page-item'" th:each="i : ${#numbers.sequence(1, products.totalPages)}">
+            <a class="page-link" style="color: black;"  th:href="@{'/home?page=' + ${i}}">[[${i}]]</a>
+        </li>
+        <li class="page-item" th:if="${!products.last}">
+            <a class="page-link" style="color:#E73C17;"  th:href="@{'/home?page=' + ${products.number + 2}}">Next</a>
+        </li>
+    </ul>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script crossorigin="anonymous"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

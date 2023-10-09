@@ -2,6 +2,8 @@ package com.needus.ecommerce.repository.user;
 
 import com.needus.ecommerce.entity.user.order.OrderItem;
 import com.needus.ecommerce.entity.user.order.UserOrder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -11,7 +13,7 @@ import java.util.UUID;
 
 @Repository
 public interface UserOrderRepository extends JpaRepository<UserOrder,Long> {
-    List<UserOrder> findByUserInformation_UserId(UUID userId);
+    Page<UserOrder> findByUserInformation_UserId(UUID userId, Pageable pageable);
 
     @Query(value = "SELECT * FROM user_order WHERE order_status = 'PENDING'",nativeQuery = true)
     List<UserOrder> findPendingOrder();

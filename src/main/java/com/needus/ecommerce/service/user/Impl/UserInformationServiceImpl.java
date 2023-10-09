@@ -159,7 +159,7 @@ public class UserInformationServiceImpl implements UserInformationService {
 //        else {
 //            user.setRole(Role.USER);
 //        }
-        user.setUserCreatedAt(LocalDateTime.now());
+        user.setUserCreatedAt(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES));
         return userRepository.save(user);
     }
 

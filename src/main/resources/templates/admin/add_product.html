@@ -49,12 +49,12 @@
                     <div class="col-8 mt-3">
                         <label class="form-label" for="product_name">Product Name</label>
                         <input class="form-control bg-body-tertiary" id="product_name" name="productName"
-                            placeholder="Enter your product name" type="text">
+                            placeholder="Enter your product name" required type="text">
                     </div>
                     <div class="col-8 mb-5 mt-3">
                         <label for="description">Description</label>
                         <textarea class="form-control bg-body-tertiary" id="description" name="description"
-                            placeholder="Enter product description" type="text"></textarea>
+                            placeholder="Enter product description" required type="text"></textarea>
                     </div>
                 </div>
                 <div class="box p-5 mt-5">
@@ -62,8 +62,7 @@
                     <div class="col-8 mt-3 mb-5">
                         <label class="form-label" for="customFile1">Product images</label>
                         <input accept="image/*" class="form-control" id="customFile1" multiple name="productImages"
-                            type="file" />
-                        <img alt="Preview" id="imagePreview" src="#">
+                            required type="file"/>
                     </div>
                 </div>
                 <div class="box p-5 mt-5">
@@ -71,7 +70,7 @@
                     <div class="col-8 mt-3 mb-5">
                         <label class="form-label" for="price">Product price</label>
                         <input class="form-control bg-body-tertiary" id="price" name="productPrice"
-                            placeholder="Enter price for your product" step="0.01" type="number">
+                            placeholder="Enter price for your product" required step="0.01" type="number">
                     </div>
                 </div>
                 <div class="box p-5 mt-5">
@@ -79,14 +78,14 @@
                     <div class="col-8 mt-3 mb-5">
                         <label class="form-label" for="stock">Product Quantity</label>
                         <input class="form-control bg-body-tertiary" id="stock" name="productStock"
-                            placeholder="Enter price for your product" type="number">
+                            placeholder="Enter price for your product" required type="number">
                     </div>
                 </div>
                 <div class="box p-5 mt-5">
                     <h4>Brand</h4>
                     <div class="col-3 mt-3 mb-5 item-key words">
                         <label class="form-label" for="brand">Product brand</label>
-                        <select aria-label="Default select example" class="form-select" id="brand" name="brandId">
+                        <select aria-label="Default select example" class="form-select" id="brand" name="brandId" required>
                             <option disabled="disabled" selected="selected" th:each="brand, iterStat : ${brand}"
                                 th:if="${iterStat.index == 0}">
                                 Choose a brand
@@ -100,7 +99,7 @@
                     <h4>Category</h4>
                     <div class="col-3 mt-3 mb-5 item-key words">
                         <label class="form-label" for="category">Product category</label>
-                        <select aria-label="Default select example" class="form-select" id="category" name="categoryId">
+                        <select aria-label="Default select example" class="form-select" id="category" name="categoryId" onchange="updateFilters()" required>
                             <option disabled="disabled" selected="selected" th:each="category, iterStat : ${category}"
                                 th:if="${iterStat.index == 0}">
                                 Choose a category
@@ -115,7 +114,7 @@
                     <h4>Filter tags</h4>
                     <div class="col-3 mt-3 mb-5 item-key words">
                         <label class="form-label" for="filters">Product filter tags</label>
-                        <select aria-label="Default select example" class="form-select" id="filters" multiple name="productFilters">
+                        <select aria-label="Default select example" class="form-select" id="filters" multiple name="productFilters" required>
                             <option disabled="disabled" selected="selected" th:each="filter, iterStat : ${filter}"
                                     th:if="${iterStat.index == 0}">
                                 Choose one or multiple filters
@@ -132,44 +131,6 @@
             </form>
         </div>
     </main>
-<script>
-  // Get references to HTML elements
-const imageInput = document.getElementById('customFile1');
-const imagePreviews = document.getElementById('imagePreviews');
-
-// Add an event listener to the file input
-imageInput.addEventListener('change', function () {
-    // Clear previous previews
-    imagePreviews.innerHTML = '';
-
-    const files = this.files;
-
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-
-        // Create a FileReader object for each file
-        const reader = new FileReader();
-
-        // Create a new image element for the preview
-        const img = document.createElement('img');
-        img.className = 'image-preview';
-
-        // Set up a function to run when the file is loaded
-        reader.onload = function (e) {
-            // Set the source of the image element to the data URL of the loaded file
-            img.src = e.target.result;
-        };
-
-        // Read the file as a data URL
-        reader.readAsDataURL(file);
-
-        // Append the image element to the imagePreviews div
-        imagePreviews.appendChild(img);
-    }
-});
-
-
-</script>
 </body>
 
 </html>

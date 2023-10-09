@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -42,7 +43,7 @@ public class Products {
     @JoinColumn(name="sellerId",unique = false)
     private UserInformation userInformation;
     @CreatedDate
-    private LocalDate publishedAt;
+    private LocalDateTime publishedAt;
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductImages> images;
     @ManyToOne

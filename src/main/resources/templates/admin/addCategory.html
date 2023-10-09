@@ -24,24 +24,38 @@
         <div class="directory">
             <span class="dashboard-indicator">Dashboard </span> > Add Category
         </div>
-        <div class="bg-success mt-2 pt-1 text-white text-center fw-semibold" style="height:30px;border-radius:5px;" th:if="${message}" th:text="${message}"></div>
     </div>
+    <div class="mt-2 pt-1 text-danger text-center fw-semibold" style="height:30px;border-radius:5px;" th:if="${message}" th:text="${message}"></div>
     <div class="box mt-5">
         <h4 class="p-5 pb-4">Add Categories</h4>
         <form class="ps-5 pb-5 pt-0" method="post" th:action="@{/admin/categories/saveCategory}">
             <div class="col-8 mt-3">
-                <label class="fw-semibold form-label" for="">Category Name</label>
-                <input class="form-control bg-body-tertiary" name="categoryName" placeholder="Enter Category name" type="text">
+                <label class="fw-semibold form-label" for="categoryName">Category Name</label>
+                <input class="form-control bg-body-tertiary" id="categoryName" name="categoryName" placeholder="Enter Category name" type="text">
             </div>
             <div class="col-8 mt-4">
-                <label class="fw-semibold form-label" for="">Brand Name</label>
-                <input class="form-control bg-body-tertiary" name="brandName" placeholder="Enter Brand name" type="text">
+                <label class="fw-semibold form-label" for="brandName">Brand Name</label>
+                <input class="form-control bg-body-tertiary" id="brandName" name="brandName" placeholder="Enter Brand name" type="text">
             </div>
             <div class="product-button-div mt-5 mb-5">
-                <input class="add-product-btn" type="submit" value="Add Category">
+                <input class="add-product-btn" id="submit" type="submit" value="Add Category">
             </div>
         </form>
     </div>
 </main>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+   $(document).ready(function() {
+        $('form').submit(function(event) {
+            var categoryName = $('#categoryName').val();
+            var brandName = $('#brandName').val();
+            console.log(brandName)
+            if (categoryName.trim() === "" && brandName.trim() === "") {
+                alert("Both Category Name and Brand Name cannot be empty");
+                event.preventDefault();
+            }
+        });
+    });
+</script>
 </body>
 </html>

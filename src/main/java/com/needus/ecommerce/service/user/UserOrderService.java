@@ -4,6 +4,7 @@ import com.needus.ecommerce.entity.user.Cart;
 import com.needus.ecommerce.entity.user.UserInformation;
 import com.needus.ecommerce.entity.user.order.OrderItem;
 import com.needus.ecommerce.entity.user.order.UserOrder;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,7 +12,7 @@ import java.util.UUID;
 public interface UserOrderService {
     void placeOrder(Cart cart, UserInformation user, long addressId, String payment);
 
-    List<UserOrder> findUserOrderByUserId(UUID userId);
+    Page<UserOrder> findUserOrderByUserId(UUID userId,int pageNo,int pageSize);
 
     List<OrderItem> findAllPendingOrders();
 
@@ -25,7 +26,7 @@ public interface UserOrderService {
 
     void cancelOrder(Long orderId);
 
-    List<UserOrder> findAllOrders();
+    Page<UserOrder> findAllOrders(int pageNo, int pageSize);
 
     void changeOrderStatus(String value, Long orderId);
 }

@@ -14,7 +14,8 @@ public class UserAddress {
     @JoinColumn(name="userId")
     UserInformation userInformation;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ADDRESS_SEQ")
+    @SequenceGenerator(name="ADDRESS_SEQ", sequenceName="ADDRESS_SEQ", allocationSize=99)
     private long id;
     @Column(nullable = false)
     private String firstName;

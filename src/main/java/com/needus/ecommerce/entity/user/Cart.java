@@ -13,7 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 public class Cart {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="CART_SEQ")
+    @SequenceGenerator(name="CART_SEQ", sequenceName="CART_SEQ", allocationSize=99)
     private long cart_id;
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
     @JoinColumn(name = "cart_items")

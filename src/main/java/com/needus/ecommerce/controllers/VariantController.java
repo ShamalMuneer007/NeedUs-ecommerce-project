@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/admin/variants")
@@ -32,10 +33,14 @@ public class VariantController {
     }
     @PostMapping("/saveVariant")
     public String addVariants(
-        @RequestParam(name="categoryId") Long categoryId,
+        @RequestParam(name="categoryId",required = false) Long categoryId,
         @RequestParam(name="filterName") String filterName,
         RedirectAttributes ra
     ){
+        if(Objects.isNull(categoryId)){
+            ra.addFlashAttribute("message","Category cannot be empty");
+            return "redirect:/admin/variants/list";
+        }
         Categories category = categoryService.findCatgeoryById(categoryId);
         if(filterService.variantExistInCategory(categoryId,filterName)){
             ra.addFlashAttribute("message","Variant in that category is already present");

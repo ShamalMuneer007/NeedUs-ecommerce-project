@@ -25,6 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -43,12 +45,10 @@ public class ProductController {
     private BrandService brandService;
     @Autowired
     private ProductFilterService filterService;
-
     @Autowired
     private ProductService productService;
     @Autowired
     private ProductImageService productImageService;
-
     @Autowired
     private ProductsRepository productsRepository;
 
@@ -135,7 +135,6 @@ public class ProductController {
             imageObj = productImageService.save(imageObj);
             images.add(imageObj);
         }
-
         product.setImages(images);
         product.setDescription(description);
         product.setBrands(brand);

@@ -9,4 +9,6 @@ public interface ProductFilterService {
     public ProductFilters saveFilter(ProductFilters filters);
 
     public List<ProductFilters> findAllFilters();
+
+    List<ProductFilters> findAllFiltersForCategory(Long categoryId);
 }

@@ -8,4 +8,7 @@ public class TechnicalIssueException extends RuntimeException{
     public TechnicalIssueException(String message, Exception cause) {
         super(message,cause.getCause());
     }
+    public TechnicalIssueException(String message) {
+        super(message);
+    }
 }

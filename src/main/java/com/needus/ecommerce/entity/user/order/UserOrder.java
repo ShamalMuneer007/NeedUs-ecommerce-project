@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -19,7 +21,8 @@ import java.util.List;
 @NoArgsConstructor
 public class UserOrder {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ORDER_SEQ")
+    @SequenceGenerator(name="ORDER_SEQ", sequenceName="ORDER_SEQ", allocationSize=999)
     private Long orderId;
     @OneToMany
     private List<OrderItem> orderItems;
@@ -29,11 +32,11 @@ public class UserOrder {
     @ManyToOne
     private UserAddress userAddress;
     @CreatedDate
-    private Date orderPlacedAt;
-    private Date orderShippedAt;
-    private Date orderDeliveredAt;
-    private Date orderCancelledAt;
-    private Date orderRefundedAt;
+    private LocalDateTime orderPlacedAt;
+    private LocalDateTime orderShippedAt;
+    private LocalDateTime orderDeliveredAt;
+    private LocalDateTime orderCancelledAt;
+    private LocalDateTime orderRefundedAt;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;

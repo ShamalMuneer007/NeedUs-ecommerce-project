@@ -1,22 +1,34 @@
 package com.needus.ecommerce.service.product.impl;
 
+import com.needus.ecommerce.entity.product.ProductFilters;
 import com.needus.ecommerce.entity.product.Products;
 import com.needus.ecommerce.repository.product.ProductsRepository;
 import com.needus.ecommerce.service.product.ProductService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
+@Slf4j
 public class ProductServiceImpl implements ProductService {
     @Autowired
     ProductsRepository repository;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     @Override
     public Products save(Products product) {
-        product.setPublishedAt(LocalDate.now());
+        product.setPublishedAt(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES));
         return repository.save(product);
     }
 
@@ -46,8 +58,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Products> findAllNonBlockedProducts() {
-        return repository.findByIsDeletedFalseAndProductStatusTrue();
+    public Page<Products> findAllNonBlockedProducts(int pageNo, int pageSize) {
+        PageRequest pageable = PageRequest.of(pageNo - 1, pageSize);
+        return repository.findByIsDeletedFalseAndProductStatusTrue(pageable);
     }
 
     @Override
@@ -56,8 +69,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Products> findProductsOfCategory(Long categoryId) {
-        return repository.findByCategories_CategoryIdAndIsDeletedFalse(categoryId);
+    public Page<Products> findProductsOfCategory(Long categoryId,int pageNo,int pageSize) {
+        PageRequest pageable = PageRequest.of(pageNo - 1, pageSize);
+        return repository.findByCategories_CategoryIdAndIsDeletedFalse(categoryId,pageable);
     }
 
     @Override
@@ -65,6 +79,29 @@ public class ProductServiceImpl implements ProductService {
         Products products = repository.findById(productId).get();
         products.setStock(products.getStock()-quantity);
         repository.save(products);
+    }
+
+    @Override
+    public Page<Products> findAllProductsWithtinParams(Long maxPrice, Long minPrice,
+                                                       List<ProductFilters> productFilters, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+        Page<Products> products = repository.findAllNonDeletedWithinPriceRange(maxPrice,minPrice,pageable);
+            if(Objects.isNull(productFilters)){
+                return products;
+            }
+        List<Products> filteredProducts = new ArrayList<>();
+        for (Products product : products) {
+            if (productFilters.stream().anyMatch(filters -> product.getProductFilters().contains(filters))){
+                filteredProducts.add(product);
+            }
+        }
+        return new PageImpl<>(filteredProducts, pageable, filteredProducts.size());
+    }
+
+    @Override
+    public Page<Products> searchProducts(int pageNo, int pageSize, String searchKey) {
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+        return repository.searchAllNonBlockedAndNonDeletedProducts(searchKey,pageable);
     }
 
 }

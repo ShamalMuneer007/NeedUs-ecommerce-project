@@ -99,7 +99,7 @@
     <div class="row">
         <div class="card col-xl-7 pt-4 ms-lg-5 mt-5" style="background-color:#ffffff; border-radius : 15px; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
             <div class="card-body ms-lg-4 mt-4 mt-lg-0" style="max-width: 700px;">
-                <div>Ordered on :  <span class="fw-semibold" th:text="${orderDetails.orderPlacedAt}"></span></div>
+                <div>Ordered on :  <span class="fw-semibold" th:text="${orderDetails.orderedDate}"></span></div>
                 <hr>
                 <div class="details d-flex justify-content-between">
                     <div class="shipping-address">
@@ -133,13 +133,13 @@
                     <span style="color:#E73C17" th:if="${orderDetails.orderStatus.name() == 'PENDING' ||
                         orderDetails.orderStatus.name() == 'PROCESSING' ||
                          orderDetails.orderStatus.name() == 'SHIPPED'}">
-                            Order delivery to be expected at :
+                            Order delivery to be expected at : <span th:text="${orderDetails.expectedDelivery}"></span>
                     </span>
-                    <span style="color:#E73C17" th:if="${orderDetails.orderStatus.name() == 'DELIVERED'}">
-                        Order Delivered at : <span th:text="orderDetails.orderDeliveredAt"></span>
+                    <span class="text-success" th:if="${orderDetails.orderStatus.name() == 'DELIVERED'}">
+                        Order Delivered at : <span th:text="orderDetails.deliveredDate"></span>
                     </span>
                     <span style="color:#E73C17" th:if="${orderDetails.orderStatus.name() == 'CANCELLED'}">
-                        Order Cancelled on : <span th:text="${orderDetails.orderCancelledAt}"></span>
+                        Order Cancelled on : <span th:text="${orderDetails.cancelledDate}"></span>
                     </span>
                 </div>
                 <div class="text-light bg-danger fw-semibold text-center" th:text="${message}">

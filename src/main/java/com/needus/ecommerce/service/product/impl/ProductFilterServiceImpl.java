@@ -32,4 +32,9 @@ public class ProductFilterServiceImpl implements ProductFilterService {
     public List<ProductFilters> findAllFilters() {
         return filterRepository.findAll();
     }
+
+    @Override
+    public List<ProductFilters> findAllFiltersForCategory(Long categoryId) {
+        return filterRepository.findForCategory(categoryId);
+    }
 }
