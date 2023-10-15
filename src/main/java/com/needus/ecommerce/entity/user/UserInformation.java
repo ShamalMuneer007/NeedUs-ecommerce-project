@@ -48,4 +48,7 @@ public class UserInformation{
     private boolean isDeleted = false;
     @OneToMany(mappedBy = "userInformation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserAddress> userAddresses;
+    @OneToOne
+    @JoinColumn(name="wallet_id")
+    private Wallet wallet;
 }

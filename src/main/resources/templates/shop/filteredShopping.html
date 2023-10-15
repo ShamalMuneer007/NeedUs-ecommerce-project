@@ -33,12 +33,46 @@
         .blur-background {
             filter: blur(5px);
         }
+           .checkbox-columns {
+    column-count: 3; /* Adjust the number of columns as per your preference */
+    column-gap: 10px; /* Adjust the gap between columns */
+    list-style: none; /* Remove default list styles */
+}
+.checkbox-columns li {
+    display : block;
+    margin-bottom: 10px; /* Adjust the space between each checkbox and label */
+}
     </style>
 </head>
 
 <body>
 <div class="welcome-strip ps-5 pb-0 pt-2 text-center">
     <span class="text-light small">Welcome to Needus & get the best computer product for best price</span>
+</div>
+<div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="logoutModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Logout Confirmation</h5>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+            </div>
+
+            <!-- Modal Body with the Form -->
+            <div class="modal-body">
+                <form method="post" th:action="@{/logout}">
+                    <p>Are you sure you want to logout?</p>
+                    <!-- Add any additional content or form elements here if needed -->
+                    <div class="modal-footer">
+                        <!-- Form Submit Button -->
+                        <input class="btn btn-danger" type="submit" value="Logout">
+                        <!-- Close Modal Button -->
+                        <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 <header class="container-fluid">
     <nav class="container-fluid navbar navbar-expand-lg mt-0 pe-3 pb-2">
@@ -97,9 +131,9 @@
                                     <a class="dropdown-item" th:href="@{/user/my-orders}">My Orders</a>
                                 </li>
                                 <li>
-                                    <form method="post" th:action="@{/logout}">
-                                        <input class="btn" type="submit" value="Logout">
-                                    </form>
+                                    <button class="btn btn-danger mt-2 ms-3" data-bs-target="#logoutModal" data-bs-toggle="modal" type="button">
+                                        Logout
+                                    </button>
                                 </li>
                             </ul>
                         </div>
@@ -135,6 +169,15 @@
                             <input class="form-input" id="max" name="max-price" step="500" style="width:15%;" type="number" value="100000">
                             <hr>
                         </li>
+
+                        <div class="fw-bold mb-2">Brands : </div>
+                        <div class="checkbox-columns">
+                            <li class="" th:each="brand : ${brands}">
+                                <input  class="d-inline ps-2" name="brand" th:value="${brand.brandId}" type="checkbox">
+                                <span class="small me-2" th:text="${brand.brandName}"></span>
+                            </li>
+                        </div>
+                        <hr>
                         <div class="fw-bold mb-2">Filter options : </div>
                         <div class="checkbox-columns">
                             <li class="" th:each="filter : ${filters}">

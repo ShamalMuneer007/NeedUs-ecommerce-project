@@ -40,18 +40,6 @@
                     <li class="nav-item">
                         <a aria-current="page" class="nav-link" th:href="@{/shop/home}">Home</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
-                           role="button">
-                            Categories
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li th:each="category : ${categories}">
-                                <a class="dropdown-item" th:href="@{'/shop/categories/' + ${category.categoryId}}"
-                                   th:text="${category.categoryName}"></a>
-                            </li>
-                        </ul>
-                    </li>
 
                 </ul>
                 <div class="d-flex gap-5 justify-content-between me-5">
@@ -93,6 +81,23 @@
     </nav>
 </header>
 <main class="container mt-5">
+    <div aria-hidden="true" aria-labelledby="cancelOrderModalLabel" class="modal fade" id="cancelOrderModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-danger" id="cancelOrderModalLabel">Cancel Order</h5>
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                </div>
+                <div class="modal-body ms-2">
+                    Are you sure you want to cancel your order?
+                    <form method="post" th:action="@{'/user/order/cancel-order/' + ${orderDetails.orderId}}">
+                        <!-- Form fields go here -->
+                        <button class="btn btn-danger mt-3 fw-bold" type="submit">Confirm Cancel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     <h2 class="fw-semibold mb-3">Order Details</h2>
     <hr>
     <h4 class="fw-semibold mt-4 mb-4">Order ID : #<span th:text="${orderDetails.orderId}"></span></h4>
@@ -121,10 +126,18 @@
                         Order Status :
                             <span style="color: #BFA900" th:if="${orderDetails.orderStatus.name() == 'PENDING'}" th:text="${orderDetails.orderStatus}"></span>
                             <span style="color: red" th:if="${orderDetails.orderStatus.name() == 'CANCELLED'}" th:text="${orderDetails.orderStatus}"></span>
+                            <span class="text-primary fw-bold" th:if="${orderDetails.orderStatus.name() == 'SHIPPED'}" th:text="${orderDetails.orderStatus}">
+
+                            </span>
+                            <span class="text-success fw-bold" th:if="${orderDetails.orderStatus.name() == 'DELIVERED'}" th:text="${orderDetails.orderStatus}">
+
+                            </span>
+                            <span class="fw-bold" style="color: orange;" th:if="${orderDetails.orderStatus.name() == 'PROCESSING'}" th:text="${orderDetails.orderStatus}"></span>
                         </div>
                         <div><span class="fw-semibold">Payment Method : </span>
                             <span class="bx bx-money"></span>
                             <span th:if="${orderDetails.paymentMethod.name() == 'ONLINE_PAYMENT'}">Online Payment</span>
+                            <span th:if="${orderDetails.paymentMethod.name() == 'COD'}">Cash On Delivery</span>
                         </div>
                     </div>
                 </div>
@@ -142,17 +155,15 @@
                         Order Cancelled on : <span th:text="${orderDetails.cancelledDate}"></span>
                     </span>
                 </div>
-                <div class="text-light bg-danger fw-semibold text-center" th:text="${message}">
+                <div class="text-light bg-danger fw-semibold text-center mt-2" th:text="${message}">
                 </div>
             </div>
             <div class="mb-5 d-flex justify-content-end me-4">
-                <form method="post" th:action="@{'/user/order/cancel-order/' + ${orderDetails.orderId}}">
-                <button class="btn cancel-order-btn fw-semibold" th:if="${orderDetails.orderStatus.name() == 'PENDING' ||
+                <button class="btn cancel-order-btn fw-semibold" data-bs-target="#cancelOrderModal"
+                        data-bs-toggle="modal"  th:if="${orderDetails.orderStatus.name() == 'PENDING' ||
                         orderDetails.orderStatus.name() == 'PROCESSING' ||
-                         orderDetails.orderStatus.name() == 'SHIPPED'}"
-                        type="submit">
+                         orderDetails.orderStatus.name() == 'SHIPPED'}" type="submit">
                     Cancel Order</button>
-                </form>
             </div>
         </div>
         <div class="order-summary col-xl-4 ms-lg-5 mt-5 pb-4"
@@ -173,15 +184,15 @@
                         </a>
                         <div class="">Qty : <span th:text="${item.getQuantity()}"></span></div>
                         <div class="">
-                            Total Price :
+                            Total Price : ₹
                                 <span class="price" th:text="${item.getProduct().getProductPrice()} * ${item.getQuantity()}">
                                         </span>
                         </div>
                     </div>
                 </div>
                 <hr>
-                <div class="d-flex justify-content-end">
-                    Total price: <span class="ms-2 mb-2 me-4 fw-bold" th:text="${orderDetails.totalAmount}"></span>
+                <div class="d-flex fw-bold justify-content-end">
+                    Total price: ₹<span class="ms-2 mb-2 me-4 fw-bold" th:text="${orderDetails.totalAmount}"></span>
                 </div>
             </div>
         </div>

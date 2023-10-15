@@ -8,4 +8,8 @@ public interface UserAddressService {
     public UserAddress findAddressByAddressId(long addressId);
 
     void updateAddress(long addressId, UserAddress address);
+
+    boolean existsByAddressId(long addressId);
+
+    void deleteAddress(Long addressId);
 }

@@ -14,4 +14,6 @@ public interface BrandService {
     boolean brandExists(String brandName);
 
     void deleteBrandById(Long brandId);
+
+    List<Brands> findAllNonDeletedBrands();
 }

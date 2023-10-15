@@ -1,22 +1,15 @@
 package com.needus.ecommerce.controllers;
 
-import com.needus.ecommerce.entity.product.Categories;
-import com.needus.ecommerce.entity.product.ProductFilters;
-import com.needus.ecommerce.entity.product.ProductImages;
-import com.needus.ecommerce.entity.product.Products;
+import com.needus.ecommerce.entity.product.*;
 import com.needus.ecommerce.exceptions.ResourceNotFoundException;
 import com.needus.ecommerce.exceptions.TechnicalIssueException;
 import com.needus.ecommerce.model.ProductDto;
-import com.needus.ecommerce.service.product.CategoryService;
-import com.needus.ecommerce.service.product.ProductFilterService;
-import com.needus.ecommerce.service.product.ProductImageService;
-import com.needus.ecommerce.service.product.ProductService;
+import com.needus.ecommerce.service.product.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,9 +30,9 @@ public class ShopController {
     @Autowired
     CategoryService categoryService;
     @Autowired
-    ProductImageService productImageService;
-    @Autowired
     ProductFilterService filterService;
+    @Autowired
+    BrandService brandService;
     @GetMapping("/home")
     public String landingPage(Model model,
                               @RequestParam(name="search",required = false) String searchKey,
@@ -48,8 +41,6 @@ public class ShopController {
                               RedirectAttributes ra){
 //        log.info("Authenticated user : "+ SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         log.info("Inside Landing Page : ");
-        List<Categories> categories = categoryService.findAllCategories();
-        List<ProductFilters> filters = filterService.findAllFilters();
         log.info("fetched categories");
         Page<Products> products;
         try {
@@ -69,8 +60,9 @@ public class ShopController {
         }
         Page<ProductDto> productsDto = products.map(ProductDto::new);
         log.info("fetched products");
-        model.addAttribute("filters",filters);
-        model.addAttribute("categories",categories);
+        model.addAttribute("filters",filterService.findAllFilters());
+        model.addAttribute("brands",brandService.findAllNonDeletedBrands());
+        model.addAttribute("categories", categoryService.findAllNonDeletedCategories());
         model.addAttribute("products",productsDto);
         model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         return "shop/home";
@@ -98,23 +90,35 @@ public class ShopController {
     public String categories(@PathVariable(name="id") Long categoryId,
                              @RequestParam(defaultValue = "1") int pageNo,
                              @RequestParam(defaultValue = "10") int pageSize,
-                             Model model){
+                             @RequestParam(name = "search",required = false) String searchKey,
+                             Model model,RedirectAttributes ra){
         Categories category = categoryService.findCatgeoryById(categoryId);
-        List<Categories> categories = categoryService.findAllCategories();
-        Page<Products> products = productService.findProductsOfCategory(categoryId,pageNo,pageSize);
+        Page<Products> products;
         List<ProductFilters> filters = filterService.findAllFiltersForCategory(categoryId);
+        products = productService.findProductsOfCategory(categoryId,pageNo,pageSize);
+        if(Objects.nonNull(searchKey)){
+            products = productService.findProductBySearchKey(pageNo,pageSize,categoryId,searchKey);
+            log.info("products exists : "+products.isEmpty());
+            products.forEach(products1 -> log.info("products : "+products1.getProductName()));
+            if(products.isEmpty()){
+                ra.addAttribute("searchKey",searchKey);
+                return "redirect:/shop/categories/"+categoryId+"?noSuchProductsInCategory&category="+ category.getCategoryName();
+            }
+        }
         Page<ProductDto> productDto = products.map(ProductDto::new);
         model.addAttribute("filters",filters);
         model.addAttribute("empty",products.isEmpty());
         model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         model.addAttribute("category",category);
-        model.addAttribute("categories",categories);
+        model.addAttribute("categories",categoryService.findAllNonDeletedCategories());
+        model.addAttribute("brands",brandService.findAllNonDeletedBrands());
         model.addAttribute("products",productDto);
         return "shop/categoryShopping";
     }
     @GetMapping("/filterProducts")
     public String filterProduct(@RequestParam(name="max-price" , required = false) Long maxPrice,
                                 @RequestParam(name="min-price", required = false) Long minPrice,
+                                @RequestParam(name="brand",required = false) List<Brands> brands,
                                 @RequestParam(name="filter",required = false) List<ProductFilters> productFilters,
                                 @RequestParam(defaultValue = "1") int pageNo,
                                 @RequestParam(defaultValue = "10") int pageSize,
@@ -126,21 +130,19 @@ public class ShopController {
             maxPrice = (long) Integer.MAX_VALUE;
         }
         log.info("Inside Landing Page : ");
-
-        List<Categories> categories = categoryService.findAllCategories();
-        List<ProductFilters> filters = filterService.findAllFilters();
         log.info("fetched categories");
         Page<Products> products;
         try {
-            products = productService.findAllProductsWithtinParams(maxPrice,minPrice,productFilters,pageNo,pageSize);
+            products = productService.findAllProductsWithtinParams(maxPrice,minPrice,productFilters,brands,pageNo,pageSize);
         } catch (Exception e) {
             log.error("An error occurred while fetching the products",e);
             throw new TechnicalIssueException("An error occurred while fetching products", e);
         }
         Page<ProductDto> productsDto = products.map(ProductDto::new);
         log.info("fetched products");
-        model.addAttribute("filters",filters);
-        model.addAttribute("categories",categories);
+        model.addAttribute("filters",filterService.findAllFilters());
+        model.addAttribute("categories",categoryService.findAllNonDeletedCategories());
+        model.addAttribute("brands",brandService.findAllNonDeletedBrands());
         model.addAttribute("products",productsDto);
         model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         return "shop/filteredShopping";

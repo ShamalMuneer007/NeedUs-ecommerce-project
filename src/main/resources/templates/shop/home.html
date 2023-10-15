@@ -42,12 +42,46 @@
     display : block;
     margin-bottom: 10px; /* Adjust the space between each checkbox and label */
 }
+.dropdown-menu {
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.dropdown-menu li:hover {
+    background-color: #f5f5f5;
+}
     </style>
 </head>
 
 <body>
 <div class="welcome-strip ps-5 pb-0 pt-2 text-center">
     <span class="text-light small">Welcome to Needus & get the best computer product for best price</span>
+</div>
+<div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="logoutModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Logout Confirmation</h5>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+            </div>
+
+            <!-- Modal Body with the Form -->
+            <div class="modal-body">
+                <form method="post" th:action="@{/logout}">
+                    <p>Are you sure you want to logout?</p>
+                    <!-- Add any additional content or form elements here if needed -->
+                    <div class="modal-footer">
+                        <!-- Form Submit Button -->
+                        <input class="btn btn-danger" type="submit" value="Logout">
+                        <!-- Close Modal Button -->
+                        <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
     <header class="container-fluid">
         <nav class="container-fluid navbar navbar-expand-lg mt-0 pe-3 pb-2">
@@ -82,7 +116,7 @@
                     </ul>
                     <div class="d-flex gap-5 justify-content-between me-5">
                     <form class="d-flex me-5 pe-5" method="get" role="search" th:action="@{/shop/home}">
-                        <input aria-label="Search" class="form-control me-2" name="search" placeholder="Search" type="search">
+                        <input aria-label="Search" class="form-control me-2" name="search" placeholder="Search Products" type="search">
                     </form>
                     <div class="d-flex gap-3 nav-item dropdown">
                         <div th:if="${not #authorization.expression('isAuthenticated()')}">
@@ -97,7 +131,7 @@
                                 <span th:text="${username}"></span></a>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a class="dropdown-item">Profile settings</a>
+                                    <a class="dropdown-item" th:href="@{/user/profile-settings}">Profile settings</a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item" th:href="@{/user/cart-items}">Cart</a>
@@ -106,9 +140,9 @@
                                     <a class="dropdown-item" th:href="@{/user/my-orders}">My Orders</a>
                                 </li>
                                 <li>
-                                    <form method="post" th:action="@{/logout}">
-                                        <input class="btn" type="submit" value="Logout">
-                                    </form>
+                                    <button class="btn btn-danger mt-2 ms-3" data-bs-target="#logoutModal" data-bs-toggle="modal" type="button">
+                                        Logout
+                                    </button>
                                 </li>
                             </ul>
                         </div>
@@ -126,15 +160,18 @@
         <div class="fw-bold mt-5" style="text-align:center; vertical-align:center; font-size:40px;" th:if="${param.noSuchProducts}">
             No results for <span th:text="${param.searchKey}"></span>
         </div>
-        <div th:if="${message}" th:text="${message}"></div>
+        <div class="fw-semibold mt-5" style="text-align:center; vertical-align:center; font-size:20px;"  th:if="${param.noSuchProductsInCategory}">
+            No such product for <span th:text="${param.searchKey}"></span> In category <span th:text="${param.category}"></span>
+        </div>
+        <div class="text-success fw-semibold text-center" th:if="${message}" th:text="${message}"></div>
         <div class="">
         <div class="row border" th:unless="${param.noSuchProducts}">
-            <div class=" pt-4 d-flex justify-content-end">
+            <div class="pt-4 d-flex justify-content-end">
                 <a aria-expanded="false" class="dropdown-toggle pe-5" data-bs-toggle="dropdown" href="#"
                    id="toggle" role="button" style="text-decoration:none; color:black;">
                     <span class="fw-semibold">Filter <i class="bx bx-filter-alt" style="color:black; text-decoration:none;"></i></span></a>
                 <form th:action="@{/shop/filterProducts}">
-                <ul class="dropdown-menu container ps-4 me-5" style="width : 40%; min-width:40%; min-height : 40%; box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;">
+                <ul class="dropdown-menu container ps-5 pb-3" style="width : 40%; min-width:40%; min-height : 40%; box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;">
                     <li>
                         <div class="fw-bold mb-1 mt-3">Enter your price Range :</div>
                         <label class="form-label small" for="min">
@@ -147,6 +184,15 @@
                         <input class="form-input" id="max" name="max-price" step="500" style="width:15%;" type="number" value="100000">
                         <hr>
                     </li>
+
+                    <div class="fw-bold mb-2">Brands : </div>
+                    <div class="checkbox-columns">
+                        <li class="" th:each="brand : ${brands}">
+                            <input class="d-inline ps-2" name="brand" th:id="${brand.brandId}" th:value="${brand.brandId}" type="checkbox">
+                            <label class="small me-2" th:for="${brand.brandId}" th:text="${brand.brandName}"></label>
+                        </li>
+                    </div>
+                    <hr>
                     <div class="fw-bold mb-2">Filter options : </div>
                     <div class="checkbox-columns">
                     <li class="" th:each="filter : ${filters}">

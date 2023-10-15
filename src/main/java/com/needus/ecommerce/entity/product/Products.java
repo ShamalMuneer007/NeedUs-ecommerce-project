@@ -35,7 +35,7 @@ public class Products {
     private Float productPrice;
     @Column(name="product_status")
     private boolean productStatus;
-    private int stock;
+    private Integer stock;
     private boolean isDeleted = false;
     @Column(name = "average_rating")
     private int averageRating;
@@ -44,7 +44,7 @@ public class Products {
     private UserInformation userInformation;
     @CreatedDate
     private LocalDateTime publishedAt;
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = {CascadeType.REMOVE,CascadeType.PERSIST,CascadeType.MERGE})
     private List<ProductImages> images;
     @ManyToOne
     @JoinColumn(name="category_id",unique = false)

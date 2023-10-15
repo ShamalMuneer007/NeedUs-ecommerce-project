@@ -33,7 +33,7 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public boolean brandExists(String brandName) {
         Brands brands = brandRepository.findByBrandName(brandName);
-        if(brandRepository.existsByBrandName(brandName)){
+        if(brandRepository.existsByBrandNameAndIsDeletedIsFalse(brandName)){
             if(brands.getBrandName().equalsIgnoreCase(brandName)){
                 return true;
             }
@@ -44,6 +44,13 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public void deleteBrandById(Long brandId) {
-        brandRepository.deleteById(brandId);
+        Brands brands = findBrandById(brandId);
+        brands.setDeleted(true);
+        brandRepository.save(brands);
+    }
+
+    @Override
+    public List<Brands> findAllNonDeletedBrands() {
+        return brandRepository.findByIsDeletedFalse();
     }
 }

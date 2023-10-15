@@ -11,6 +11,7 @@ import com.needus.ecommerce.service.user.UserInformationService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -53,18 +54,17 @@ public class ProductController {
     private ProductsRepository productsRepository;
 
     @GetMapping("/list")
-    public String products(Model model, HttpServletRequest request) throws TechnicalIssueException {
-        List<ProductDto> productDto = new ArrayList<>();
-        List<Products> products;
+    public String products(Model model, HttpServletRequest request,
+                           @RequestParam(defaultValue = "1") int pageNo,
+                           @RequestParam(defaultValue = "10") int pageSize) throws TechnicalIssueException {
+        Page<Products> products;
         try {
-            products = productService.findAllProducts();
+            products = productService.findAllProducts(pageNo,pageSize);
         } catch (Exception e) {
             log.error("An error occurred while fetching the products",e);
             throw new TechnicalIssueException("An error occurred while fetching products", e);
         }
-        for (Products product : products) {
-            productDto.add(new ProductDto(product));
-        }
+        Page<ProductDto> productDto = products.map(ProductDto::new);
         model.addAttribute("requestURI", request.getRequestURI());
         model.addAttribute("products", productDto);
         return "admin/products";
@@ -73,7 +73,7 @@ public class ProductController {
     public String addProducts(Model model, HttpServletRequest request) {
         List<Categories> categories;
         try{
-            categories = categoryService.findAllCategories();
+            categories = categoryService.findAllNonDeletedCategories();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -81,7 +81,7 @@ public class ProductController {
         }
         List<Brands> brands;
         try {
-            brands = brandService.findAllBrands();
+            brands = brandService.findAllNonDeletedBrands();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -127,13 +127,26 @@ public class ProductController {
         }
         Products product = new Products();
         product.setProductName(productName);
-        Products tempProduct = productService.save(product);
+        Products tempProduct;
+        try {
+            tempProduct = productService.save(product);
+        }
+        catch (Exception e){
+            log.error("Something went wrong while temporarily saving the product");
+            throw new TechnicalIssueException("Something went wrong while temporarily saving the product");
+        }
         List<ProductImages> images = new ArrayList<>();
-        for (MultipartFile imageFile : imageFiles) {
-            String fileName = fileUploadDir(imageFile);
-            ProductImages imageObj = new ProductImages(fileName, tempProduct);
-            imageObj = productImageService.save(imageObj);
-            images.add(imageObj);
+        try {
+            for (MultipartFile imageFile : imageFiles) {
+                String fileName = fileUploadDir(imageFile);
+                ProductImages imageObj = new ProductImages(fileName, tempProduct);
+                imageObj = productImageService.save(imageObj);
+                images.add(imageObj);
+            }
+        }
+        catch (Exception e){
+            log.error("Something went wrong while saving the image");
+            throw new TechnicalIssueException("Something went wrong while saving the image");
         }
         product.setImages(images);
         product.setDescription(description);
@@ -158,8 +171,15 @@ public class ProductController {
     @PostMapping("/block/{id}")
     public String productBlock(RedirectAttributes redirectAttributes,
                                @PathVariable(name="id") Long productId){
-        productService.blockProduct(productId);
-        Products products = productService.findProductById(productId);
+        Products products;
+        try {
+            productService.blockProduct(productId);
+            products = productService.findProductById(productId);
+        }
+        catch (Exception e){
+            log.error("Something went wrong while blocking the product");
+            throw new TechnicalIssueException("Something went wrong while blocking the product");
+        }
         if(!products.isProductStatus()) {
             redirectAttributes.addFlashAttribute("message", "Product is Blocked");
         }
@@ -169,19 +189,18 @@ public class ProductController {
         return "redirect:/admin/products/list";
     }
     @GetMapping("/editProduct/{id}")
-    public String productEdit(@PathVariable(name = "id") Long id,Model model){
+    public String productEdit(HttpServletRequest request,@PathVariable(name = "id") Long id,Model model){
         if(!productService.existsById(id)){
             throw new ResourceNotFoundException("Product not found");
         }
         Products product = productService.findProductById(id);
         Brands productBrand = product.getBrands();
         Categories productCategories = product.getCategories();
-//        List<ProductFilters> productFilters = product.getProductFilters();
-        List<Brands> brands = brandService.findAllBrands();
-        List<Categories> categories = categoryService.findAllCategories();
+        List<Brands> brands = brandService.findAllNonDeletedBrands();
+        List<Categories> categories = categoryService.findAllNonDeletedCategories();
         List<ProductFilters> filters = filterService.findAllFilters();
         model.addAttribute("productCategory",productCategories);
-//        model.addAttribute("productFilters",productFilters.);
+        model.addAttribute("requestURI",request.getRequestURI());
         model.addAttribute("category",categories);
         model.addAttribute("brand",brands);
         model.addAttribute("filter",filters);
@@ -205,41 +224,75 @@ public class ProductController {
         if(!productService.existsById(productId)){
             throw new ResourceNotFoundException("Product not found");
         }
-        Products productDetails = productService.findProductById(productId);
+        Products productDetails;
+        try {
+            productDetails = productService.findProductById(productId);
+        }
+        catch (Exception e){
+            log.error("Something went wrong while fetching the product");
+            throw new TechnicalIssueException("Something went wrong while fetching the product");
+        }
         Brands brand = brandService.findBrandById(brandId);
         Categories category = categoryService.findCatgeoryById(categoryId);
         if(!productDetails.getProductName().equals(productName)||!productName.isEmpty()) {
+            log.warn("Product name has been changed");
             productDetails.setProductName(productName);
         }
-        Products tempProduct = productService.save(productDetails);
+        Products tempProduct;
+        try {
+            tempProduct = productService.save(productDetails);
+        }
+        catch (Exception e){
+            log.error("Something went wrong while temporarily saving the product");
+            throw  new TechnicalIssueException("Something went wrong while temporarily saving the product");
+        }
         List<ProductImages> images = new ArrayList<>();
-        if(Objects.nonNull(imageFiles)) {
-            for (MultipartFile imageFile : imageFiles) {
-                String fileName = fileUploadDir(imageFile);
-                ProductImages imageObj = new ProductImages(fileName, tempProduct);
-                imageObj = productImageService.save(imageObj);
-                images.add(imageObj);
+        try {
+            if (!imageFiles.isEmpty()) {
+                for (MultipartFile imageFile : imageFiles) {
+                    if (!imageFile.isEmpty()) {
+                        productImageService.removeProductImages(productDetails.getImages());
+                        String fileName = fileUploadDir(imageFile);
+                        ProductImages imageObj = new ProductImages(fileName, tempProduct);
+                        imageObj = productImageService.save(imageObj);
+                        images.add(imageObj);
+                    }
+                }
+                productDetails.getImages().clear();
             }
         }
+        catch (Exception e){
+            log.error("something went wrong while saving the image of the product");
+            throw new TechnicalIssueException("something went wrong while saving the image of the product");
+        }
         if(!images.isEmpty()) {
+            log.warn("Images has been changed");
             productDetails.setImages(images);
         }
-        if(Objects.nonNull(description)) {
+        if(Objects.nonNull(description)&&!description.isEmpty()) {
+            log.warn("Description has been changed");
             productDetails.setDescription(description);
         }
         if(!productDetails.getBrands().equals(brand)) {
+            log.warn("Brand has been changed");
             productDetails.setBrands(brand);
         }
         if(!productDetails.getCategories().equals(category)) {
+            log.warn("Category has been changed");
             productDetails.setCategories(category);
         }
-        if(!(productDetails.getStock() == stock)) {
+        if(Objects.nonNull(stock)&&productDetails.getStock().equals(stock)) {
+            log.warn("Stock has been changed");
             productDetails.setStock(stock);
         }
-        productDetails.setProductPrice(price);
+        if(Objects.nonNull(price)&&productDetails.getProductPrice().equals(price)) {
+            productDetails.setProductPrice(price);
+        }
         if(Objects.nonNull(filters)) {
+            log.warn("product filter tags has been changed");
             productDetails.setProductFilters(filters);
         }
+        productService.save(productDetails);
         ra.addFlashAttribute("message","Product : "+productDetails.getProductName()+" is updated");
         return "redirect:/admin/products/list";
 

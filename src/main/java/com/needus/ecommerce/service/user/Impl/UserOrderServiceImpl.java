@@ -1,31 +1,33 @@
 package com.needus.ecommerce.service.user.Impl;
 
+import com.needus.ecommerce.entity.product.Products;
 import com.needus.ecommerce.entity.user.Cart;
 import com.needus.ecommerce.entity.user.CartItem;
 import com.needus.ecommerce.entity.user.UserInformation;
-import com.needus.ecommerce.entity.user.order.OrderItem;
-import com.needus.ecommerce.entity.user.enums.OrderStatus;
-import com.needus.ecommerce.entity.user.enums.PaymentMethod;
-import com.needus.ecommerce.entity.user.order.UserOrder;
+import com.needus.ecommerce.entity.order.OrderItem;
+import com.needus.ecommerce.entity.order.enums.OrderStatus;
+import com.needus.ecommerce.entity.order.enums.PaymentMethod;
+import com.needus.ecommerce.entity.order.UserOrder;
+import com.needus.ecommerce.exceptions.OrderTransactionException;
 import com.needus.ecommerce.repository.user.UserOrderRepository;
 import com.needus.ecommerce.service.product.ProductService;
-import com.needus.ecommerce.service.user.CartService;
-import com.needus.ecommerce.service.user.OrderItemService;
-import com.needus.ecommerce.service.user.UserAddressService;
-import com.needus.ecommerce.service.user.UserOrderService;
+import com.needus.ecommerce.service.user.*;
+import com.needus.ecommerce.service.verification.EmailService;
+import jakarta.mail.MessagingException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
+@Slf4j
 public class UserOrderServiceImpl implements UserOrderService {
     @Autowired
     OrderItemService orderItemService;
@@ -38,10 +40,14 @@ public class UserOrderServiceImpl implements UserOrderService {
     ProductService productService;
 
     @Autowired
+    WalletService walletService;
+    @Autowired
+    EmailService emailService;
+    @Autowired
     CartService cartService;
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     @Override
-    public void placeOrder(Cart cart, UserInformation user, long addressId, String payment) {
+    public void placeOrder(Cart cart, UserInformation user, long addressId, String payment) throws MessagingException, OrderTransactionException {
         float discounterPrice = 0;
         List<CartItem> cartItems =cart.getCartItems();
         List<OrderItem> orderItems = new ArrayList<>();
@@ -56,9 +62,17 @@ public class UserOrderServiceImpl implements UserOrderService {
             order.setPaymentMethod(PaymentMethod.COD);
             order.setOrderStatus(OrderStatus.PROCESSING);
         }
-        else{
+        else if(payment.equalsIgnoreCase("online")){
             order.setPaymentMethod(PaymentMethod.ONLINE_PAYMENT);
             order.setOrderStatus(OrderStatus.PENDING);
+        }
+        else if(payment.equalsIgnoreCase("wallet")){
+            if(totalAmount>walletService.getWalletBalance(user)){
+                log.error("User : "+user.getUserId()+"'s wallet has insufficient balance");
+                throw new OrderTransactionException("wallet has insufficient balance");
+            }
+            order.setPaymentMethod(PaymentMethod.WALLET_PAYMENT);
+            walletService.walletDebit(user,totalAmount);
         }
         order.setUserAddress(addressService.findAddressByAddressId(addressId));
         order.setUserInformation(user);
@@ -68,12 +82,14 @@ public class UserOrderServiceImpl implements UserOrderService {
             productService.reduceStock(item.getProduct().getProductId(),item.getQuantity());
         }
         cartService.removeAllCartItem(cart);
+        emailService.sendInvoiceMail(order);
         orderRepository.save(order);
     }
 
     @Override
     public Page<UserOrder> findUserOrderByUserId(UUID userId,int pageNo,int pageSize) {
-        PageRequest pageable = PageRequest.of(pageNo - 1, pageSize);
+        Sort sort = Sort.by(Sort.Order.desc("orderPlacedAt"));
+        PageRequest pageable = PageRequest.of(pageNo - 1, pageSize,sort);
         return orderRepository.findByUserInformation_UserId(userId,pageable);
     }
 
@@ -127,6 +143,25 @@ public class UserOrderServiceImpl implements UserOrderService {
         UserOrder order = orderRepository.findById(orderId).get();
         order.setOrderStatus(OrderStatus.CANCELLED);
         order.setOrderCancelledAt(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES));
+        order.getOrderItems().forEach(orderItem ->{
+            Products product = orderItem.getProduct();
+            product.setStock(product.getStock()+orderItem.getQuantity());});
+        if(
+            order.getPaymentMethod().equals(PaymentMethod.ONLINE_PAYMENT)||
+                order.getPaymentMethod().equals(PaymentMethod.WALLET_PAYMENT)){
+                walletService.walletCredit(order.getUserInformation(),order.getTotalAmount());
+        }
+        orderRepository.save(order);
+    }
+    @Override
+    public void returnOrder(Long orderId){
+        UserOrder order = orderRepository.findById(orderId).get();
+        order.setOrderStatus(OrderStatus.RETURNED);
+        order.setOrderReturnedAt(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES));
+        order.getOrderItems().forEach(orderItem ->{
+            Products product = orderItem.getProduct();
+            product.setStock(product.getStock()+orderItem.getQuantity());});
+        walletService.walletCredit(order.getUserInformation(),order.getTotalAmount());
         orderRepository.save(order);
     }
 
@@ -151,9 +186,13 @@ public class UserOrderServiceImpl implements UserOrderService {
             order.setOrderDeliveredAt(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES));
         }
         else if(value.equalsIgnoreCase("4")){
-            order.setOrderStatus(OrderStatus.CANCELLED);
-            order.setOrderCancelledAt(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES));
+            cancelOrder(orderId);
         }
         orderRepository.save(order);
+    }
+
+    @Override
+    public boolean existByOrderId(Long orderId) {
+        return orderRepository.existsById(orderId);
     }
 }

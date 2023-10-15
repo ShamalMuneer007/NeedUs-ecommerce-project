@@ -1,21 +1,17 @@
 package com.needus.ecommerce.model;
 
-import com.needus.ecommerce.entity.user.CartItem;
 import com.needus.ecommerce.entity.user.UserAddress;
 import com.needus.ecommerce.entity.user.UserInformation;
-import com.needus.ecommerce.entity.user.enums.OrderStatus;
-import com.needus.ecommerce.entity.user.enums.PaymentMethod;
-import com.needus.ecommerce.entity.user.order.OrderItem;
-import com.needus.ecommerce.entity.user.order.UserOrder;
-import jakarta.persistence.*;
+import com.needus.ecommerce.entity.order.enums.OrderStatus;
+import com.needus.ecommerce.entity.order.enums.PaymentMethod;
+import com.needus.ecommerce.entity.order.OrderItem;
+import com.needus.ecommerce.entity.order.UserOrder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -31,7 +27,7 @@ public class UserOrderDto {
     private LocalDateTime orderShippedAt;
     private LocalDateTime orderDeliveredAt;
     private LocalDateTime orderCancelledAt;
-    private LocalDateTime orderRefundedAt;
+    private LocalDateTime orderReturnedAt;
     private String expectedDelivery;
     private String orderedDate;
     private String cancelledDate;
@@ -50,7 +46,7 @@ public class UserOrderDto {
         this.orderPlacedAt = userOrder.getOrderPlacedAt();
         this.orderShippedAt = userOrder.getOrderShippedAt();
         this.orderDeliveredAt = userOrder.getOrderDeliveredAt();
-        this.orderRefundedAt = userOrder.getOrderRefundedAt();
+        this.orderReturnedAt = userOrder.getOrderReturnedAt();
         this.orderCancelledAt = userOrder.getOrderCancelledAt();
         this.paymentMethod =userOrder.getPaymentMethod();
         this.expectedDelivery = this.orderPlacedAt.plusDays(7).format(formatter);

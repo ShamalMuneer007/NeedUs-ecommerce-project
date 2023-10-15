@@ -23,8 +23,8 @@ public class CategoryController {
     @GetMapping("/list")
     public String listCategories(Model model,HttpServletRequest request){
         model.addAttribute("requestURI",request.getRequestURI());
-        model.addAttribute("categories",categoryService.findAllCategories());
-        model.addAttribute("brands",brandService.findAllBrands());
+        model.addAttribute("categories",categoryService.findAllNonDeletedCategories());
+        model.addAttribute("brands",brandService.findAllNonDeletedBrands());
         return "admin/categoryList";
     }
     @GetMapping("/addCategory")

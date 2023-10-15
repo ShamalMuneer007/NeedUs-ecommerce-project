@@ -1,7 +1,7 @@
 package com.needus.ecommerce.controllers;
 
-import com.needus.ecommerce.entity.user.order.OrderItem;
-import com.needus.ecommerce.entity.user.order.UserOrder;
+import com.needus.ecommerce.entity.order.OrderItem;
+import com.needus.ecommerce.entity.order.UserOrder;
 import com.needus.ecommerce.service.user.UserOrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;

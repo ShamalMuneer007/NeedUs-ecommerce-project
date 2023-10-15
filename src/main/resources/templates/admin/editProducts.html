@@ -36,21 +36,20 @@
                     <div class="col-8 mt-3">
                         <label class="form-label" for="product_name">Product Name</label>
                         <input class="form-control bg-body-tertiary" id="product_name" name="productName"
-                            placeholder="Enter your product name" th:value="${product.productName}" type="text">
+                            placeholder="Enter your product name" required th:value="${product.productName}" type="text">
                     </div>
                     <div class="col-8 mb-5 mt-3">
                         <label for="description">Description</label>
                         <textarea class="form-control bg-body-tertiary" id="description" name="description"
-                            placeholder="Enter product description" th:value="${product.description}"
-                            type="text"></textarea>
+                            placeholder="Enter product description"
+                            th:value="${product.description}" type="text"></textarea>
                     </div>
                 </div>
                 <div class="box p-5 mt-5">
                     <h4>Media</h4>
                     <div class="col-8 mt-3 mb-5">
                         <label class="form-label" for="imageInput">Product images</label>
-                        <input accept="image/*" class="form-control" id="imageInput" multiple name="productImages"
-                            type="file" />
+                        <input accept="image/*" class="form-control" id="imageInput" multiple name="productImages" type="file"/>
                     </div>
 <!--                    <div id="imagePreview"></div>-->
                 </div>
@@ -59,8 +58,8 @@
                     <div class="col-8 mt-3 mb-5">
                         <label class="form-label" for="price">Product price</label>
                         <input class="form-control bg-body-tertiary" id="price" name="productPrice"
-                            placeholder="Enter price for your product" step="0.01" th:value="${product.productPrice}"
-                            type="number">
+                            placeholder="Enter price for your product" required step="0.01"
+                            th:value="${product.productPrice}" type="number">
                     </div>
                 </div>
                 <div class="box p-5 mt-5">
@@ -68,14 +67,14 @@
                     <div class="col-8 mt-3 mb-5">
                         <label class="form-label" for="stock">Product Quantity</label>
                         <input class="form-control bg-body-tertiary" id="stock" name="productStock"
-                            placeholder="Enter price for your product" th:value="${product.stock}" type="number">
+                            placeholder="Enter price for your product" required th:value="${product.stock}" type="number">
                     </div>
                 </div>
                 <div class="box p-5 mt-5">
                     <h4>Brand</h4>
                     <div class="col-3 mt-3 mb-5 item-key words">
                         <label class="form-label" for="brand">Product brand</label>
-                        <select aria-label="Default select example" class="form-select" id="brand" name="brandId">
+                        <select aria-label="Default select example" class="form-select" id="brand" name="brandId" required>
                             <option selected="selected" th:each="brand, iterStat : ${brand}"
                                 th:if="${iterStat.index == 0}" th:text="${productBrand.brandName}"
                                 th:value="${productBrand.brandId}">
@@ -90,7 +89,7 @@
                     <h4>Category</h4>
                     <div class="col-3 mt-3 mb-5 item-key words">
                         <label class="form-label" for="category">Product category</label>
-                        <select aria-label="Default select example" class="form-select" id="category" name="categoryId">
+                        <select aria-label="Default select example" class="form-select" id="category" name="categoryId" required>
                             <option selected="selected" th:each="category, iterStat : ${category}"
                                 th:if="${iterStat.index == 0}" th:text="${productCategory.categoryName}"
                                 th:value="${productCategory.categoryId}">

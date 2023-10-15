@@ -1,18 +1,16 @@
-package com.needus.ecommerce.entity.user.order;
+package com.needus.ecommerce.entity.order;
 
 import com.needus.ecommerce.entity.user.UserAddress;
 import com.needus.ecommerce.entity.user.UserInformation;
-import com.needus.ecommerce.entity.user.enums.OrderStatus;
-import com.needus.ecommerce.entity.user.enums.PaymentMethod;
+import com.needus.ecommerce.entity.order.enums.OrderStatus;
+import com.needus.ecommerce.entity.order.enums.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -20,6 +18,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserOrder {
+    @OneToOne
+    @JoinColumn(name="transaction_id")
+    OrderTransactions transaction;
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ORDER_SEQ")
     @SequenceGenerator(name="ORDER_SEQ", sequenceName="ORDER_SEQ", allocationSize=999)
@@ -36,7 +37,7 @@ public class UserOrder {
     private LocalDateTime orderShippedAt;
     private LocalDateTime orderDeliveredAt;
     private LocalDateTime orderCancelledAt;
-    private LocalDateTime orderRefundedAt;
+    private LocalDateTime orderReturnedAt;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;

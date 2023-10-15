@@ -17,4 +17,5 @@ public class Brands {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long brandId;
     private String brandName;
+    private boolean isDeleted = false;
 }

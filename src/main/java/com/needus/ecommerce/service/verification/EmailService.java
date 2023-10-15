@@ -2,6 +2,7 @@ package com.needus.ecommerce.service.verification;
 
 import com.needus.ecommerce.entity.user.ConfirmationToken;
 import com.needus.ecommerce.entity.user.UserInformation;
+import com.needus.ecommerce.entity.order.UserOrder;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,20 @@ public class EmailService {
             helper.setText(body,true);
             javaMailSender.send(message);
         }
+    }
+    public void sendInvoiceMail(UserOrder order) throws MessagingException {
+            Context context = new Context();
+            context.setVariable("order",order);
+            context.setVariable("address",order.getUserAddress());
+            context.setVariable("orderItems",order.getOrderItems());
+            context.setVariable("totalAmount",order.getTotalAmount());
+            String body = templateEngine.process("orderInvoice",context);
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message,true);
+            helper.setTo(order.getUserInformation().getEmail());
+            helper.setSubject("Order Invoice");
+            helper.setText(body,true);
+            javaMailSender.send(message);
     }
 
 }

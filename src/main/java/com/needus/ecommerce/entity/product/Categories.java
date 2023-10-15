@@ -15,4 +15,5 @@ public class Categories {
     @Column(name = "categoryId")
     private Long categoryId;
     private String categoryName;
+    private boolean isDeleted = false;
 }

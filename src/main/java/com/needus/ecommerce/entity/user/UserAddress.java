@@ -32,4 +32,5 @@ public class UserAddress {
     private String postalCode;
     @Column(nullable = false)
     private String contactNumber;
+    private boolean isDeleted = false;
 }

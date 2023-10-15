@@ -51,4 +51,16 @@ public class UserAddressServiceImpl implements UserAddressService {
         }
         userAddressRepository.save(newAddress);
     }
+
+    @Override
+    public boolean existsByAddressId(long addressId) {
+        return userAddressRepository.existsById(addressId);
+    }
+
+    @Override
+    public void deleteAddress(Long addressId) {
+        UserAddress userAddress = userAddressRepository.findById(addressId).get();
+        userAddress.setDeleted(true);
+        userAddressRepository.save(userAddress);
+    }
 }

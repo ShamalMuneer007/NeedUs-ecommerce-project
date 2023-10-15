@@ -27,7 +27,7 @@ public class VariantController {
     @GetMapping("/list")
     public String variants(Model model, HttpServletRequest request){
         model.addAttribute("requestURI",request.getRequestURI());
-        List<Categories> categories = categoryService.findAllCategories();
+        List<Categories> categories = categoryService.findAllNonDeletedCategories();
         model.addAttribute("category",categories);
         return "admin/addVariants";
     }

@@ -16,6 +16,7 @@
             <h3 class="fw-bold pt-3 pb-4"
                 style="font-size : 20px; color:#E73C17;">Order
                 Invoice</h3>
+            <h5 class="fw-semibold pt-3 pb-4">Order Id <span th:text="${order.orderId}"></span></h5>
             <h5 class="fw-semibold pt-3 pb-4" style="font-size : 17px;">Delivery to address : </h5>
             <div>
                 <div th:text="${address.firstName + ' ' + address.lastName}"></div>

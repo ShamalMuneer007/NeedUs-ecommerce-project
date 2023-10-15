@@ -1,4 +1,4 @@
-package com.needus.ecommerce.entity.user.order;
+package com.needus.ecommerce.entity.order;
 
 import com.needus.ecommerce.entity.product.Products;
 import com.needus.ecommerce.entity.user.CartItem;

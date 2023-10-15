@@ -14,4 +14,6 @@ public interface CategoryService {
     boolean categoryExists(String categoryName);
 
     void deleteCategoryById(Long categoryId);
+
+    List<Categories> findAllNonDeletedCategories();
 }

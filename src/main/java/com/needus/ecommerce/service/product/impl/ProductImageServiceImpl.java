@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Service
 public class ProductImageServiceImpl implements ProductImageService {
     @Autowired
@@ -25,5 +27,10 @@ public class ProductImageServiceImpl implements ProductImageService {
     @Override
     public ProductImages findImageById(Long imageId) {
         return repository.findById(imageId).get();
+    }
+
+    @Override
+    public void removeProductImages(List<ProductImages> imagesList) {
+        repository.deleteAllInBatch(imagesList);
     }
 }

@@ -12,6 +12,11 @@
     <link rel="stylesheet" th:href="@{/styles/user/checkoutPageStyle.css}">
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <style>
+           .custom-active a{
+        color: white !important;
+        font-weight: bold;
+        background-color : #E73C17 !important;
+    }
     </style>
 </head>
 
@@ -34,23 +39,11 @@
                     <li class="nav-item">
                         <a aria-current="page" class="nav-link" th:href="@{/shop/home}">Home</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
-                           role="button">
-                            Categories
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li th:each="category : ${categories}">
-                                <a class="dropdown-item" th:href="@{'/shop/categories/' + ${category.categoryId}}"
-                                   th:text="${category.categoryName}"></a>
-                            </li>
-                        </ul>
-                    </li>
 
                 </ul>
                 <div class="d-flex gap-5 justify-content-between me-5">
                     <form class="d-flex me-5 pe-5" role="search">
-                        <input aria-label="Search" class="form-control me-2" placeholder="Search" type="search">
+                        <input aria-label="Search" class="form-control me-2" placeholder="Search Products" type="search">
                     </form>
                     <div class="d-flex gap-3 nav-item dropdown">
                         <div th:if="${not #authorization.expression('isAuthenticated()')}">

@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface ProductsRepository extends JpaRepository<Products,Long> {
     @Query(value = "SELECT * FROM products WHERE is_deleted = false",nativeQuery = true)
-    List<Products> findAllNonDeleted();
+    Page<Products> findAllNonDeleted(Pageable pageable);
 
     Page<Products> findByIsDeletedFalseAndProductStatusTrue(Pageable pageable);
 
@@ -30,4 +30,12 @@ public interface ProductsRepository extends JpaRepository<Products,Long> {
         " AND product_name LIKE %:searchKey%",
         nativeQuery = true)
     Page<Products> searchAllNonBlockedAndNonDeletedProducts(@Param("searchKey")String searchKey, Pageable pageable);
+
+    @Query(value = "SELECT * FROM products "+
+        " WHERE category_id = :categoryId "+
+        " AND is_deleted = false " +
+        " AND product_status = true "+
+        " AND product_name LIKE %:searchKey%",nativeQuery = true)
+    Page<Products> searchProductsInCategory(@Param("categoryId") Long categoryId,
+                                            @Param("searchKey") String searchKey, Pageable pageable);
 }
