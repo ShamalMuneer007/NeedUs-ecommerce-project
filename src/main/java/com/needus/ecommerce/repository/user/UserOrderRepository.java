@@ -1,6 +1,6 @@
 package com.needus.ecommerce.repository.user;
 
-import com.needus.ecommerce.entity.order.UserOrder;
+import com.needus.ecommerce.entity.user_order.UserOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

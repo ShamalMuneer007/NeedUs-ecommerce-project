@@ -116,18 +116,8 @@
                 <div class="d-flex justify-content-end fw-bold" style="">
                     <div class="d-flex mb-0">
                         <div>
-                            <a class="breadcrumbs" style="color : black; text-decoration : none;"
-                                th:href="@{/user/cart-items}">Shopping cart</a>
-                            <span class="text-50 mx-2"> > </span>
-                        </div>
-                        <div>
-                            <a class="breadcrumbs" href="" style="color : #E73C17; text-decoration : none;">Order
-                                checkout</a>
-                            <span class="text-50 mx-2"> > </span>
-                        </div>
-                        <div>
-                            <a class="breadcrumbs" href="" style="color : black; text-decoration : none;">Order
-                                Confirmation</a>
+                            <a class="breadcrumbs small" style="color : black; text-decoration : none;"
+                                th:href="@{/user/cart-items}">Back to shopping cart</a>
                         </div>
                     </div>
                 </div>
@@ -206,11 +196,24 @@
                                     <div class="col-lg-12 mb-3">
                                         <div class="form-check h-100 border rounded-3">
                                             <div class="p-3">
-                                                <input checked class="form-check-input" name="payment" type="radio"
-                                                    value="wallet" />
-                                                <label class="form-check-label">
-                                                    Wallet<br />
-                                                </label>
+                                                <div th:if="${(subTotalAmount - couponDiscount) > walletAmount}">
+                                                    <input class="form-check-input" disabled name="payment" type="radio"
+                                                        value="wallet" />
+                                                    <label class="form-check-label">
+                                                        Wallet
+                                                    </label>
+                                                    <br />
+                                                    <span class="text-danger fw-semibold">You have insufficient balance
+                                                        in your wallet</span>
+
+                                                </div>
+                                                <div th:unless="${subTotalAmount - couponDiscount} > ${walletAmount}">
+                                                    <input class="form-check-input" name="payment" type="radio"
+                                                        value="wallet" />
+                                                    <label class="form-check-label">
+                                                        Wallet<br />
+                                                    </label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -258,16 +261,33 @@
                         </div>
                         <div class="d-flex justify-content-between">
                             <p class="mb-2">Discount:</p>
-                            <p class="mb-2 text-danger"></p>
+                            <p class="mb-2 fw-semibold text-danger">- ₹ <span th:text="${subTotalAmount * couponDiscount}"></span></p>
                         </div>
                         <hr />
                         <div class="d-flex justify-content-between">
                             <p class="mb-2 fw-bold">Total price:</p>
-                            <p class="mb-2 fw-bold">₹ <span id="amount" th:text="${subTotalAmount}"></span></p>
+                            <p class="mb-2 fw-bold">₹ <span id="amount"
+                                    th:text="${subTotalAmount - subTotalAmount * couponDiscount}"></span></p>
                         </div>
-                        <div class="input-group mt-3 mb-4">
-                            <input class="form-control border" name="" placeholder="Promo code" type="text" />
-                            <button class="btn btn-light text-primary border">Apply</button>
+                        <div class="input-group mt-1 mb-4">
+                            <div th:unless="${coupons.size()==0}">
+                                <div>
+                                    <label class="form-label fw-semibold" >Coupons : </label>
+                                        <select class="form-select d-inline" data-live-search="true" id="coupon">
+                                            <option disabled="disabled" selected="selected" th:each="coupon, iterStat : ${coupons}"
+                                                    th:if="${iterStat.index == 0}">
+                                                    Select a coupon
+                                            </option>
+                                            <option th:each="coupon : ${coupons}" th:text="${coupon.couponName}" th:value="${coupon.couponId}">
+                                            </option>
+                                        </select>
+                                </div>
+                                <button class="btn btn-light text-primary border mt-2" onclick="applyCoupon()" style="margin-top:40%; margin-left:70%;">Apply</button>
+                            </div>
+                            <div class="fw-semibold text-danger" th:if="${coupons.size()==0}">
+                                No coupons available for you.
+                            </div>
+                            <span class="fw-semibold" id="coupon_error_msg" style="color:red"></span>
                         </div>
                     </div>
                 </div>
@@ -373,6 +393,26 @@
                 document.getElementById("orderForm").submit();
             }
         };
+        const applyCoupon = () =>{
+            let coupon = $("#coupon").val();
+             $.ajax({
+                     url: '/user/checkout/apply-coupon',
+                     data: JSON.stringify({
+                            coupon
+                     }),
+                     contentType: 'application/json',
+                     method: 'post',
+                     success: (response) => {
+                          if (response.success) {
+                              console.log('response got')
+                              location.reload()
+                          }
+                          else {
+                             $("#coupon_error_msg").html("The total price of your products is not within the range of the selected coupon price limit");
+                          }
+                     }
+             })
+        }
 
 
     </script>

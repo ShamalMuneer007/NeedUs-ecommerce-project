@@ -88,7 +88,7 @@
               <div class="small text-muted" th:text="${user.email}"></div>
             </td>
             <td th:text="${user.phoneNumber}"></td>
-            <td></td>
+            <td th:text="${user.getUserOrders().size()}"></td>
             <td class="">
               <div class="fw-semibold ms-2 p-1 mt-2" style="background-color:rgba(158, 238, 158, 0.7); font-size: 13px; color:#013220; border-radius:10px; width:80%;"
                 th:if="${user.isEnabled}">

@@ -11,7 +11,7 @@
     <link rel="stylesheet" th:href="@{/styles/user/userSettingsStyle.css}" type="text/css">
     <meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
-<body>
+<body class="container-fluid">
 <header class="container-fluid">
     <nav class="navbar navbar-expand-lg pt-4 pe-3 pb-2">
         <div class="container-fluid">
@@ -72,7 +72,7 @@
 </header>
 <main>
     <div class="container mt-5">
-        <div class="row">
+        <div class="row gap-5 gap-lg-0">
             <div class="col-lg-4">
                 <div class="profile-card-4 z-depth-3">
                     <div class="card">
@@ -115,16 +115,14 @@
                             </ul>
                             <div class="row text-center mt-4">
                                 <div class="col p-2">
-                                    <h4 class="mb-1 line-height-5">154</h4>
+                                    <h4 class="mb-1 line-height-5"><span th:text="${user.userOrders.size()}"></span></h4>
                                     <small class="mb-0 font-weight-bold">Orders</small>
                                 </div>
+                                <div class="col p-2">
+                                    <h4 class="mb-1 line-height-5">₹<span th:text="${wallet.balanceAmount}"></span></h4>
+                                    <small class="mb-0 font-weight-bold">Wallet Balance Amount</small>
+                                </div>
                             </div>
-                        </div>
-                        <div class="card-footer text-center">
-                            <a class="btn-social btn-facebook waves-effect waves-light m-1" href="javascript:void()"><i class="fa fa-facebook"></i></a>
-                            <a class="btn-social btn-google-plus waves-effect waves-light m-1" href="javascript:void()"><i class="fa fa-google-plus"></i></a>
-                            <a class="list-inline-item btn-social btn-behance waves-effect waves-light" href="javascript:void()"><i class="fa fa-behance"></i></a>
-                            <a class="list-inline-item btn-social btn-dribbble waves-effect waves-light" href="javascript:void()"><i class="fa fa-dribbble"></i></a>
                         </div>
                     </div>
                 </div>
@@ -133,13 +131,16 @@
                 <div class="card z-depth-3">
                     <div class="card-body"><ul class="nav nav-pills nav-fill">
                         <li class="nav-item">
-                            <a class="nav-link active" data-bs-toggle="pill" href="#profile"><i class="icon-user"></i> <span class="d-none d-sm-inline">Profile</span></a>
+                            <a class="nav-link active" data-bs-toggle="pill" href="#profile"><i class="bx bx-user"></i> <span class="d-none d-sm-inline">Profile</span></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="pill" href="#messages"><i class="icon-envelope-open"></i> <span class="d-none d-sm-inline">Addresses</span></a>
+                            <a class="nav-link" data-bs-toggle="pill" href="#messages"><i class="bx bx-envelope-open"></i> <span class="d-none d-sm-inline">Addresses</span></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="pill" href="#edit"><i class="icon-note"></i> <span class="d-none d-sm-inline">Edit</span></a>
+                            <a class="nav-link" data-bs-toggle="pill" href="#edit"><i class="bx bx-pen"></i> <span class="d-none d-sm-inline">Edit</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="pill" href="#wallet"><i class="bx bx-wallet"></i> <span class="d-none d-sm-inline">Wallet History</span></a>
                         </li>
                     </ul>
                         <div class="tab-content p-3">
@@ -286,6 +287,40 @@
                                         </div>
                                     </div>
                                 </form>
+                            </div>
+                            <div class="tab-pane" id="wallet">
+                                <h5 class="fw-bold mt-2" style="font-size:25px;">Wallet Transactions</h5>
+                                <hr>
+                                <div class="card p-4 row mb-3">
+                                    <div th:if="${wallet.getWalletHistories().isEmpty()}">
+                                        <div class="fw-semibold" style="text-align : center; align-items:center; font-size : 23px;">
+                                            You didn't do any purchases using the wallet
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 mb-3" th:each="transaction : ${wallet.walletHistories}">
+                                        <div class="h-100 border rounded-3 d-flex justify-content-between">
+                                            <div>
+                                                <div class="p-3 ps-1">
+                                                    <div class="fw-semibold">
+                                                        Wallet transaction date and time :
+                                                        <span th:text="${transaction.walletTransactionTime}"></span>
+                                                        <br>
+                                                    </div>
+                                                    <div class="fw-semibold">
+                                                        Transaction :
+                                                        <span th:text="${transaction.getWalletTransactionType.name()}"></span>
+                                                        <br>
+                                                    </div>
+                                                    <div class="fw-semibold">
+                                                        Amount :
+                                                        <span th:text="${transaction.amount}"></span>
+                                                        <br>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

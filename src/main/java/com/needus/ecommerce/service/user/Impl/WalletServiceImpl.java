@@ -42,4 +42,11 @@ public class WalletServiceImpl implements WalletService {
             userWallet.getWalletHistories().add(walletHistory);
             walletRepository.save(userWallet);
     }
+
+    @Override
+    public Wallet createWallet(UserInformation user) {
+        Wallet wallet = new Wallet();
+        wallet.setUserInformation(user);
+        return walletRepository.save(wallet);
+    }
 }

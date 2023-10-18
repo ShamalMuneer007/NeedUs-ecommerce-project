@@ -1,19 +1,18 @@
 package com.needus.ecommerce.entity.user;
 
+import com.needus.ecommerce.entity.user_order.UserOrder;
 import com.needus.ecommerce.entity.user.enums.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
-@Data
+@ToString(exclude = {"userOrders"})
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="Users")
@@ -47,8 +46,10 @@ public class UserInformation{
     @Column(nullable = false,name = "isDeleted")
     private boolean isDeleted = false;
     @OneToMany(mappedBy = "userInformation", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserAddress> userAddresses;
-    @OneToOne
+    private List<UserAddress> userAddresses = new LinkedList<>();
+    @OneToMany(mappedBy = "userInformation",cascade = CascadeType.ALL,orphanRemoval = true)
+    private Set<UserOrder> userOrders = new HashSet<>();
+    @OneToOne(mappedBy = "userInformation", cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name="wallet_id")
     private Wallet wallet;
 }

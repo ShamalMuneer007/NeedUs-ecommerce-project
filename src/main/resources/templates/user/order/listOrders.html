@@ -124,9 +124,9 @@
                         </div>
                     </td>
                     <td style="text-align: center; vertical-align: middle;">
-                        <div class="d-flex justify-content-center align-self-center my-auto" th:text="${order.expectedDelivery}" th:unless="${order.orderStatus.name() == 'DELIVERED' || order.orderStatus.name() == 'CANCELLED'}" >
+                        <div class="d-flex justify-content-center align-self-center my-auto" th:text="${order.expectedDelivery}" th:unless="${order.orderStatus.name() == 'DELIVERED' || order.orderStatus.name() == 'CANCELLED' || order.orderStatus.name() == 'RETURNED'}" >
                         </div>
-                        <div class="text-info fw-bold" th:if="${order.orderStatus.name() == 'DELIVERED' || order.orderStatus.name() == 'CANCELLED'}" th:text="${order.orderStatus}">
+                        <div class="text-info fw-bold" th:if="${order.orderStatus.name() == 'DELIVERED' || order.orderStatus.name() == 'CANCELLED' || order.orderStatus.name() == 'RETURNED'}" th:text="${order.orderStatus}">
 
                         </div>
                     </td>
@@ -136,7 +136,8 @@
                         <div class="fw-bold" style="color: red;" th:if="${order.orderStatus.name() == 'CANCELLED'}" th:text="${order.orderStatus}">
                         </div>
                         <div class="text-primary fw-bold" th:if="${order.orderStatus.name() == 'SHIPPED'}" th:text="${order.orderStatus}">
-
+                        </div>
+                        <div class="fw-bold" style="color: red" th:if="${order.orderStatus.name() == 'RETURNED'}" th:text="${order.orderStatus}">
                         </div>
                         <div class="text-success fw-bold" th:if="${order.orderStatus.name() == 'DELIVERED'}" th:text="${order.orderStatus}">
 

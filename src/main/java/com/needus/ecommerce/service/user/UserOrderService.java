@@ -1,9 +1,10 @@
 package com.needus.ecommerce.service.user;
 
+import com.needus.ecommerce.entity.product.Coupon;
 import com.needus.ecommerce.entity.user.Cart;
 import com.needus.ecommerce.entity.user.UserInformation;
-import com.needus.ecommerce.entity.order.OrderItem;
-import com.needus.ecommerce.entity.order.UserOrder;
+import com.needus.ecommerce.entity.user_order.OrderItem;
+import com.needus.ecommerce.entity.user_order.UserOrder;
 import com.needus.ecommerce.exceptions.OrderTransactionException;
 import jakarta.mail.MessagingException;
 import org.springframework.data.domain.Page;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserOrderService {
-    void placeOrder(Cart cart, UserInformation user, long addressId, String payment) throws MessagingException, OrderTransactionException;
+    UserOrder placeOrder(Cart cart, UserInformation user, long addressId, String payment, Coupon coupon) throws MessagingException, OrderTransactionException;
 
     Page<UserOrder> findUserOrderByUserId(UUID userId,int pageNo,int pageSize);
 

@@ -85,11 +85,14 @@
                             <span class="text-primary" th:if="${orderDetails.orderStatus.name() == 'SHIPPED'}" th:text="${orderDetails.orderStatus}"></span>
                             <span class="text-success" th:if="${orderDetails.orderStatus.name() == 'DELIVERED'}" th:text="${orderDetails.orderStatus}"></span>
                             <span style="color: orange;" th:if="${orderDetails.orderStatus.name() == 'PROCESSING'}" th:text="${orderDetails.orderStatus}"></span>
+                            <span style="color: red" th:if="${orderDetails.orderStatus.name() == 'RETURNED'}" th:text="${orderDetails.orderStatus}"></span>
 
                         </div>
                         <div><span class="fw-semibold">Payment Method : </span>
                             <span class="bx bx-money"></span>
                             <span th:if="${orderDetails.paymentMethod.name() == 'ONLINE_PAYMENT'}">Online Payment</span>
+                            <span th:if="${orderDetails.paymentMethod.name() == 'COD'}">Cash On Delivery</span>
+                            <span  th:text="${orderDetails.paymentMethod.name() == 'WALLET_PAYMENT'}">Wallet</span>
                         </div>
                         <div class="fw-semibold">Transaction ID : </div>
                     </div>
@@ -104,6 +107,9 @@
                     </span>
                     <span style="color:#E73C17" th:if="${orderDetails.orderStatus.name() == 'CANCELLED'}">
                         Order Cancelled on : <span th:text="${orderDetails.orderCancelledAt}"></span>
+                    </span>
+                    <span style="color:#E73C17" th:if="${orderDetails.orderStatus.name() == 'RETURNED'}">
+                        Order Returned at : <span th:text="${orderDetails.returnedDate}"></span>
                     </span>
                 </div>
                 <div class="text-light bg-danger fw-semibold text-center " th:text="${message}">

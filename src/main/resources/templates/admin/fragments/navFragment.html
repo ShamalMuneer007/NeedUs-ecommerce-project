@@ -56,7 +56,9 @@
             th:href="@{/admin/variants/list}">
             <i class='bx bx-dice-2 nav_icon'></i> <span class="nav_name">Variants</span>
           </a>
-          <a class="nav_link" href="#"> <i class='bx bxs-coupon nav_icon'></i><span class="nav_name">Coupons</span></a>
+          <a  class="nav_link"
+              th:classappend="${requestURI.startsWith('/admin/coupons/')? 'active' : ''}"
+              th:href="@{/admin/coupons/list}"> <i class='bx bxs-coupon nav_icon'></i><span class="nav_name">Coupons</span></a>
           <form id="myForm" method="post" th:action="@{/logout}">
             <a class="nav_link" id="signoutLink" style="cursor:pointer;"><i class='bx bx-log-out nav_icon'></i> <span
                 class="nav_name">SignOut</span></a>

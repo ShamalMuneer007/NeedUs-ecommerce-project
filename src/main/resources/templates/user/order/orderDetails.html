@@ -98,6 +98,23 @@
             </div>
         </div>
     </div>
+    <div aria-hidden="true" aria-labelledby="returnOrderModalLabel" class="modal fade" id="returnOrderModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-danger" id="returnOrderModalLabel">Return Order</h5>
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                </div>
+                <div class="modal-body ms-2">
+                    Are you sure you want to return your order?
+                    <form method="post" th:action="@{'/user/order/return-order/' + ${orderDetails.orderId}}">
+                        <!-- Form fields go here -->
+                        <button class="btn btn-danger mt-3 fw-bold" type="submit">Confirm</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     <h2 class="fw-semibold mb-3">Order Details</h2>
     <hr>
     <h4 class="fw-semibold mt-4 mb-4">Order ID : #<span th:text="${orderDetails.orderId}"></span></h4>
@@ -126,6 +143,7 @@
                         Order Status :
                             <span style="color: #BFA900" th:if="${orderDetails.orderStatus.name() == 'PENDING'}" th:text="${orderDetails.orderStatus}"></span>
                             <span style="color: red" th:if="${orderDetails.orderStatus.name() == 'CANCELLED'}" th:text="${orderDetails.orderStatus}"></span>
+                            <span style="color: red" th:if="${orderDetails.orderStatus.name() == 'RETURNED'}" th:text="${orderDetails.orderStatus}"></span>
                             <span class="text-primary fw-bold" th:if="${orderDetails.orderStatus.name() == 'SHIPPED'}" th:text="${orderDetails.orderStatus}">
 
                             </span>
@@ -138,6 +156,7 @@
                             <span class="bx bx-money"></span>
                             <span th:if="${orderDetails.paymentMethod.name() == 'ONLINE_PAYMENT'}">Online Payment</span>
                             <span th:if="${orderDetails.paymentMethod.name() == 'COD'}">Cash On Delivery</span>
+                            <span th:if="${orderDetails.paymentMethod.name() == 'WALLET_PAYMENT'}">Wallet</span>
                         </div>
                     </div>
                 </div>
@@ -152,7 +171,10 @@
                         Order Delivered at : <span th:text="orderDetails.deliveredDate"></span>
                     </span>
                     <span style="color:#E73C17" th:if="${orderDetails.orderStatus.name() == 'CANCELLED'}">
-                        Order Cancelled on : <span th:text="${orderDetails.cancelledDate}"></span>
+                        Order Canceled on : <span th:text="${orderDetails.cancelledDate}"></span>
+                    </span>
+                    <span style="color:#E73C17" th:if="${orderDetails.orderStatus.name() == 'RETURNED'}">
+                        Order Returned at : <span th:text="${orderDetails.returnedDate}"></span>
                     </span>
                 </div>
                 <div class="text-light bg-danger fw-semibold text-center mt-2" th:text="${message}">
@@ -163,7 +185,12 @@
                         data-bs-toggle="modal"  th:if="${orderDetails.orderStatus.name() == 'PENDING' ||
                         orderDetails.orderStatus.name() == 'PROCESSING' ||
                          orderDetails.orderStatus.name() == 'SHIPPED'}" type="submit">
-                    Cancel Order</button>
+                    Cancel Order
+                </button>
+                <button class="btn cancel-order-btn fw-semibold" data-bs-target="#returnOrderModal"
+                        data-bs-toggle="modal" th:if="${orderDetails.orderStatus.name() == 'DELIVERED'}">
+                    Return Order
+                </button>
             </div>
         </div>
         <div class="order-summary col-xl-4 ms-lg-5 mt-5 pb-4"

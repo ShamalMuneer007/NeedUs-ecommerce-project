@@ -1,10 +1,10 @@
 //package com.needus.ecommerce.service.verification;
 //
 //import com.needus.ecommerce.config.TwilioConfig;
-//import com.needus.ecommerce.model.OtpRequest;
-//import com.needus.ecommerce.model.OtpResponseDto;
+//import com.needus.ecommerce.model.otp.OtpRequest;
+//import com.needus.ecommerce.model.otp.OtpResponseDto;
 //import com.needus.ecommerce.model.enums.OtpStatus;
-//import com.needus.ecommerce.model.OtpValidationRequest;
+//import com.needus.ecommerce.model.otp.OtpValidationRequest;
 //import com.twilio.rest.api.v2010.account.Message;
 //import com.twilio.type.PhoneNumber;
 //import lombok.extern.slf4j.Slf4j;

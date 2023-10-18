@@ -1,5 +1,6 @@
 package com.needus.ecommerce.entity.user;
 
+import com.needus.ecommerce.entity.product.Coupon;
 import com.needus.ecommerce.entity.product.Products;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

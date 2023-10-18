@@ -1,6 +1,7 @@
 package com.needus.ecommerce.service.user.Impl;
 
 import com.needus.ecommerce.entity.user.Cart;
+import com.needus.ecommerce.entity.user.Wallet;
 import com.needus.ecommerce.entity.user.Wishlist;
 import com.needus.ecommerce.entity.user.enums.Role;
 import com.needus.ecommerce.entity.user.UserInformation;
@@ -8,11 +9,13 @@ import com.needus.ecommerce.repository.user.ConfirmationTokenRepository;
 import com.needus.ecommerce.repository.user.UserInformationRepository;
 import com.needus.ecommerce.service.user.CartService;
 import com.needus.ecommerce.service.user.UserInformationService;
+import com.needus.ecommerce.service.user.WalletService;
 import com.needus.ecommerce.service.user.WishlistService;
 import com.needus.ecommerce.service.verification.ConfirmationTokenService;
 import com.needus.ecommerce.service.verification.EmailService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -42,11 +45,12 @@ public class UserInformationServiceImpl implements UserInformationService {
     private final SessionRegistry sessionRegistry;
     private final CartService cartService;
     private final WishlistService wishlistService;
+    private final WalletService walletService;
     @Autowired
     public UserInformationServiceImpl(
         BCryptPasswordEncoder encoder, UserInformationRepository userRepository,
         ConfirmationTokenRepository confirmationTokenRepository, ConfirmationTokenService confirmationTokenService,
-        EmailService emailService, SessionRegistry sessionRegistry, CartService cartService, WishlistService wishlistService){
+        EmailService emailService, SessionRegistry sessionRegistry, CartService cartService, WishlistService wishlistService, WalletService walletService){
         this.encoder = encoder;
         this.userRepository = userRepository;
         this.confirmationTokenRepository = confirmationTokenRepository;
@@ -55,14 +59,15 @@ public class UserInformationServiceImpl implements UserInformationService {
         this.sessionRegistry = sessionRegistry;
         this.cartService = cartService;
         this.wishlistService = wishlistService;
+        this.walletService = walletService;
     }
 
 
     @Override
+    @Transactional
     public UserInformation register(UserInformation user) {
         Wishlist wishlist =  new Wishlist();
-        Cart cart = new Cart();
-        cartService.createCart(cart);
+        Cart cart = cartService.createCart();
         wishlistService.createWishlist(wishlist);
         user.setPassword(encoder.encode(user.getPassword()));
         user.setEnabled(false);
@@ -74,6 +79,9 @@ public class UserInformationServiceImpl implements UserInformationService {
         else {
             user.setRole(Role.USER);
         }
+        UserInformation userInformation = save(user);
+        Wallet wallet  = walletService.createWallet(user);
+        user.setWallet(wallet);
         Optional<UserInformation> saved = Optional.of(save(user));
         saved.ifPresent( mail -> {
                 try {
@@ -81,13 +89,17 @@ public class UserInformationServiceImpl implements UserInformationService {
                     confirmationTokenService.save(saved.get(),token);
                     emailService.sendHtmlMail(mail);
                 } catch (Exception e) {
-                    log.error("Something wen wrong while sending user confirmation token");
+                    log.error("Something went wrong while sending user confirmation token");
                     e.printStackTrace();
                 }
-
             });
         return saved.get();
     }
+
+//    private UserInformation saveAndFlush(UserInformation user) {
+//        user.setUserCreatedAt(LocalDateTime.now());
+//        return userRepository.saveAndFlush(user);
+//    }
 
     @Override
     public UserInformation findUserById(UUID id) {

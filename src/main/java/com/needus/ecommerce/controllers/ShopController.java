@@ -3,8 +3,9 @@ package com.needus.ecommerce.controllers;
 import com.needus.ecommerce.entity.product.*;
 import com.needus.ecommerce.exceptions.ResourceNotFoundException;
 import com.needus.ecommerce.exceptions.TechnicalIssueException;
-import com.needus.ecommerce.model.ProductDto;
+import com.needus.ecommerce.model.product.ProductDto;
 import com.needus.ecommerce.service.product.*;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,13 +35,14 @@ public class ShopController {
     BrandService brandService;
     @GetMapping("/home")
     public String landingPage(Model model,
+                              HttpSession session,
                               @RequestParam(name="search",required = false) String searchKey,
                               @RequestParam(defaultValue = "1") int pageNo,
                               @RequestParam(defaultValue = "10") int pageSize,
                               RedirectAttributes ra){
-//        log.info("Authenticated user : "+ SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         log.info("Inside Landing Page : ");
         log.info("fetched categories");
+        session.removeAttribute("coupon");
         Page<Products> products;
         try {
             if(Objects.isNull(searchKey)) {

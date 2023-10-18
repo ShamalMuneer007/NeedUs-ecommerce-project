@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface CartService {
     Cart findUserCartById(Long cartId);
 
-    void createCart(Cart cart);
+    Cart createCart();
 
     void addItemtoCart(UserInformation user, Products product);
 
@@ -22,4 +22,5 @@ public interface CartService {
 
     void removeAllCartItem(Cart cart);
 
+    void updateCart(Cart cart);
 }

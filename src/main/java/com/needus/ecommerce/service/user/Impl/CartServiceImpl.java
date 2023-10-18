@@ -25,8 +25,9 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void createCart(Cart cart) {
-        cartRepository.save(cart);
+    public Cart createCart() {
+        Cart cart = new Cart();
+        return cartRepository.save(cart);
     }
 
     @Override
@@ -73,6 +74,11 @@ public class CartServiceImpl implements CartService {
     @Override
     public void removeAllCartItem(Cart cart) {
         cart.getCartItems().removeAll(cart.getCartItems());
+        cartRepository.save(cart);
+    }
+
+    @Override
+    public void updateCart(Cart cart) {
         cartRepository.save(cart);
     }
 }

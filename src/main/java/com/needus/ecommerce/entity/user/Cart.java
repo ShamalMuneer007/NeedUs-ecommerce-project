@@ -1,5 +1,6 @@
 package com.needus.ecommerce.entity.user;
 
+import com.needus.ecommerce.entity.product.Coupon;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,4 +20,6 @@ public class Cart {
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
     @JoinColumn(name = "cart_items")
     private List<CartItem> cartItems;
+    @ManyToOne
+    private Coupon coupon;
 }

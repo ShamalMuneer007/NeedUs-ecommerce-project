@@ -1,7 +1,7 @@
 package com.needus.ecommerce.service.user.Impl;
 
 import com.needus.ecommerce.entity.user.CartItem;
-import com.needus.ecommerce.entity.order.OrderItem;
+import com.needus.ecommerce.entity.user_order.OrderItem;
 import com.needus.ecommerce.repository.user.OrderItemRepository;
 import com.needus.ecommerce.service.user.OrderItemService;
 import org.springframework.beans.factory.annotation.Autowired;

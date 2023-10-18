@@ -1,15 +1,17 @@
 package com.needus.ecommerce.service.user.Impl;
 
+import com.needus.ecommerce.entity.product.Coupon;
 import com.needus.ecommerce.entity.product.Products;
 import com.needus.ecommerce.entity.user.Cart;
 import com.needus.ecommerce.entity.user.CartItem;
 import com.needus.ecommerce.entity.user.UserInformation;
-import com.needus.ecommerce.entity.order.OrderItem;
-import com.needus.ecommerce.entity.order.enums.OrderStatus;
-import com.needus.ecommerce.entity.order.enums.PaymentMethod;
-import com.needus.ecommerce.entity.order.UserOrder;
+import com.needus.ecommerce.entity.user_order.OrderItem;
+import com.needus.ecommerce.entity.user_order.enums.OrderStatus;
+import com.needus.ecommerce.entity.user_order.enums.PaymentMethod;
+import com.needus.ecommerce.entity.user_order.UserOrder;
 import com.needus.ecommerce.exceptions.OrderTransactionException;
 import com.needus.ecommerce.repository.user.UserOrderRepository;
+import com.needus.ecommerce.service.product.CouponService;
 import com.needus.ecommerce.service.product.ProductService;
 import com.needus.ecommerce.service.user.*;
 import com.needus.ecommerce.service.verification.EmailService;
@@ -38,24 +40,28 @@ public class UserOrderServiceImpl implements UserOrderService {
 
     @Autowired
     ProductService productService;
-
     @Autowired
     WalletService walletService;
     @Autowired
     EmailService emailService;
     @Autowired
     CartService cartService;
+    @Autowired
+    CouponService couponService;
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     @Override
-    public void placeOrder(Cart cart, UserInformation user, long addressId, String payment) throws MessagingException, OrderTransactionException {
-        float discounterPrice = 0;
+    public UserOrder placeOrder(Cart cart, UserInformation user, long addressId, String payment,Coupon coupon) throws MessagingException, OrderTransactionException {
+        float discountedPrice = 0;
+        if(Objects.nonNull(coupon)) {
+            discountedPrice = coupon.getCouponDiscount();
+        }
         List<CartItem> cartItems =cart.getCartItems();
         List<OrderItem> orderItems = new ArrayList<>();
             for(CartItem cartItem : cartItems){
                 orderItems.add(orderItemService.save(cartItem));
             }
         float subTotalAmount = cartService.calculateTotalAmount(user);
-        float totalAmount = subTotalAmount + discounterPrice;
+        float totalAmount = subTotalAmount - subTotalAmount*discountedPrice;
         UserOrder order =  new UserOrder();
         order.setOrderItems(orderItems);
         if(payment.equalsIgnoreCase("cod")){
@@ -71,11 +77,15 @@ public class UserOrderServiceImpl implements UserOrderService {
                 log.error("User : "+user.getUserId()+"'s wallet has insufficient balance");
                 throw new OrderTransactionException("wallet has insufficient balance");
             }
-            order.setPaymentMethod(PaymentMethod.WALLET_PAYMENT);
             walletService.walletDebit(user,totalAmount);
+            order.setPaymentMethod(PaymentMethod.WALLET_PAYMENT);
+            order.setOrderStatus(OrderStatus.PENDING);
         }
         order.setUserAddress(addressService.findAddressByAddressId(addressId));
         order.setUserInformation(user);
+        if(Objects.nonNull(coupon)){
+            order.setCoupon(coupon);
+        }
         order.setTotalAmount(totalAmount);
         order.setOrderPlacedAt(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES));
         for(OrderItem item : orderItems){
@@ -83,7 +93,7 @@ public class UserOrderServiceImpl implements UserOrderService {
         }
         cartService.removeAllCartItem(cart);
         emailService.sendInvoiceMail(order);
-        orderRepository.save(order);
+        return orderRepository.save(order);
     }
 
     @Override

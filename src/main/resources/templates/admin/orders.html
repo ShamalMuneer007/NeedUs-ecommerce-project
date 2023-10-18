@@ -128,6 +128,7 @@
                     <div class="text-primary fw-bold" th:if="${order.orderStatus.name() == 'SHIPPED'}" th:text="${order.orderStatus}">
 
                     </div>
+                    <div class="fw-bold" style="color: red" th:if="${order.orderStatus.name() == 'RETURNED'}" th:text="${order.orderStatus}"></div>
                     <div class="text-success fw-bold" th:if="${order.orderStatus.name() == 'DELIVERED'}" th:text="${order.orderStatus}">
 
                     </div>

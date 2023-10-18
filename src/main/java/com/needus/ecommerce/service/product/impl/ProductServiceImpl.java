@@ -46,8 +46,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<Products> findAllProducts(int pageNo,int pageSize) {
-        Sort sort = Sort.by(Sort.Order.desc("publishedAt"));
-        Pageable pageable = PageRequest.of(pageNo-1,pageSize,sort);
+//        Sort sort = Sort.by(Sort.Order.desc("publishedAt"));
+        Pageable pageable = PageRequest.of(pageNo-1,pageSize);
         return repository.findAllNonDeleted(pageable);
     }
 
