@@ -34,4 +34,6 @@ public interface ProductService {
     Page<Products> searchProducts(int pageNo, int pageSize, String searchKey);
 
     Page<Products> findProductBySearchKey(int pageNo, int pageSize, Long categoryId, String searchKey);
+
+    List<Products> findAllProducts();
 }

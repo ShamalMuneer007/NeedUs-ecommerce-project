@@ -9,13 +9,18 @@ import com.needus.ecommerce.service.user.UserInformationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.Timestamp;
+import java.util.Set;
 
 @Controller
 @Slf4j
@@ -49,11 +54,31 @@ public class MainController {
     }
     @GetMapping("/login")
     public String login(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
+        if (!(authentication instanceof AnonymousAuthenticationToken)){
+            if(roles.contains("ADMIN")){
+                return "redirect:/admin/dashboard/sales-report";
+            }
+            if(roles.contains("USER")){
+                return "redirect:/shop/home";
+            }
+        }
         log.info("Inside login");
         return "login";
     }
     @GetMapping("/signup")
     public String signup(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
+        if (!(authentication instanceof AnonymousAuthenticationToken)){
+            if(roles.contains("ADMIN")){
+                return "redirect:/admin/dashboard/sales-report";
+            }
+            if(roles.contains("USER")){
+                return "redirect:/shop/home";
+            }
+        }
         log.info("Inside signup");
         return "register";
     }
@@ -151,6 +176,6 @@ public class MainController {
     }
     @RequestMapping("/error/500")
     public String handleInternalError() {
-        return "404";
+        return "500";
     }
 }

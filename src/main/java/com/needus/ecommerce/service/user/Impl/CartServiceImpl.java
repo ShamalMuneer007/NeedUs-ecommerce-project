@@ -81,4 +81,10 @@ public class CartServiceImpl implements CartService {
     public void updateCart(Cart cart) {
         cartRepository.save(cart);
     }
+
+    @Override
+    public boolean productExists(UserInformation user, Products product) {
+        Cart cart = user.getCart();
+        return cart.getCartItems().stream().anyMatch(cartItem -> cartItem.getProduct().equals(product));
+    }
 }

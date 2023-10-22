@@ -1,8 +1,6 @@
 package com.needus.ecommerce.controllers.admin;
 
 import com.needus.ecommerce.entity.user.UserInformation;
-import com.needus.ecommerce.repository.product.ProductsRepository;
-import com.needus.ecommerce.service.product.*;
 import com.needus.ecommerce.service.user.UserInformationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,7 +16,7 @@ import java.util.UUID;
 @Controller
 @RequestMapping("/admin")
 @Slf4j
-public class AdminController {
+public class AdminCustomerController {
 
     //Field Injections
     @Autowired
@@ -40,7 +38,6 @@ public class AdminController {
         }
         else{
             redirectAttributes.addFlashAttribute("successMsg", "User is disabled");
-
         }
         return "redirect:/admin/users/list";
     }

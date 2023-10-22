@@ -5,10 +5,13 @@ import com.needus.ecommerce.exceptions.ResourceNotFoundException;
 import com.needus.ecommerce.exceptions.TechnicalIssueException;
 import com.needus.ecommerce.model.product.ProductDto;
 import com.needus.ecommerce.service.product.*;
+import com.needus.ecommerce.service.user.UserInformationService;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +33,8 @@ public class ShopController {
     @Autowired
     CategoryService categoryService;
     @Autowired
+    UserInformationService userService;
+    @Autowired
     ProductFilterService filterService;
     @Autowired
     BrandService brandService;
@@ -43,6 +48,11 @@ public class ShopController {
         log.info("Inside Landing Page : ");
         log.info("fetched categories");
         session.removeAttribute("coupon");
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        int userCartSize = 0;
+        if(username!=null){
+            userCartSize = userService.getCurrentUser().getCart().getCartItems().size();
+        }
         Page<Products> products;
         try {
             if(Objects.isNull(searchKey)) {
@@ -61,11 +71,12 @@ public class ShopController {
         }
         Page<ProductDto> productsDto = products.map(ProductDto::new);
         log.info("fetched products");
+        model.addAttribute("cartSize",userCartSize);
         model.addAttribute("filters",filterService.findAllFilters());
         model.addAttribute("brands",brandService.findAllNonDeletedBrands());
         model.addAttribute("categories", categoryService.findAllNonDeletedCategories());
         model.addAttribute("products",productsDto);
-        model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
+        model.addAttribute("username", username);
         return "shop/home";
     }
     @GetMapping("/home/product-details/{id}")

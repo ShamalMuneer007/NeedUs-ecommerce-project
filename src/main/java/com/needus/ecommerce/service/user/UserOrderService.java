@@ -9,6 +9,7 @@ import com.needus.ecommerce.exceptions.OrderTransactionException;
 import jakarta.mail.MessagingException;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,7 +20,7 @@ public interface UserOrderService {
 
     List<OrderItem> findAllPendingOrders();
 
-    List<OrderItem> findAllDeliveredOrders(List<UserOrder> userOrderInfo);
+    List<UserOrder> findAllDeliveredOrders();
 
     List<OrderItem> findAllRefundedOrders(List<UserOrder> userOrderInfo);
 
@@ -30,10 +31,17 @@ public interface UserOrderService {
     void cancelOrder(Long orderId);
 
     void returnOrder(Long orderId);
+    void requestReturnOrder(Long orderId);
 
     Page<UserOrder> findAllOrders(int pageNo, int pageSize);
 
     void changeOrderStatus(String value, Long orderId);
 
     boolean existByOrderId(Long orderId);
+
+    void cancelReturnRequest(Long orderId);
+
+    List<UserOrder> findAllOrders();
+
+    List<UserOrder> findOrdersByDate(LocalDate currentDate);
 }

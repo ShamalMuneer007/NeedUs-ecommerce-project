@@ -42,6 +42,31 @@
     </style>
 </head>
 <body id="body-pd">
+<div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="logoutModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Logout Confirmation</h5>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+            </div>
+
+            <!-- Modal Body with the Form -->
+            <div class="modal-body">
+                <form method="post" th:action="@{/logout}">
+                    <p>Are you sure you want to logout?</p>
+                    <!-- Add any additional content or form elements here if needed -->
+                    <div class="modal-footer">
+                        <!-- Form Submit Button -->
+                        <input class="btn btn-danger" type="submit" value="Logout">
+                        <!-- Close Modal Button -->
+                        <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
     <div th:include="~{admin/fragments/navFragment :: navigation}"></div>
     <main class="container-fluid ms-sm-3 ps-5">
         <h3>Coupons</h3>
@@ -72,6 +97,8 @@
                     <th class="bg-body-secondary" scope="col">Coupon Name</th>
                     <th class="bg-body-secondary" scope="col">Coupon Code</th>
                     <th class="bg-body-secondary" scope="col">Coupon Discount</th>
+                    <th class="bg-body-secondary" scope="col">Coupon Min Amount</th>
+                    <th class="bg-body-secondary" scope="col">Coupon Max Amount</th>
                     <th class="bg-body-secondary" scope="col">Created at</th>
                     <th class="bg-body-secondary" scope="col">Expiration Date</th>
                     <th class="bg-body-secondary" scope="col">Status</th>
@@ -87,6 +114,12 @@
                         <div th:text="${coupon.couponCode}"></div>
                     </td>
                     <td><span  th:text="${coupon.couponDiscount}*100"></span>%</td>
+                    <td th:text="${coupon.minPriceLimit}">
+
+                    </td>
+                    <td th:text="${coupon.maxPriceLimit}">
+
+                    </td>
                     <td th:text="${coupon.createdDate}"></td>
                     <td>
                         <div th:text="${coupon.expirationDate}"></div>
@@ -104,7 +137,7 @@
                 <span class=""><button class="block btn" type="submit"><i class="bx bx-block"></i>
                 </button></span>
                         </form>
-                        <form class="d-inline" method="post" th:action="@{'/admin/coupon/delete/' + ${coupon.couponId}}">
+                        <form class="d-inline" method="post" th:action="@{'/admin/coupons/delete/' + ${coupon.couponId}}">
                 <span class=""><button class="delete btn" data-target="#deleteModal" data-toggle="modal" id="delete" type="submit">
                     <i class="bx bx-trash"></i>
                   </button></span>

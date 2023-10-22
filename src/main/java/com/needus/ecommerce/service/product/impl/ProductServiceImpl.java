@@ -1,6 +1,7 @@
 package com.needus.ecommerce.service.product.impl;
 
 import com.needus.ecommerce.entity.product.Brands;
+import com.needus.ecommerce.entity.product.Categories;
 import com.needus.ecommerce.entity.product.ProductFilters;
 import com.needus.ecommerce.entity.product.Products;
 import com.needus.ecommerce.repository.product.ProductsRepository;
@@ -13,9 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -120,13 +119,29 @@ public class ProductServiceImpl implements ProductService {
     public Page<Products> searchProducts(int pageNo, int pageSize, String searchKey) {
 //        Sort sort = Sort.by(Sort.Order.desc("publishedAt"));
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
-        return repository.searchAllNonBlockedAndNonDeletedProducts(searchKey,pageable);
+        List<Products> products =  repository.searchAllNonBlockedAndNonDeletedProducts(searchKey);
+        List<Categories> categories = categoryService.searchAllNonDeletedProductsBasedOnCategorySearchKey(searchKey);
+        List<Products> allProducts = findAllProducts();
+        for (Products product : allProducts){
+            for(Categories category : categories){
+                if(product.getCategories().equals(category)){
+                    products.add(product);
+                }
+            }
+        }
+        Set<Products> productResult = new HashSet<>(products);
+        return new PageImpl<Products>(productResult.stream().toList(),pageable, products.size());
     }
 
     @Override
     public Page<Products> findProductBySearchKey(int pageNo, int pageSize,Long categoryId, String searchKey) {
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
         return repository.searchProductsInCategory(categoryId,searchKey,pageable);
+    }
+
+    @Override
+    public List<Products> findAllProducts() {
+        return repository.findByIsDeletedFalseAndProductStatusTrue();
     }
 
 }

@@ -45,9 +45,35 @@
      background-color: white;
   }
   </style>
+    <title>Needus. | Categories</title>
 </head>
 
 <body id="body-pd">
+<div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="logoutModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Logout Confirmation</h5>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+            </div>
+
+            <!-- Modal Body with the Form -->
+            <div class="modal-body">
+                <form method="post" th:action="@{/logout}">
+                    <p>Are you sure you want to logout?</p>
+                    <!-- Add any additional content or form elements here if needed -->
+                    <div class="modal-footer">
+                        <!-- Form Submit Button -->
+                        <input class="btn btn-danger" type="submit" value="Logout">
+                        <!-- Close Modal Button -->
+                        <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <div th:include="~{admin/fragments/navFragment :: navigation}"></div>
 <main class="container-fluid ms-sm-3 ps-5">
     <h3>Categories & Brands</h3>

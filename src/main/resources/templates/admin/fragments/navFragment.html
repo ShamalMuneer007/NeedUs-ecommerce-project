@@ -14,7 +14,7 @@
 <body id="body-pd">
   <div th:fragment="navigation">
     <header class="header" id="header">
-      <div></div>
+
       <div>
         <div class="header_img"><svg height="1em" viewBox="0 0 448 512"
             xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -31,7 +31,8 @@
           <a class="nav_logo" href="#"> <span class="nav_logo-name">Needus</span><span class="logo-dot">.</span> </a>
         </div>
         <div class="nav_list">
-          <a class="nav_link" href="#"> <i class='bx bxs-chalkboard nav_icon'></i> <span
+          <a class="nav_link" th:classappend="${requestURI.startsWith('/admin/dashboard/')? 'active' : ''}"
+             th:href="@{/admin/dashboard/sales-report}"> <i class='bx bxs-chalkboard nav_icon'></i> <span
               class="nav_name">Dashboard</span>
           </a>
           <a class="nav_link"
@@ -59,18 +60,13 @@
           <a  class="nav_link"
               th:classappend="${requestURI.startsWith('/admin/coupons/')? 'active' : ''}"
               th:href="@{/admin/coupons/list}"> <i class='bx bxs-coupon nav_icon'></i><span class="nav_name">Coupons</span></a>
-          <form id="myForm" method="post" th:action="@{/logout}">
-            <a class="nav_link" id="signoutLink" style="cursor:pointer;"><i class='bx bx-log-out nav_icon'></i> <span
+            <a class="nav_link" data-bs-target="#logoutModal"
+               data-bs-toggle="modal" style="cursor:pointer;"><i class='bx bx-log-out nav_icon'></i> <span
                 class="nav_name">SignOut</span></a>
-          </form>
         </div>
       </nav>
     </div>
     <script>
-      document.getElementById('signoutLink').addEventListener('click', function (event) {
-        event.preventDefault();
-        document.getElementById('myForm').submit();
-      });
     </script>
   </div>
 </body>

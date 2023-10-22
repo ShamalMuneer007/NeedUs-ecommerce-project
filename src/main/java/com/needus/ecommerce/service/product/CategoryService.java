@@ -16,4 +16,6 @@ public interface CategoryService {
     void deleteCategoryById(Long categoryId);
 
     List<Categories> findAllNonDeletedCategories();
+
+    List<Categories> searchAllNonDeletedProductsBasedOnCategorySearchKey(String searchKey);
 }

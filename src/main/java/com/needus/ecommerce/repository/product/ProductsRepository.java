@@ -29,7 +29,7 @@ public interface ProductsRepository extends JpaRepository<Products,Long> {
         " AND product_status = true" +
         " AND product_name LIKE %:searchKey%",
         nativeQuery = true)
-    Page<Products> searchAllNonBlockedAndNonDeletedProducts(@Param("searchKey")String searchKey, Pageable pageable);
+    List<Products> searchAllNonBlockedAndNonDeletedProducts(@Param("searchKey")String searchKey);
 
     @Query(value = "SELECT * FROM products "+
         " WHERE category_id = :categoryId "+
@@ -38,4 +38,6 @@ public interface ProductsRepository extends JpaRepository<Products,Long> {
         " AND product_name LIKE %:searchKey%",nativeQuery = true)
     Page<Products> searchProductsInCategory(@Param("categoryId") Long categoryId,
                                             @Param("searchKey") String searchKey, Pageable pageable);
+
+    List<Products> findByIsDeletedFalseAndProductStatusTrue();
 }

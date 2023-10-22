@@ -13,4 +13,6 @@ public interface WishlistService {
     void createWishlist(Wishlist wishlist);
 
     void addProductToWishList(UserInformation user, Products product);
+
+    boolean productExists(Wishlist userWishlist, Products product);
 }

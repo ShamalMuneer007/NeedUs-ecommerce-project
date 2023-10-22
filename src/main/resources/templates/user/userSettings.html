@@ -13,29 +13,73 @@
 </head>
 <body class="container-fluid">
 <header class="container-fluid">
-    <nav class="navbar navbar-expand-lg pt-4 pe-3 pb-2">
+    <div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="logoutModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Logout Confirmation</h5>
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                </div>
+
+                <!-- Modal Body with the Form -->
+                <div class="modal-body">
+                    <form method="post" th:action="@{/logout}">
+                        <p>Are you sure you want to logout?</p>
+                        <!-- Add any additional content or form elements here if needed -->
+                        <div class="modal-footer">
+                            <!-- Form Submit Button -->
+                            <input class="btn btn-danger" type="submit" value="Logout">
+                            <!-- Close Modal Button -->
+                            <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <nav class="container-fluid navbar navbar-expand-lg pt-4 pe-3 pb-2">
         <div class="container-fluid">
-            <div class="navbar-brand">
-                <a class="nav_logo pe-5 ps-5" href="#"> <span class="nav_logo-name">Needus</span><span
+            <div class="navbar-brand ms-sm-0 d-none d-md-inline-block">
+                <a class="nav_logo pe-lg-5 pe-0 ps-5" href="#"> <span class="nav_logo-name">Needus</span><span
                         class="logo-dot">.</span>
                 </a>
             </div>
+            <div class="navbar-brand ms-sm-0 d-inline-block d-md-none">
+                <a class="nav_logo pe-lg-5 pe-0 ps-5" href="#"> <span class="nav_logo-name">N</span><span
+                        class="logo-dot">.</span>
+                </a>
+            </div>
+            <form class="d-sm-flex me-lg-3 pe-0 me-0 d-none pe-lg-5 " method="get" role="search"
+                  th:action="@{/shop/home}">
+                <input aria-label="Search" class="form-control me-2" name="search" placeholder="Search Products"
+                       type="search">
+            </form>
+            <a aria-expanded="false" class="nav-link d-sm-none" data-bs-target="#searchModal" data-bs-toggle="modal"
+               role="button">
+                <i class="bx bx-search"></i>
+            </a>
+            <ul class="dropdown-menu">
+            </ul>
             <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
                     class="navbar-toggler" data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse"
                     type="button">
                 <span><i class="bx bx-menu"></i></span>
             </button>
             <div class="collapse navbar-collapse ps-5" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 gap-3 mb-lg-0">
+                <ul class="navbar-nav me-auto mb-lg-2 gap-3 mb-lg-0">
                     <li class="nav-item">
-                        <a aria-current="page" class="nav-link" th:href="@{/shop/home}">Home</a>
+                        <a class="nav-link" th:href="@{/shop/home}">Home</a>
                     </li>
-
+                    <li class="nav-item dropdown">
+                        <a class="nav-link" th:href="@{/user/cart-items}"><i class="bx bx-cart pe-2"></i><span class="">Cart</span></a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a  class="nav-link" th:href="@{/user/wishlist-items}"><i
+                                class="bx bx-heart pe-2"></i><span >Wishlist</span></a>
+                    </li>
                 </ul>
                 <div class="d-flex gap-5 justify-content-between me-5">
-                    <form class="d-flex me-5 pe-5" role="search">
-                        <input aria-label="Search" class="form-control me-2" placeholder="Search" type="search">
-                    </form>
                     <div class="d-flex gap-3 nav-item dropdown">
                         <div th:if="${not #authorization.expression('isAuthenticated()')}">
                             <a class="reg nav-link" th:href="@{/login}">Login</a>
@@ -44,12 +88,13 @@
                             <a class="reg nav-link" th:href="@{/signup}">Signup</a>
                         </div>
                         <div th:if="${#authorization.expression('isAuthenticated()')}">
-                            <a aria-expanded="false" class="nav-link dropdown-toggle pt-2" data-bs-toggle="dropdown"
+                            <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
                                href="#" role="button">
                                 <span th:text="${username}"></span></a>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a class="dropdown-item">Profile settings</a>
+                                    <a class="dropdown-item" th:href="@{/user/profile-settings}">Profile
+                                        settings</a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item" th:href="@{/user/cart-items}">Cart</a>
@@ -58,9 +103,10 @@
                                     <a class="dropdown-item" th:href="@{/user/my-orders}">My Orders</a>
                                 </li>
                                 <li>
-                                    <form method="post" th:action="@{/logout}">
-                                        <input class="btn" type="submit" value="Logout">
-                                    </form>
+                                    <button class="btn btn-danger mt-2 ms-3" data-bs-target="#logoutModal"
+                                            data-bs-toggle="modal" type="button">
+                                        Logout
+                                    </button>
                                 </li>
                             </ul>
                         </div>

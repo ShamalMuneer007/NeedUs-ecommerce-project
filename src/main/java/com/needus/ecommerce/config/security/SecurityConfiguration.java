@@ -11,11 +11,13 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @Configuration
@@ -25,11 +27,16 @@ public class SecurityConfiguration {
     UserInfoDetailsService userInfoDetailsService;
     @Autowired
     CustomOidUserService customOidUserService;
+
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler(){
         return new CustomSuccessHandler();
     }
 
+    @Bean
+    public SimpleUrlAuthenticationFailureHandler authenticationFailureHandler(){
+        return new CustomAuthenticationFailureHandler();
+    }
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
@@ -55,6 +62,7 @@ public class SecurityConfiguration {
                     form
                         .loginPage("/login").permitAll()
                         .successHandler(authenticationSuccessHandler())
+                        .failureHandler(authenticationFailureHandler())
             )
             .sessionManagement(
                 httpSecuritySessionManagementConfigurer ->
@@ -69,7 +77,7 @@ public class SecurityConfiguration {
                     oauth
                         .loginPage("/login")
                         .successHandler(authenticationSuccessHandler())
-                        .userInfoEndpoint().userService(customOidUserService)
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOidUserService))
             )
             .logout(logout ->
                     logout
@@ -78,8 +86,7 @@ public class SecurityConfiguration {
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
             )
-
-            .cors().and().csrf().disable();
+            .cors(AbstractHttpConfigurer::disable).csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
     @Bean

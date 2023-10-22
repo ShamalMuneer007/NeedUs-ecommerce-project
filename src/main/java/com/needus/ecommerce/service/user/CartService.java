@@ -23,4 +23,6 @@ public interface CartService {
     void removeAllCartItem(Cart cart);
 
     void updateCart(Cart cart);
+
+    boolean productExists(UserInformation user, Products product);
 }

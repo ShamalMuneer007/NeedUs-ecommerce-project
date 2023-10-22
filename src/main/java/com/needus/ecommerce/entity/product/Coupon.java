@@ -21,6 +21,7 @@ public class Coupon {
     private Long couponId;
     private String couponName;
     private String couponCode;
+    private String couponDescription;
     private boolean isDeleted = false;
     private boolean isValid = true;
     private Float maxPriceLimit;

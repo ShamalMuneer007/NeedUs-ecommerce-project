@@ -14,8 +14,8 @@ import java.nio.file.AccessDeniedException;
 
 @ControllerAdvice
 public class CustomExceptionHandler implements ErrorController {
-    @ExceptionHandler(DisabledException.class)
-    public String handleDisabledException(DisabledException ex) {
+    @ExceptionHandler(UserDisabledException.class)
+    public String handleDisabledException(UserDisabledException ex) {
         return "redirect:/login?disabled=true";
     }
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -38,5 +38,4 @@ public class CustomExceptionHandler implements ErrorController {
     @ExceptionHandler({AccessDeniedException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public String accessDeniedException(AccessDeniedException ex){return "500";}
-
 }

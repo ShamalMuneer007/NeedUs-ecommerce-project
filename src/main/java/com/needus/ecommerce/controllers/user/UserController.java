@@ -1,5 +1,4 @@
 package com.needus.ecommerce.controllers.user;
-
 import com.needus.ecommerce.entity.product.Coupon;
 import com.needus.ecommerce.entity.product.Products;
 import com.needus.ecommerce.entity.user.Cart;
@@ -31,8 +30,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
@@ -43,18 +43,14 @@ public class UserController {
     UserInformationService userService;
     @Autowired
     UserAddressService userAddressService;
-
     @Autowired
     ProductService productService;
     @Autowired
     WishlistService wishlistService;
-
     @Autowired
     UserOrderService orderService;
-
     @Autowired
     CartService cartService;
-
     @Autowired
     CouponService couponService;
     //wishlists
@@ -79,6 +75,10 @@ public class UserController {
         session.removeAttribute("coupon");
         UserInformation user = userService.getCurrentUser();
         Products product = productService.findProductById(productId);
+        if(wishlistService.productExists(user.getUserWishlist(),product)){
+            ra.addFlashAttribute("ErrorMsg", "Item is already present in the wishlist");
+            return "redirect:/shop/home";
+        }
         wishlistService.addProductToWishList(user,product);
         ra.addFlashAttribute("message", "Item added to the wishlist");
         return "redirect:/shop/home";
@@ -122,6 +122,10 @@ public class UserController {
                             RedirectAttributes ra){
         UserInformation user = userService.getCurrentUser();
         Products product = productService.findProductById(productId);
+        if(cartService.productExists(user,product)){
+            ra.addFlashAttribute("message", "Item already present in the cart");
+            return "redirect:/shop/home";
+        }
         cartService.addItemtoCart(user, product);
         ra.addFlashAttribute("message", "Item added to the cart");
         return "redirect:/shop/home";
@@ -282,11 +286,11 @@ public class UserController {
         ra.addFlashAttribute("message","Your order has been cancelled");
         return "redirect:/user/my-orders/order-details/"+orderId;
     }
-    @PostMapping("/order/return-order/{orderId}")
-    public String returnOrder(@PathVariable(name = "orderId") Long orderId,
+    @PostMapping("/order/request-order-return/{orderId}")
+    public String requestReturnOrder(@PathVariable(name = "orderId") Long orderId,
                               RedirectAttributes ra){
-        orderService.returnOrder(orderId);
-        ra.addFlashAttribute("message","Your order is returned");
+        orderService.requestReturnOrder(orderId);
+        ra.addFlashAttribute("message","Return request for your order has been sent");
         return "redirect:/user/my-orders/order-details/"+orderId;
     }
 
@@ -316,6 +320,16 @@ public class UserController {
         }
         UserOrderDto userOrderDto = new UserOrderDto(orderDetails);
         List<OrderItem> orderItems = orderDetails.getOrderItems();
+        boolean returnExpired = false;
+        boolean returnEligible = false;
+        if(Objects.nonNull(orderDetails.getOrderDeliveredAt())){
+            returnExpired = LocalDateTime.now().isAfter(orderDetails.getOrderDeliveredAt().plusDays(7));
+        }
+        if(Objects.isNull(orderDetails.getReturnRequestedAt())){
+            returnEligible = true;
+        }
+        model.addAttribute("returnEligible",returnEligible);
+        model.addAttribute("returnExpired",returnExpired);
         model.addAttribute("orderDetails",userOrderDto);
         model.addAttribute("orderItems",orderItems);
         model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
@@ -394,11 +408,7 @@ public class UserController {
         if(coupon.getMaxPriceLimit()<subTotalAmount || coupon.getMinPriceLimit()>subTotalAmount){
             return new ResponseEntity<>(Map.of("success", false),HttpStatus.OK);
         }
-//        Cart cart = user.getCart();
-//        cart.setCoupon(coupon);
-//        cartService.updateCart(cart);
         httpSession.setAttribute("coupon",coupon);
         return new ResponseEntity<>(Map.of("success", true),HttpStatus.OK);
-
     }
 }

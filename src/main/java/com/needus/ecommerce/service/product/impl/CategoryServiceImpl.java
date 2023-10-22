@@ -1,12 +1,13 @@
 package com.needus.ecommerce.service.product.impl;
 
 import com.needus.ecommerce.entity.product.Categories;
+import com.needus.ecommerce.entity.product.Products;
 import com.needus.ecommerce.repository.product.CategoryRepository;
 import com.needus.ecommerce.service.product.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -49,5 +50,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<Categories> findAllNonDeletedCategories() {
         return categoryRepository.findByIsDeletedFalse();
+    }
+
+    @Override
+    public List<Categories> searchAllNonDeletedProductsBasedOnCategorySearchKey(String searchKey) {
+       return categoryRepository.searchAllNonDeletedCategories(searchKey);
     }
 }

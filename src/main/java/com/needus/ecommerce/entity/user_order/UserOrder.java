@@ -39,6 +39,7 @@ public class UserOrder {
     private LocalDateTime orderDeliveredAt;
     private LocalDateTime orderCancelledAt;
     private LocalDateTime orderReturnedAt;
+    private LocalDateTime returnRequestedAt;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;

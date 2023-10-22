@@ -143,6 +143,8 @@
 
                         </div>
                         <div class="fw-bold" style="color: orange;" th:if="${order.orderStatus.name() == 'PROCESSING'}" th:text="${order.orderStatus}"></div>
+                        <div class="fw-bold" style="color: orange;" th:if="${order.orderStatus.name() == 'RETURN_REQUESTED'}" th:text="${order.orderStatus}"></div>
+
                     </td>
                 </tr>
             </tbody>

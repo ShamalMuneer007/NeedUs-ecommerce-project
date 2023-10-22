@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -114,13 +115,8 @@ public class UserOrderServiceImpl implements UserOrderService {
     }
 
     @Override
-    public List<OrderItem> findAllDeliveredOrders(List<UserOrder> userOrderInfo) {
-        List<UserOrder> userOrders = orderRepository.findDeliveredOrder();
-        List<OrderItem> orderItems = new ArrayList<>();
-        for(UserOrder userOrder : userOrders){
-            orderItems.addAll(userOrder.getOrderItems());
-        }
-        return orderItems;
+    public List<UserOrder> findAllDeliveredOrders() {
+        return orderRepository.findDeliveredOrder();
     }
 
     @Override
@@ -174,6 +170,13 @@ public class UserOrderServiceImpl implements UserOrderService {
         walletService.walletCredit(order.getUserInformation(),order.getTotalAmount());
         orderRepository.save(order);
     }
+    @Override
+    public void requestReturnOrder(Long orderId){
+        UserOrder order = orderRepository.findById(orderId).get();
+        order.setOrderStatus(OrderStatus.RETURN_REQUESTED);
+        order.setReturnRequestedAt(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES));
+        orderRepository.save(order);
+    }
 
     @Override
     public Page<UserOrder> findAllOrders(int pageNo , int pageSize) {
@@ -204,5 +207,22 @@ public class UserOrderServiceImpl implements UserOrderService {
     @Override
     public boolean existByOrderId(Long orderId) {
         return orderRepository.existsById(orderId);
+    }
+
+    @Override
+    public void cancelReturnRequest(Long orderId) {
+        UserOrder order = orderRepository.findById(orderId).get();
+        order.setOrderStatus(OrderStatus.DELIVERED);
+        orderRepository.save(order);
+    }
+
+    @Override
+    public List<UserOrder> findAllOrders() {
+        return orderRepository.findAll();
+    }
+
+    @Override
+    public List<UserOrder> findOrdersByDate(LocalDate currentDate) {
+        return orderRepository.findByOrderPlacedAt(currentDate.atTime(12,0,0));
     }
 }

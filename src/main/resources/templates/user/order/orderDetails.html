@@ -107,7 +107,7 @@
                 </div>
                 <div class="modal-body ms-2">
                     Are you sure you want to return your order?
-                    <form method="post" th:action="@{'/user/order/return-order/' + ${orderDetails.orderId}}">
+                    <form method="post" th:action="@{'/user/order/request-order-return/' + ${orderDetails.orderId}}">
                         <!-- Form fields go here -->
                         <button class="btn btn-danger mt-3 fw-bold" type="submit">Confirm</button>
                     </form>
@@ -151,6 +151,7 @@
 
                             </span>
                             <span class="fw-bold" style="color: orange;" th:if="${orderDetails.orderStatus.name() == 'PROCESSING'}" th:text="${orderDetails.orderStatus}"></span>
+                            <span class="fw-bold" style="color: orange;" th:if="${orderDetails.orderStatus.name() == 'RETURN_REQUESTED'}" th:text="${orderDetails.orderStatus}"></span>
                         </div>
                         <div><span class="fw-semibold">Payment Method : </span>
                             <span class="bx bx-money"></span>
@@ -168,7 +169,7 @@
                             Order delivery to be expected at : <span th:text="${orderDetails.expectedDelivery}"></span>
                     </span>
                     <span class="text-success" th:if="${orderDetails.orderStatus.name() == 'DELIVERED'}">
-                        Order Delivered at : <span th:text="orderDetails.deliveredDate"></span>
+                        Order Delivered at : <span th:text="${orderDetails.deliveredDate}"></span>
                     </span>
                     <span style="color:#E73C17" th:if="${orderDetails.orderStatus.name() == 'CANCELLED'}">
                         Order Canceled on : <span th:text="${orderDetails.cancelledDate}"></span>
@@ -188,7 +189,7 @@
                     Cancel Order
                 </button>
                 <button class="btn cancel-order-btn fw-semibold" data-bs-target="#returnOrderModal"
-                        data-bs-toggle="modal" th:if="${orderDetails.orderStatus.name() == 'DELIVERED'}">
+                        data-bs-toggle="modal" th:if="${orderDetails.orderStatus.name() == 'DELIVERED' && returnEligible}" th:unless="${returnExpired}">
                     Return Order
                 </button>
             </div>

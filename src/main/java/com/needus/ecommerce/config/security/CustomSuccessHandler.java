@@ -87,7 +87,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
             log.info("Security Context holder : "+SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         }
         if(roles.contains(new SimpleGrantedAuthority(Role.ADMIN.name())))
-            response.sendRedirect("/admin/users/list");
+            response.sendRedirect("/admin/dashboard/sales-report");
         else
             response.sendRedirect("/shop/home");
     }

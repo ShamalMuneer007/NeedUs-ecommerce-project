@@ -30,7 +30,7 @@ public class CouponServiceImpl implements CouponService {
 
     @Override
     public List<Coupon> findAllNonDeletedCoupons() {
-        return couponRepository.findByIsDeletedFalse();
+        return couponRepository.findByIsDeletedFalseAndIsValidTrue();
     }
 
     @Override

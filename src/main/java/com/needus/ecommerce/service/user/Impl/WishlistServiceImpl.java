@@ -37,4 +37,9 @@ public class WishlistServiceImpl implements WishlistService {
         wishlist.getProductsList().add(product);
         wishlistRepository.save(wishlist);
     }
+
+    @Override
+    public boolean productExists(Wishlist userWishlist, Products product) {
+        return userWishlist.getProductsList().contains(product);
+    }
 }

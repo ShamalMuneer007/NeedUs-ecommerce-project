@@ -68,4 +68,18 @@ public class AdminOrderController {
         }
         return "redirect:/admin/order/order-details/"+orderId;
     }
+    @PostMapping("/order-details/accept-return-request/{orderId}")
+    public String returnOrder(@PathVariable(name = "orderId") Long orderId,
+                                     RedirectAttributes ra){
+        orderService.returnOrder(orderId);
+        ra.addFlashAttribute("message","The order is returned");
+        return "redirect:/admin/order/order-details/"+orderId;
+    }
+    @PostMapping("/order-details/cancel-return-request/{orderId}")
+    public String cancelReturnRequest(@PathVariable(name = "orderId") Long orderId,
+                                     RedirectAttributes ra){
+        orderService.cancelReturnRequest(orderId);
+        ra.addFlashAttribute("message","The order return request is cancelled");
+        return "redirect:/admin/order/order-details/"+orderId;
+    }
 }

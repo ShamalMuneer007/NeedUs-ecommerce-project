@@ -20,4 +20,6 @@ public interface CouponRepository extends JpaRepository<Coupon,Long>{
     boolean existsByCouponNameAndIsDeletedIsFalse(String couponName);
 
     boolean existsByCouponCodeAndIsDeletedIsFalse(String couponCode);
+
+    List<Coupon> findByIsDeletedFalseAndIsValidTrue();
 }
