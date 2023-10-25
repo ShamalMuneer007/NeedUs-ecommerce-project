@@ -40,6 +40,8 @@ public class Products {
     @ManyToOne
     @JoinColumn(name="sellerId",unique = false)
     private UserInformation userInformation;
+    @OneToMany(mappedBy = "product")
+    private List<ProductReview> productReview;
     @CreatedDate
     private LocalDateTime publishedAt;
     @OneToMany(mappedBy = "product", cascade = {CascadeType.REMOVE,CascadeType.PERSIST,CascadeType.MERGE})

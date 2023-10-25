@@ -1,6 +1,9 @@
 package com.needus.ecommerce.controllers;
 
 import com.needus.ecommerce.entity.product.*;
+import com.needus.ecommerce.entity.user.UserInformation;
+import com.needus.ecommerce.entity.user_order.UserOrder;
+import com.needus.ecommerce.entity.user_order.enums.OrderStatus;
 import com.needus.ecommerce.exceptions.ResourceNotFoundException;
 import com.needus.ecommerce.exceptions.TechnicalIssueException;
 import com.needus.ecommerce.model.product.ProductDto;
@@ -23,6 +26,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Controller
 @Slf4j
@@ -50,7 +54,7 @@ public class ShopController {
         session.removeAttribute("coupon");
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         int userCartSize = 0;
-        if(username!=null){
+        if(userService.getCurrentUser()!=null){
             userCartSize = userService.getCurrentUser().getCart().getCartItems().size();
         }
         Page<Products> products;
@@ -83,14 +87,30 @@ public class ShopController {
     public String productDetails(
         @PathVariable(name = "id") Long productId ,
         Model model){
+
         log.info("Inside product details method");
         if(!productService.existsById(productId)){
             log.error("Product of the given path variable does not exists");
             throw new ResourceNotFoundException("Product not found");
         }
+        UserInformation user = userService.getCurrentUser();
         Products product = productService.findProductById(productId);
+        boolean isPurchased = false;
+        if(Objects.nonNull(user)) {
+            Set<UserOrder> userOrders = user.getUserOrders();
+            isPurchased =
+                userOrders.stream()
+                    .filter(userOrder -> userOrder.getOrderStatus().equals(OrderStatus.DELIVERED))
+                    .anyMatch(userOrder -> userOrder
+                        .getOrderItems()
+                        .stream()
+                        .anyMatch(orderItem -> orderItem.getProduct().equals(product)));
+        }
         List<ProductImages> images = product.getImages();
         log.info("fetched images");
+        List<ProductReview> productReviews = product.getProductReview();
+        model.addAttribute("reviews",productReviews);
+        model.addAttribute("isPurchased",isPurchased);
         model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         model.addAttribute("image",images.get(0));
         model.addAttribute("images",images);

@@ -181,4 +181,10 @@ public class UserInformationServiceImpl implements UserInformationService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userRepository.findByUsername(authentication.getName());
     }
+
+    @Override
+    public void changePassword(UserInformation user, String password) {
+        user.setPassword(encoder.encode(password));
+        userRepository.save(user);
+    }
 }

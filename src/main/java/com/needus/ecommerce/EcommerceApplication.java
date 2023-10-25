@@ -14,8 +14,8 @@ public class EcommerceApplication {
 
 
 	public static void main(String[] args) {
-
         SpringApplication.run(EcommerceApplication.class, args);
+
 //     System.out.println(" ____  _____   ________   ________   ______     _____  _____    ______       \n" +
 //         "|_   \\|_   _| |_   __  | |_   __  | |_   _ `.  |_   _||_   _| .' ____ \\      \n" +
 //         "  |   \\ | |     | |_ \\_|   | |_ \\_|   | | `. \\   | |    | |   | (___ \\_|     \n" +

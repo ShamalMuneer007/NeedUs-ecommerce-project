@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
-@ToString(exclude = {"userOrders"})
 @Getter
 @Setter
 @NoArgsConstructor

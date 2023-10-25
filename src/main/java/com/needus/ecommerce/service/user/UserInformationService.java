@@ -28,4 +28,6 @@ public interface UserInformationService {
 
     public boolean usersExistsByUsername(String username);
     public UserInformation getCurrentUser();
+
+    void changePassword(UserInformation user, String password);
 }

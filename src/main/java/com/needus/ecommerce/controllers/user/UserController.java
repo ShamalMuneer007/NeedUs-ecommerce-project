@@ -1,5 +1,6 @@
 package com.needus.ecommerce.controllers.user;
 import com.needus.ecommerce.entity.product.Coupon;
+import com.needus.ecommerce.entity.product.ProductReview;
 import com.needus.ecommerce.entity.product.Products;
 import com.needus.ecommerce.entity.user.Cart;
 import com.needus.ecommerce.entity.user.CartItem;
@@ -13,6 +14,7 @@ import com.needus.ecommerce.exceptions.TechnicalIssueException;
 import com.needus.ecommerce.exceptions.UnknownException;
 import com.needus.ecommerce.model.user_order.UserOrderDto;
 import com.needus.ecommerce.service.product.CouponService;
+import com.needus.ecommerce.service.product.ProductReviewService;
 import com.needus.ecommerce.service.product.ProductService;
 import com.needus.ecommerce.service.user.*;
 import com.razorpay.Order;
@@ -25,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -53,6 +56,9 @@ public class UserController {
     CartService cartService;
     @Autowired
     CouponService couponService;
+
+    @Autowired
+    ProductReviewService productReviewService;
     //wishlists
     @GetMapping("/wishlist-items")
     public String redirectWishlist(HttpSession session) {
@@ -355,6 +361,33 @@ public class UserController {
         return "redirect:/user/profile-settings";
     }
 
+    @PostMapping("/publish-product-review/{productId}")
+    public String  publishProductReview(@ModelAttribute ProductReview productReview,
+                                        @PathVariable(name = "productId") Long productId,
+                                        RedirectAttributes ra){
+        UserInformation user;
+        Products product;
+        try {
+            user = userService.getCurrentUser();
+            product = productService.findProductById(productId);
+        }
+        catch (Exception e){
+            log.error("Something went wrong while publishing the review");
+            throw new TechnicalIssueException("Something went wrong while publishing the review");
+        }
+        productReview.setProduct(product);
+        productReview.setUserInformation(user);
+        try {
+            productReviewService.saveReview(productReview);
+        }
+        catch (Exception e){
+            log.error("Something went wrong while saving the product review");
+            throw new TechnicalIssueException("Something went wrong while saving the product review");
+        }
+        ra.addFlashAttribute("Product review added successfully");
+        return "redirect:/shop/home/product-details/"+productId;
+    }
+
     @PostMapping("/create-order")
     @ResponseBody
     public String createRazorPayOrder(@RequestBody Map<String,Object> data) throws RazorpayException {
@@ -371,8 +404,8 @@ public class UserController {
             order = razorpayClient.Orders.create(orderRequest);
             log.info("Order  : "+order);
         } catch (RazorpayException e) {
-            // Handle Exception
-            System.out.println(e.getMessage());
+            log.error(e.getMessage());
+            throw new TechnicalIssueException(e.getMessage());
         }
         assert order != null;
         return order.toString();
@@ -398,10 +431,12 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<Map<String,Boolean>> applyCoupon(@RequestBody Map<String,Object> data, HttpSession httpSession){
         log.info("Applying coupon");
-        UserInformation user = userService.getCurrentUser();
+        UserInformation user;
+        Coupon coupon;
         Long couponId = Long.parseLong(data.get("coupon").toString());
         log.info("coupon id : "+couponId);
-        Coupon coupon = couponService.findById(couponId);
+        coupon = couponService.findById(couponId);
+        user = userService.getCurrentUser();
         float subTotalAmount = cartService.calculateTotalAmount(user);
         log.info(""+coupon.getMinPriceLimit());
         log.info(""+coupon.getMaxPriceLimit());

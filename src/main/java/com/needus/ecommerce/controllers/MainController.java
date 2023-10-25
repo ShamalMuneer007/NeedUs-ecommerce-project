@@ -4,28 +4,35 @@ import com.needus.ecommerce.entity.user.ConfirmationToken;
 import com.needus.ecommerce.entity.user.UserInformation;
 import com.needus.ecommerce.exceptions.TechnicalIssueException;
 import com.needus.ecommerce.repository.user.UserInformationRepository;
+import com.needus.ecommerce.service.security.OtpService;
 import com.needus.ecommerce.service.verification.ConfirmationTokenService;
 import com.needus.ecommerce.service.user.UserInformationService;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.json.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.nio.file.AccessDeniedException;
 import java.sql.Timestamp;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 @Controller
 @Slf4j
-@EnableWebSecurity
-@Configuration
 public class MainController {
     @Autowired
     UserInformationService userInformationService;
@@ -33,6 +40,8 @@ public class MainController {
     ConfirmationTokenService tokenService;
     @Autowired
     UserInformationRepository repository;
+    @Autowired
+    OtpService otpService;
 
 //    @Bean
 //    public AuthenticationProvider authenticationProvider(){
@@ -82,10 +91,10 @@ public class MainController {
         log.info("Inside signup");
         return "register";
     }
+
     @PostMapping ("/register")
     public String register
-        (@ModelAttribute UserInformation user, Model model, RedirectAttributes ra)
-    {
+        (@ModelAttribute UserInformation user, Model model, RedirectAttributes ra) {
         log.info("registering the user");
         if(repository.existsByUsername(user.getUsername())){
             return "redirect:/signup?userNameError=true";
@@ -104,8 +113,7 @@ public class MainController {
         ra.addFlashAttribute("message","Success! A verification email has been sent to your email");
         return "redirect:/login?registrationSuccess=true";
     }
-//    @PostMapping("/user-forgot-password")
-//    public String
+
     @GetMapping("/activation")
     public String activation(@RequestParam("token") String token,Model model){
         ConfirmationToken confirmationToken = tokenService.findByToken(token);
@@ -133,43 +141,65 @@ public class MainController {
         }
         return "activation";
     }
-//    @GetMapping("/change-password")
-//    public String changePassword(){
-//        return "changePasswordForm";
-//    }
-//
-//
-//    @PostMapping("/send-otp")
-//    public String sendOtp(
-//        @RequestParam(name="username") String username,
-//        RedirectAttributes ra
-//    ) {
-//        log.info("inside sendOtp :: " + username);
-//        if(!userInformationService.usersExistsByUsername(username){
-//            ra.addFlashAttribute("message","Username is not found");
-//            return "redirect:/change-password";
-//        }
-//        String phoneNumber = userInformationService.findUserByName(username).getPhoneNumber();
-//        smsService.sendSMS(phoneNumber);
-//        return "redirect:/otp-submission";
-//    }
-//    @GetMapping("/otp-submission")
-//    public String otpSubmission(){
-//        return "otpSubmission";
-//    }
-//    @PostMapping("/validate-otp")
-//    public String validateOtp(
-//        @RequestParam(name="otpCode") String otpCode
-//    ) {
-//        log.info("inside validateOtp :: "+otpValidationRequest.getUsername()+" "+otpValidationRequest.getOtpNumber());
-//        if(smsService.validateOtp(otpValidationRequest)){
-//            return "redirect:/changePassword";
-//        }
-//        else {
-//            return "redirect:/otp-submission";
-//        }
-//    }
 
+    @GetMapping("/forgot-password")
+    public String forgotPassword(Model model){
+        return "forgotPassword";
+    }
+    @PostMapping("/change-password")
+    public String changePassword(HttpSession session,
+                                 @ModelAttribute UserInformation userInformation,
+                                 RedirectAttributes ra) throws AccessDeniedException {
+        if(session.getAttribute("username")==null){
+            throw new AccessDeniedException("User Submitting unauthorized request");
+        }
+       String username =  session.getAttribute("username").toString();
+       UserInformation user = userInformationService.findUserByName(username);
+       log.info("password : "+userInformation.getPassword());
+       userInformationService.changePassword(user,userInformation.getPassword());
+       session.removeAttribute("username");
+        ra.addFlashAttribute("successMessage","Password Changed successfully");
+        return "/login";
+    }
+    @PostMapping("/check-username")
+    @ResponseBody
+    public ResponseEntity<Map<String,Boolean>> checkUsername(@RequestBody Map<String,String> data,
+                                                             HttpSession session){
+        String username = data.get("username");
+        UserInformation user;
+        try {
+            user = userInformationService.findUserByName(username);
+        }
+        catch (Exception e){
+            log.error("Something went wrong while fetching user");
+            throw new TechnicalIssueException("Something went wrong while fetching user");
+        }
+        if(Objects.isNull(user)){
+            return new ResponseEntity<>(Map.of("success",false), HttpStatus.OK);
+        }
+        if(Objects.isNull(user.getPhoneNumber())){
+            return new ResponseEntity<>(Map.of("success",false), HttpStatus.OK);
+        }
+        session.setAttribute("otp",otpService.sendOtp("+91"+user.getPhoneNumber()));
+        return new ResponseEntity<>(Map.of("success",true), HttpStatus.OK);
+    }
+
+    @PostMapping("/check-otp")
+    @ResponseBody
+    public ResponseEntity<Map<String,Boolean>> checkOtp(@RequestBody Map<String,String> data,
+                                                        HttpSession session){
+       String otp =  session.getAttribute("otp").toString();
+       String otpReceived = data.get("otp");
+       String username = data.get("user");
+       log.info("username : "+username);
+       log.info("otp : "+otpReceived+" Otp send : "+otp);
+       if(!otpReceived.equals(otp)){
+           return new ResponseEntity<>(Map.of("success",false), HttpStatus.OK);
+       }
+       session.setAttribute("username",username);
+       session.removeAttribute("otp");
+        return new ResponseEntity<>(Map.of("success",true), HttpStatus.OK);
+    }
     @RequestMapping("/error/404")
     public String handleExternalError() {
         return "404";

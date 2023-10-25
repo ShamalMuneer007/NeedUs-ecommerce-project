@@ -61,6 +61,27 @@
         .dropdown-menu li:hover {
             background-color: #f5f5f5;
         }
+     .icon-button {
+      position: relative;
+      display: flex;
+      border: none;
+      outline: none;
+    }
+
+
+    .icon-button__badge {
+      width: 13px;
+      height: 13px;
+      background-color: #E73C17;
+      color: #ffffff;
+      font-size : 11px;
+      padding-top : 1.5px;
+      font-weight : bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+    }
     </style>
 </head>
 
@@ -160,7 +181,9 @@
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link" th:href="@{/user/cart-items}"><i class="bx bx-cart pe-2"></i>Cart</a>
+                            <a class="nav-link icon-button" th:href="@{/user/cart-items}">
+                                <span class="icon-button__badge" th:text="${cartSize}" th:unless="${cartSize} == 0"></span>
+                                <i class="bx bx-cart pe-2"></i>Cart</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link" th:href="@{/user/wishlist-items}"><i

@@ -301,7 +301,6 @@ public class ProductController {
         ra.addFlashAttribute("message","Product is deleted");
         return "redirect:/admin/products/list";
     }
-
     // Image upload directory method
     private String fileUploadDir(MultipartFile file) throws IOException {
         String rootPath = System.getProperty("user.dir");

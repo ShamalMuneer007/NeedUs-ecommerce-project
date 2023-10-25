@@ -37,6 +37,8 @@
                                 <div class="successful-msg fw-semibold mb-2" th:if="${param.registrationSuccess}">
                                     Registration Successful. Activation Mail is sent to you email!
                                 </div>
+                                <div class="successful-msg fw-semibold mb-2" th:if="${successMessage}" th:text="${successMessage}">
+                                </div>
                                 <div class="disabled-msg fw-semibold mb-2" th:if="${param.disabled}">
                                     User is disabled.
                                 </div>
@@ -64,7 +66,7 @@
                                     <input class="login-button" type="submit" value="Login">
                                 </div>
                             </form>
-                            <span class="text-center forgot-pass-div"><a class="forgot-pass" href="#!">Forgot
+                            <span class="text-center forgot-pass-div"><a class="forgot-pass" th:href="@{/forgot-password}">Forgot
                                     password?</a></span>
                             <span class="mt-3 text-center small fw-semibold">OR</span>
                             <div class="oAuth">
