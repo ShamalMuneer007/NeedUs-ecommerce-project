@@ -18,6 +18,28 @@
         .add-to-cart-btn:hover{
             color : green !important;
         }
+        header{
+box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+  .icon-button__badge {
+      width: 13px;
+      height: 13px;
+      background-color: #E73C17;
+      color: #ffffff;
+      font-size : 11px;
+      padding-top : 1.5px;
+      font-weight : bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+    }
+             .icon-button {
+      position: relative;
+      display: flex;
+      border: none;
+      outline: none;
+    }
     </style>
 </head>
 
@@ -102,7 +124,9 @@
                             <a class="nav-link" th:href="@{/shop/home}">Home</a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link" th:href="@{/user/cart-items}"><i class="bx bx-cart pe-2"></i><span class="">Cart</span></a>
+                            <a class="nav-link icon-button" th:href="@{/user/cart-items}">
+                                <span class="icon-button__badge" th:text="${cartSize}" th:unless="${cartSize} == 0"></span>
+                                <i class="bx bx-cart pe-2"></i>Cart</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a aria-current="page" class="nav-link active" style="color : #E73C17;" th:href="@{/user/wishlist-items}"><i

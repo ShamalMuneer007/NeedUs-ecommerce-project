@@ -36,7 +36,7 @@ public class Products {
     private Integer stock;
     private boolean isDeleted = false;
     @Column(name = "average_rating")
-    private int averageRating;
+    private int averageRating = 1;
     @ManyToOne
     @JoinColumn(name="sellerId",unique = false)
     private UserInformation userInformation;

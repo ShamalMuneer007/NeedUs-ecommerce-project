@@ -19,6 +19,7 @@ public class ProductReview {
     UserInformation userInformation;
     @ManyToOne
     Products product;
+    int rating = 1;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -26,4 +27,8 @@ public class ProductReview {
     private String reviewContent;
     @OneToMany(mappedBy = "productReview",cascade = {CascadeType.ALL},orphanRemoval = true)
     private List<ReviewComment> reviewComments;
+
+    public int getEmptyStars() {
+        return  5 - rating;
+    }
 }

@@ -257,11 +257,10 @@ main {
     margin: calc(var(--header-height) + 1rem) 0 0 0;
     padding-left: calc(var(--nav-width));
   }
+  }
 
   @media (max-width:550) {
     .add-product-btn {
       width: 30px;
     }
   }
-
-}

@@ -29,4 +29,6 @@ public interface UserOrderRepository extends JpaRepository<UserOrder,Long> {
     List<UserOrder> findCanceledOrder();
 
     List<UserOrder> findByOrderPlacedAt(LocalDateTime date);
+
+    List<UserOrder> findByOrderPlacedAtBetween(LocalDateTime startOfDay, LocalDateTime endOfDay);
 }

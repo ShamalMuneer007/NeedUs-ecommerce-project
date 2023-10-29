@@ -44,4 +44,6 @@ public interface UserOrderService {
     List<UserOrder> findAllOrders();
 
     List<UserOrder> findOrdersByDate(LocalDate currentDate);
+
+    List<UserOrder> findAllOrdersWithCoupon(UserInformation userInformation);
 }

@@ -139,7 +139,7 @@
                                             <i class="icon-pointer danger font-large-2 float-left"></i>
                                         </div>
                                         <div class="media-body text-right">
-                                            <h3>423</h3>
+                                            <h3 th:text="${totalVisits}"></h3>
                                             <span>Total Visits</span>
                                         </div>
                                     </div>
@@ -168,18 +168,25 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12 justify-content-center">
+            <div class="col-12 d-flex justify-content-end">
+                <div class="small text-muted me-5" id="downloadGraph"><button class="bx bx-download btn"></button></div>
+            </div>
+            <div class="col-12 d-flex justify-content-end">
+                <div class="small text-muted me-5" id="graph-message"></div>
+            </div>
+            <div class="col-md-12 d-flex justify-content-center">
                 <canvas height="100%;" id="combinedChart" width="400"></canvas>
             </div>
         </div>
         <h4 class="ms-5 mt-5 fw-bold">Best selling products</h4>
         <hr>
         <div class="table-responsive d-flex justify-content-center mt-2 pb-5 mb-5">
-            <table class="box table" style="width:70%;">
+            <table class="box table" style="width:80%;">
                 <thead>
                     <tr>
                         <th class="bg-body-secondary text-center" scope="col" style="width:14%;">Product</th>
                         <th class="col-lg-1 bg-body-secondary text-center" scope="col">Number of items sold</th>
+                        <th class="col-lg-1 bg-body-secondary text-center" scope="col">Remaining Stock</th>
                         <th class="col-lg-1 bg-body-secondary text-center" scope="col">Revenue Generated</th>
                     </tr>
                 </thead>
@@ -191,6 +198,8 @@
                             <div class="d-inline ms-5" th:text="${product.key.productName}"></div>
                         </td>
                         <td class="text-center" style="width:10%;" th:text="${product.value}">
+                        </td>
+                        <td class="text-center" style="width:10%;" th:text="${product.key.getStock()}">
                         </td>
                         <td class="text-center">
                             ₹<span th:text="${product.value * product.key.productPrice}"></span>
@@ -204,108 +213,7 @@
     <script crossorigin="anonymous" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
             src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-          var amount;
-var xAxis = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'Aug', 'September','October', 'November', 'December'];
-var combinedChart;
-
-console.log(amount);
-$(year())
-function graph() {
-    var data = {
-        labels: xAxis,
-        datasets: [{
-            label: 'Revenue',
-            data: amount,
-            fill: true,
-            borderColor: '#ff6384',
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderWidth: 2,
-            lineTension: 0.2
-        }]
-    };
-    if (combinedChart) {
-        combinedChart.destroy();
-    }
-    combinedChart = new Chart(document.getElementById('combinedChart').getContext('2d'), {
-        type: 'bar',
-        data: data,
-        options: {
-            scales: {
-                x: {
-                    grid: {
-                        display: true,
-                    }
-                },
-                y: {
-                    grid: {
-                        display: true,
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    labels: {
-                        font: {
-                            size: 14,
-                            weight: 'bold'
-                        }
-                    }
-                },
-            }
-        }
-    });
-}
-function month() {
-    $.ajax({
-        url: "/admin/dashboard/sales-report/monthly",
-        type: "GET",
-        dataType: "json",
-        success: function(responseData) {
-            amount = responseData;
-            xAxis = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September','October', 'November', 'December'];
-            graph();
-            console.log(responseData);
-        },
-        error: function(xhr, status, error) {
-            console.error("Request failed with status: " + xhr.status);
-        }
-    });
-}
-function week() {
-    $.ajax({
-        url: "/admin/dashboard/sales-report/weekly",
-        type: "GET",
-        dataType: "json",
-        success: function(responseData) {
-            amount = responseData;
-            xAxis = ['Week 1','Week 2','Week 3','Week 4'];
-            graph();
-            console.log(responseData);
-        },
-        error: function(xhr, status, error) {
-            console.error("Request failed with status: " + xhr.status);
-        }
-    });
-}
-
-
-function year() {
-    $.ajax({
-        url: "/admin/dashboard/sales-report/yearly",
-        type: "GET",
-        dataType: "json",
-        success: function(responseData) {
-            amount = responseData;
-            xAxis = ['2023','2024','2025','2026','2027','2028','2029','2030','2031','2032','2033'];
-            graph();
-            console.log(responseData);
-        },
-        error: function(xhr, status, error) {
-            console.error("Request failed with status: " + xhr.status);
-        }
-    });
-}
+    <script th:src="@{/scripts/dashboardScript.js}">
 
     </script>
 </body>

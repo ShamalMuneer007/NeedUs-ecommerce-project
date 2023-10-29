@@ -6,10 +6,7 @@ import com.needus.ecommerce.entity.user.enums.Role;
 import com.needus.ecommerce.entity.user.UserInformation;
 import com.needus.ecommerce.entity.user.Wishlist;
 import com.needus.ecommerce.repository.user.UserInformationRepository;
-import com.needus.ecommerce.service.user.CartService;
-import com.needus.ecommerce.service.user.UserInformationService;
-import com.needus.ecommerce.service.user.WalletService;
-import com.needus.ecommerce.service.user.WishlistService;
+import com.needus.ecommerce.service.user.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,7 +27,6 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @Slf4j
@@ -48,6 +44,8 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
     @Autowired
     WalletService walletService;
 
+    @Autowired
+    UserLogService userLogService;
     @Autowired
     UserInformationRepository repository;
     @Override
@@ -84,8 +82,10 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
                 userInfo.getUsername(),userInfo.getPassword(), List.of(new SimpleGrantedAuthority(Role.USER.name())));
             log.info("authToken : "+authToken);
             SecurityContextHolder.getContext().setAuthentication(authToken);
+
             log.info("Security Context holder : "+SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         }
+        userLogService.logUser(userInformation.getUsername(),request.getRemoteAddr());
         if(roles.contains(new SimpleGrantedAuthority(Role.ADMIN.name())))
             response.sendRedirect("/admin/dashboard/sales-report");
         else

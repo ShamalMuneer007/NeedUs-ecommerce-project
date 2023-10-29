@@ -2,10 +2,7 @@ package com.needus.ecommerce.controllers.user;
 import com.needus.ecommerce.entity.product.Coupon;
 import com.needus.ecommerce.entity.product.ProductReview;
 import com.needus.ecommerce.entity.product.Products;
-import com.needus.ecommerce.entity.user.Cart;
-import com.needus.ecommerce.entity.user.CartItem;
-import com.needus.ecommerce.entity.user.UserAddress;
-import com.needus.ecommerce.entity.user.UserInformation;
+import com.needus.ecommerce.entity.user.*;
 import com.needus.ecommerce.entity.user_order.OrderItem;
 import com.needus.ecommerce.entity.user_order.UserOrder;
 import com.needus.ecommerce.exceptions.OrderTransactionException;
@@ -58,6 +55,8 @@ public class UserController {
     CouponService couponService;
 
     @Autowired
+    WalletHistoryService walletHistoryService;
+    @Autowired
     ProductReviewService productReviewService;
     //wishlists
     @GetMapping("/wishlist-items")
@@ -69,7 +68,19 @@ public class UserController {
 
     @GetMapping("/wishlist-items/{wishlistId}")
     public String wishlist(@PathVariable(name = "wishlistId") Long wishlistId, Model model) {
-        List<Products> products = wishlistService.findWishlistById(wishlistId).getProductsList();
+        int userCartSize = 0;
+        List<Products> products;
+        try {
+            products = wishlistService.findWishlistById(wishlistId).getProductsList();
+            if (userService.getCurrentUser() != null) {
+                userCartSize = userService.getCurrentUser().getCart().getCartItems().size();
+            }
+        }
+        catch (Exception e){
+            log.error("Something went wrong while fetching products from wishlist");
+            throw new TechnicalIssueException("Something went wrong while fetching products from wishlist");
+        }
+        model.addAttribute("cartSize",userCartSize);
         model.addAttribute("products", products);
         model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         return "user/wishlist";
@@ -78,14 +89,19 @@ public class UserController {
     public String addItemToWishlist(HttpSession session,
                                     @PathVariable(name = "productId") Long productId,
                                     RedirectAttributes ra){
-        session.removeAttribute("coupon");
-        UserInformation user = userService.getCurrentUser();
-        Products product = productService.findProductById(productId);
-        if(wishlistService.productExists(user.getUserWishlist(),product)){
-            ra.addFlashAttribute("ErrorMsg", "Item is already present in the wishlist");
-            return "redirect:/shop/home";
+        try {
+            session.removeAttribute("coupon");
+            UserInformation user = userService.getCurrentUser();
+            Products product = productService.findProductById(productId);
+            if (wishlistService.productExists(user.getUserWishlist(), product)) {
+                ra.addFlashAttribute("ErrorMsg", "Item is already present in the wishlist");
+                return "redirect:/shop/home";
+            }
+            wishlistService.addProductToWishList(user, product);
         }
-        wishlistService.addProductToWishList(user,product);
+        catch (Exception e){
+            log.error("Something went wrong while adding product to the wishlist");
+        }
         ra.addFlashAttribute("message", "Item added to the wishlist");
         return "redirect:/shop/home";
     }
@@ -126,20 +142,34 @@ public class UserController {
     @PostMapping("/add-to-cart/{productId}")
     public String addToCart(@PathVariable(name = "productId") Long productId,
                             RedirectAttributes ra){
-        UserInformation user = userService.getCurrentUser();
-        Products product = productService.findProductById(productId);
-        if(cartService.productExists(user,product)){
-            ra.addFlashAttribute("message", "Item already present in the cart");
-            return "redirect:/shop/home";
+        try {
+
+            UserInformation user = userService.getCurrentUser();
+            Products product = productService.findProductById(productId);
+            if (cartService.productExists(user, product)) {
+                ra.addFlashAttribute("message", "Item already present in the cart");
+                return "redirect:/shop/home";
+            }
+
+            cartService.addItemtoCart(user, product);
         }
-        cartService.addItemtoCart(user, product);
+        catch (Exception e){
+            log.error("Something went wrong while addint=g the product to the cart");
+            throw new TechnicalIssueException("Something went wrong while addint=g the product to the cart");
+        }
         ra.addFlashAttribute("message", "Item added to the cart");
         return "redirect:/shop/home";
     }
 
     @PostMapping("/remove-cart-item/{itemId}")
     public String removeItemFromCart(@PathVariable(name = "itemId") Long itemId, RedirectAttributes ra) {
-        cartService.removeCartItem(itemId);
+        try {
+            cartService.removeCartItem(itemId);
+        }
+        catch (Exception e){
+            log.error("Something went wrong while removing the item form the cart");
+            throw new TechnicalIssueException("Something went wrong while removing the item form the cart");
+        }
         return "redirect:/user/cart-items";
     }
 
@@ -149,7 +179,13 @@ public class UserController {
         @PathVariable(name = "itemId") Long itemId, RedirectAttributes ra) {
         log.info("adding item");
         int quantity = Integer.parseInt(qty);
-        cartService.addCartItem(itemId, quantity);
+        try {
+            cartService.addCartItem(itemId, quantity);
+        }
+        catch (Exception e){
+            log.error("Something went wrong while adding the quantity of the item in the cart");
+            throw new TechnicalIssueException("Something went wrong while adding the quantity of the item in the cart");
+        }
         return "redirect:/user/cart-items";
     }
 
@@ -166,44 +202,50 @@ public class UserController {
     public String orderCheckOut(HttpSession session,
                                 RedirectAttributes ra,
                                 Model model) {
-        UserInformation user = userService.getCurrentUser();
-        if (user.getUserAddresses().isEmpty()||user.getUserAddresses().stream().allMatch(UserAddress::isDeleted)) {
-            return "redirect:/user/addAddress";
-        }
-        Cart cart = cartService.findUserCartById(user.getCart().getCart_id());
-        if(cart.getCartItems().isEmpty()){
-            return "redirect:/shop/home";
-        }
-        List<CartItem> cartItems = cart.getCartItems();
-        for(CartItem cartItem : cartItems){
-            if(cartItem.getQuantity()>=cartItem.getProduct().getStock()){
-                log.error("cart item quantity exceeded stock : "+cartItem);
-                cartService.removeAllCartItem(cart);
-                throw new TechnicalIssueException("cart item quantity exceeded stock");
+        try {
+            UserInformation user = userService.getCurrentUser();
+            if (user.getUserAddresses().isEmpty() || user.getUserAddresses().stream().allMatch(UserAddress::isDeleted)) {
+                return "redirect:/user/addAddress";
             }
-        }
-        float subTotalAmount = cartService.calculateTotalAmount(user);
-        float discountPrice = 0F;
-        Coupon coupon = (Coupon) session.getAttribute("coupon");
-        if(Objects.nonNull(coupon)){
-            discountPrice = coupon.getCouponDiscount();
-        }
+            Cart cart = cartService.findUserCartById(user.getCart().getCart_id());
+            if (cart.getCartItems().isEmpty()) {
+                return "redirect:/shop/home";
+            }
+            List<CartItem> cartItems = cart.getCartItems();
+            for (CartItem cartItem : cartItems) {
+                if (cartItem.getQuantity() >= cartItem.getProduct().getStock()) {
+                    log.error("cart item quantity exceeded stock : " + cartItem);
+                    cartService.removeAllCartItem(cart);
+                    throw new TechnicalIssueException("cart item quantity exceeded stock");
+                }
+            }
+            float subTotalAmount = cartService.calculateTotalAmount(user);
+            float discountPrice = 0F;
+            int userCartSize = 0;
+            Coupon coupon = (Coupon) session.getAttribute("coupon");
+            if (Objects.nonNull(coupon)) {
+                discountPrice = coupon.getCouponDiscount();
+            }
 
-        List<Coupon> coupons = couponService.findAllNonDeletedCoupons();
-        List<Coupon> usedCoupons =  new LinkedList<>();
-        user.getUserOrders().forEach( order ->
-        {
-            if(Objects.nonNull(order.getCoupon()))
-                 usedCoupons.add(order.getCoupon());
-        });
-        coupons.removeAll(usedCoupons);
-        model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
-        model.addAttribute("addresses", user.getUserAddresses().stream().filter(userAddress -> !userAddress.isDeleted()));
-        model.addAttribute("subTotalAmount", subTotalAmount);
-        model.addAttribute("items", cartItems);
-        model.addAttribute("couponDiscount",discountPrice);
-        model.addAttribute("coupons",coupons);
-        model.addAttribute("walletAmount",user.getWallet().getBalanceAmount());
+            List<Coupon> coupons = couponService.findAllNonDeletedCoupons();
+            List<Coupon> usedCoupons = couponService.findAllUserUsedCoupon(user);
+            if (userService.getCurrentUser() != null) {
+                userCartSize = userService.getCurrentUser().getCart().getCartItems().size();
+            }
+            coupons.removeAll(usedCoupons);
+            model.addAttribute("cartSize", userCartSize);
+            model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
+            model.addAttribute("addresses", user.getUserAddresses().stream().filter(userAddress -> !userAddress.isDeleted()));
+            model.addAttribute("subTotalAmount", subTotalAmount);
+            model.addAttribute("items", cartItems);
+            model.addAttribute("couponDiscount", discountPrice);
+            model.addAttribute("coupons", coupons);
+            model.addAttribute("walletAmount", user.getWallet().getBalanceAmount());
+        }
+        catch (Exception e){
+            log.error("Something went wrong while checking out the cart");
+            throw new TechnicalIssueException("Something went wrong while checking out the cart");
+        }
         return "user/order/checkout";
     }
 
@@ -318,8 +360,16 @@ public class UserController {
             log.error("order Id does not exists");
             throw new ResourceNotFoundException("order Id does not exists");
         }
-        UserInformation userInformation = userService.getCurrentUser();
-        UserOrder orderDetails = orderService.findOrderDetailsById(orderId);
+        UserOrder orderDetails;
+        UserInformation userInformation;
+        try {
+            userInformation = userService.getCurrentUser();
+            orderDetails = orderService.findOrderDetailsById(orderId);
+        }
+        catch (Exception e){
+            log.error("something went wrong while collecting order details of the user");
+            throw new TechnicalIssueException("something went wrong while collecting order details of the user");
+        }
         if(!orderDetails.getUserInformation().equals(userInformation)){
             log.error("User tried to access unauthorized resources");
             throw new AccessDeniedException("User tried to access unauthorized resources");
@@ -343,20 +393,41 @@ public class UserController {
     }
     @GetMapping("/profile-settings")
     public String profileSettings(Model model){
-        UserInformation userInformation = userService.getCurrentUser();
-        Page<UserOrder> userOrderInfo = orderService.findUserOrderByUserId(userInformation.getUserId(),1,10);
-        Page<UserOrderDto> userOrders = userOrderInfo.map(UserOrderDto::new);
+        UserInformation userInformation;
+        List<UserOrder> userOrdersWithCoupon;
+        Page<UserOrder> userOrderInfo;
+        Page<UserOrderDto> userOrders;
+        List<WalletHistory> walletHistories;
+        try {
+            userInformation = userService.getCurrentUser();
+            userOrdersWithCoupon = orderService.findAllOrdersWithCoupon(userInformation);
+            userOrderInfo = orderService.findUserOrderByUserId(userInformation.getUserId(),1,10);
+            userOrders = userOrderInfo.map(UserOrderDto::new);
+            walletHistories = walletHistoryService.findAllUserWalletTransactions(userInformation.getWallet());
+        }
+        catch (Exception e){
+            log.error("Something went wrong while collecting the user information");
+            throw new TechnicalIssueException("Something went wrong while collecting user information");
+        }
+        model.addAttribute("couponOrders",userOrdersWithCoupon);
         model.addAttribute("orders", userOrders);
         model.addAttribute("user",userInformation);
         model.addAttribute("addresses",userInformation.getUserAddresses().stream().filter(userAddress -> !userAddress.isDeleted()).toList());
         model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         model.addAttribute("wallet",userInformation.getWallet());
+        model.addAttribute("walletHistories",walletHistories);
         return "user/userSettings";
     }
     @PostMapping("/deleteAddress/{addressId}")
     public String deleteAddress(@PathVariable(name = "addressId") Long addressId,
                                 RedirectAttributes ra){
-        userAddressService.deleteAddress(addressId);
+        try {
+            userAddressService.deleteAddress(addressId);
+        }
+        catch (Exception e){
+            log.error("Something went wrong while deleting the user address");
+            throw new TechnicalIssueException("Something went wrong while deleting the user address");
+        }
         ra.addFlashAttribute("message","address deleted successfully");
         return "redirect:/user/profile-settings";
     }
@@ -384,6 +455,8 @@ public class UserController {
             log.error("Something went wrong while saving the product review");
             throw new TechnicalIssueException("Something went wrong while saving the product review");
         }
+        productService.setProductAverageRating(product,productReview.getRating());
+        log.info("rating given : "+productReview.getRating());
         ra.addFlashAttribute("Product review added successfully");
         return "redirect:/shop/home/product-details/"+productId;
     }
@@ -435,9 +508,16 @@ public class UserController {
         Coupon coupon;
         Long couponId = Long.parseLong(data.get("coupon").toString());
         log.info("coupon id : "+couponId);
-        coupon = couponService.findById(couponId);
-        user = userService.getCurrentUser();
-        float subTotalAmount = cartService.calculateTotalAmount(user);
+        float subTotalAmount;
+        try {
+            coupon = couponService.findById(couponId);
+            user = userService.getCurrentUser();
+            subTotalAmount = cartService.calculateTotalAmount(user);
+        }
+        catch (Exception e){
+            log.error("Something went wrong while applying coupon");
+            throw new TechnicalIssueException("Something went wrong while applying coupon");
+        }
         log.info(""+coupon.getMinPriceLimit());
         log.info(""+coupon.getMaxPriceLimit());
         if(coupon.getMaxPriceLimit()<subTotalAmount || coupon.getMinPriceLimit()>subTotalAmount){

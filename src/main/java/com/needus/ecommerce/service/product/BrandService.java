@@ -16,4 +16,6 @@ public interface BrandService {
     void deleteBrandById(Long brandId);
 
     List<Brands> findAllNonDeletedBrands();
+
+    List<Brands> searchAllNonDeletedProductsBasedOnBrandSearchKey(String searchKey);
 }

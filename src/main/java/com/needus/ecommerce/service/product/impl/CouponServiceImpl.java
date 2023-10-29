@@ -2,6 +2,7 @@ package com.needus.ecommerce.service.product.impl;
 
 import com.needus.ecommerce.entity.product.Coupon;
 import com.needus.ecommerce.entity.user.Cart;
+import com.needus.ecommerce.entity.user.UserInformation;
 import com.needus.ecommerce.repository.product.CouponRepository;
 import com.needus.ecommerce.service.product.CouponService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -58,6 +60,17 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public Coupon findById(Long couponId) {
         return couponRepository.findById(couponId).get();
+    }
+
+    @Override
+    public List<Coupon> findAllUserUsedCoupon(UserInformation user) {
+        List<Coupon> usedCoupons = new LinkedList<>();
+        user.getUserOrders().forEach( order ->
+        {
+            if(Objects.nonNull(order.getCoupon()))
+                usedCoupons.add(order.getCoupon());
+        });
+        return usedCoupons;
     }
 
     @EventListener(ApplicationReadyEvent.class)

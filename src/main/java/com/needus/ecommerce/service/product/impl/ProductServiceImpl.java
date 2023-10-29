@@ -1,10 +1,8 @@
 package com.needus.ecommerce.service.product.impl;
 
-import com.needus.ecommerce.entity.product.Brands;
-import com.needus.ecommerce.entity.product.Categories;
-import com.needus.ecommerce.entity.product.ProductFilters;
-import com.needus.ecommerce.entity.product.Products;
+import com.needus.ecommerce.entity.product.*;
 import com.needus.ecommerce.repository.product.ProductsRepository;
+import com.needus.ecommerce.service.product.BrandService;
 import com.needus.ecommerce.service.product.CategoryService;
 import com.needus.ecommerce.service.product.ProductService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -23,6 +22,9 @@ public class ProductServiceImpl implements ProductService {
     ProductsRepository repository;
     @Autowired
     CategoryService categoryService;
+
+    @Autowired
+    BrandService brandService;
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     @Override
     public Products save(Products product) {
@@ -117,20 +119,19 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<Products> searchProducts(int pageNo, int pageSize, String searchKey) {
-//        Sort sort = Sort.by(Sort.Order.desc("publishedAt"));
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
-        List<Products> products =  repository.searchAllNonBlockedAndNonDeletedProducts(searchKey);
+        List<Products> products = repository.searchAllNonBlockedAndNonDeletedProducts(searchKey);
         List<Categories> categories = categoryService.searchAllNonDeletedProductsBasedOnCategorySearchKey(searchKey);
+        List<Brands> brands = brandService.searchAllNonDeletedProductsBasedOnBrandSearchKey(searchKey);
         List<Products> allProducts = findAllProducts();
-        for (Products product : allProducts){
-            for(Categories category : categories){
-                if(product.getCategories().equals(category)){
-                    products.add(product);
-                }
-            }
-        }
+        Set<Products> filteredProducts = allProducts.stream()
+            .filter(product -> !products.contains(product) &&
+                (categories.stream().anyMatch(category -> product.getCategories().equals(category)) ||
+                    brands.stream().anyMatch(brand -> product.getBrands().equals(brand))))
+            .collect(Collectors.toSet());
+        products.addAll(filteredProducts);
         Set<Products> productResult = new HashSet<>(products);
-        return new PageImpl<Products>(productResult.stream().toList(),pageable, products.size());
+        return new PageImpl<>(productResult.stream().toList(), pageable, products.size());
     }
 
     @Override
@@ -143,5 +144,37 @@ public class ProductServiceImpl implements ProductService {
     public List<Products> findAllProducts() {
         return repository.findByIsDeletedFalseAndProductStatusTrue();
     }
+
+    @Override
+    public void setProductAverageRating(Products product, int rating) {
+        if(!product.getProductReview().isEmpty()){
+            log.info("review size : "+product.getProductReview().size());
+            log.info("given rating : "+rating);
+            int totalRating;
+            totalRating = product.getProductReview().stream().map(ProductReview::getRating).reduce(0,Integer::sum);
+                log.info("Product total rating : "+totalRating);
+                product.setAverageRating((totalRating)/(product.getProductReview().size()));
+            repository.save(product);
+        }
+
+    }
+
+    @Override
+    public void deleteProductsOfCategory(Long categoryId) {
+        List<Products> products =  repository.findByCategories_CategoryIdAndIsDeletedFalse(categoryId);
+        products.forEach(product -> {
+            product.setDeleted(true);
+            repository.save(product);
+        }
+        );
+
+    }
+
+    @Override
+    public void deleteProductsOfBrand(Long brandId) {
+        List<Products> products = repository.findByBrands_BrandIdAndIsDeletedFalse(brandId);
+        products.forEach(product -> {product.setDeleted(true);repository.save(product);});
+    }
+
 
 }

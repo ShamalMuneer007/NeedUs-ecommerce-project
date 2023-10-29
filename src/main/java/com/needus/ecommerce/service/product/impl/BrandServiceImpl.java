@@ -3,17 +3,18 @@ package com.needus.ecommerce.service.product.impl;
 import com.needus.ecommerce.entity.product.Brands;
 import com.needus.ecommerce.repository.product.BrandRepository;
 import com.needus.ecommerce.service.product.BrandService;
+import com.needus.ecommerce.service.product.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class BrandServiceImpl implements BrandService {
-    private final BrandRepository brandRepository;
+    @Autowired
+    private BrandRepository brandRepository;
 
-    public BrandServiceImpl(BrandRepository brandRepository) {
-        this.brandRepository = brandRepository;
-    }
+
 
     @Override
     public void saveBrand(Brands brands) {
@@ -52,5 +53,10 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public List<Brands> findAllNonDeletedBrands() {
         return brandRepository.findByIsDeletedFalse();
+    }
+
+    @Override
+    public List<Brands> searchAllNonDeletedProductsBasedOnBrandSearchKey(String searchKey) {
+        return brandRepository.searchAllNonDeletedBrands(searchKey);
     }
 }

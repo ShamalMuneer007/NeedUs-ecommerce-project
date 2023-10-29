@@ -9,6 +9,7 @@ import com.needus.ecommerce.model.user_order.OrderItemProjection;
 import com.needus.ecommerce.service.product.ProductService;
 import com.needus.ecommerce.service.user.OrderItemService;
 import com.needus.ecommerce.service.user.UserInformationService;
+import com.needus.ecommerce.service.user.UserLogService;
 import com.needus.ecommerce.service.user.UserOrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,8 @@ public class DashboardController {
     ProductService productService;
     @Autowired
     OrderItemService orderItemService;
+    @Autowired
+    UserLogService userLogService;
     @GetMapping("/sales-report")
     public String dashboard(Model model,
                             HttpServletRequest request,
@@ -63,6 +66,7 @@ public class DashboardController {
         model.addAttribute("noOfOrders",orderService.findAllOrders().size());
         model.addAttribute("noOfCustomers",userService.findAllUsers().size());
         model.addAttribute("bestProducts",sortedBestProducts);
+        model.addAttribute("totalVisits",userLogService.totalVisitsCount());
         model.addAttribute("requestURI",request.getRequestURI());
         return "admin/dashboard";
     }
@@ -146,23 +150,22 @@ public class DashboardController {
         // Iterate over the days of the current month
         for (int day = 1; day <= currentYearMonth.lengthOfMonth(); day++) {
             LocalDate currentDate = currentYearMonth.atDay(day);
-
+            log.info(""+currentDate);
             // Get the week number for the current date
-            int weekNumber = currentDate.get(WeekFields.ISO.weekOfWeekBasedYear());
-
+            int weekNumberWithinYear = currentDate.get(WeekFields.ISO.weekOfWeekBasedYear());
+            int weekNumberWithinMonth = weekNumberWithinYear - currentDate.withDayOfMonth(1).get(WeekFields.ISO.weekOfWeekBasedYear()) + 1;
             // Calculate total amount for the current week
-            float currentTotal = totalAmountOfEachWeek.getOrDefault(weekNumber, 0f);
+            float currentTotal = totalAmountOfEachWeek.getOrDefault(weekNumberWithinMonth, 0f);
 
             // Get orders placed on the current date
             List<UserOrder> ordersOnDate = orderService.findOrdersByDate(currentDate);
-
             // Calculate total amount for the current date and update the total for the week
             float totalAmountOnDate = ordersOnDate.stream()
                 .filter(order -> order.getOrderStatus().equals(OrderStatus.DELIVERED))
                 .map(UserOrder::getTotalAmount)
                 .reduce(0f, Float::sum);
-
-            totalAmountOfEachWeek.put(weekNumber, currentTotal + totalAmountOnDate);
+            log.info(""+totalAmountOnDate);
+            totalAmountOfEachWeek.put(weekNumberWithinMonth, currentTotal + totalAmountOnDate);
         }
 
         // Convert the map values to a list

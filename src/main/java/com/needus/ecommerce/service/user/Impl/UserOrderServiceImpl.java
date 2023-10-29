@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -180,7 +181,8 @@ public class UserOrderServiceImpl implements UserOrderService {
 
     @Override
     public Page<UserOrder> findAllOrders(int pageNo , int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+        Sort sort = Sort.by(Sort.Order.desc("orderPlacedAt"));
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize,sort);
         return orderRepository.findAll(pageable);
     }
 
@@ -223,6 +225,19 @@ public class UserOrderServiceImpl implements UserOrderService {
 
     @Override
     public List<UserOrder> findOrdersByDate(LocalDate currentDate) {
-        return orderRepository.findByOrderPlacedAt(currentDate.atTime(12,0,0));
+        LocalDateTime startOfDay = currentDate.atStartOfDay();
+        LocalDateTime endOfDay = currentDate.atTime(LocalTime.MAX);
+        return orderRepository.findByOrderPlacedAtBetween(startOfDay, endOfDay);
+    }
+
+    @Override
+    public List<UserOrder> findAllOrdersWithCoupon(UserInformation user) {
+        List<UserOrder> orders = new LinkedList<>();
+        user.getUserOrders().forEach( order ->
+        {
+            if(Objects.nonNull(order.getCoupon()))
+                orders.add(order);
+        });
+        return orders;
     }
 }

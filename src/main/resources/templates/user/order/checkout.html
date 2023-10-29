@@ -15,10 +15,63 @@
         .multiline-option {
             white-space: pre-line !important;
         }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+        }
+        .loader {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -25px;
+            margin-left: -25px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+             header{
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        }
+          .icon-button__badge {
+      width: 13px;
+      height: 13px;
+      background-color: #E73C17;
+      color: #ffffff;
+      font-size : 11px;
+      padding-top : 1.5px;
+      font-weight : bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+    }
+         .icon-button {
+      position: relative;
+      display: flex;
+      border: none;
+      outline: none;
+    }
+
     </style>
 </head>
 
 <body class="container-fluid">
+    <div class="overlay">
+        <div class="loader"></div>
+    </div>
     <div aria-hidden="true" aria-labelledby="orderConfirmationModalLabel" class="modal fade" id="orderConfirmationModal"
         tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -104,7 +157,9 @@
                             <a class="nav-link" th:href="@{/shop/home}">Home</a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link" th:href="@{/user/cart-items}"><i class="bx bx-cart pe-2"></i><span class="">Cart</span></a>
+                            <a class="nav-link icon-button" th:href="@{/user/cart-items}">
+                                <span class="icon-button__badge" th:text="${cartSize}" th:unless="${cartSize} == 0"></span>
+                                <i class="bx bx-cart pe-2"></i>Cart</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a  class="nav-link" th:href="@{/user/wishlist-items}"><i
@@ -147,26 +202,25 @@
                 </div>
             </div>
         </nav>
-        <div class=" ">
-            <div class="container py-4">
-                <div class="d-flex justify-content-end fw-bold" style="">
-                    <div class="d-flex mb-0">
-                        <div>
-                            <a class="breadcrumbs small" style="color : black; text-decoration : none;"
-                               th:href="@{/user/cart-items}">Back to shopping cart</a>
-                        </div>
+    </header>
+    <div class=" ">
+        <div class="container py-4">
+            <div class="d-flex justify-content-end fw-bold" style="">
+                <div class="d-flex mb-0">
+                    <div>
+                        <a class="breadcrumbs small" style="color : black; text-decoration : none;"
+                           th:href="@{/user/cart-items}">Back to shopping cart</a>
                     </div>
                 </div>
             </div>
         </div>
-    </header>
-
+    </div>
     <main class="bg-light">
         <div class="container">
             <h3 class="fw-semibold ps-4" style="font-size:35px;">Checkout</h3>
             <hr>
-            <div class="row">
-                <div class="col-7">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-7">
                     <div class="">
                         <div class="p-4">
                             <h5 class="mb-3 fw-bold">Shipping info</h5>
@@ -265,9 +319,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="order-summary col-xl-4 ms-lg-5 mt-5 d-flex justify-content-center"
-                    style="background-color:#ddffe2; height: 80%; border-radius : 15px;">
-                    <div class="ms-lg-4 mt-4 mt-lg-0" style="max-width: 320px;">
+                <div class="order-summary col-12 col-md-12 col-lg-4 mt-3 mt-lg-5 ms-lg-5 d-flex justify-content-center"
+                    style="background-color:#ddffe2; height: 50%; border-radius : 15px;">
+                    <div class="ms-lg-4 mt-4 mt-lg-0">
                         <h5 class="text-dark fw-bold"
                             style="font-size : 20px; margin-top:10%; margin-left:-10%; margin-bottom : 5%;">Order
                             Summary</h5>
@@ -334,120 +388,8 @@
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-    <script>
-        const paymentStart = () => {
-            let amount = $("#amount").text();
-            var paymentOptions = document.getElementsByName('payment');
-            var selectedPaymentMethod;
+    <script th:src="@{/scripts/checkoutScript.js}">
 
-            for (var i = 0; i < paymentOptions.length; i++) {
-                if (paymentOptions[i].checked) {
-                    selectedPaymentMethod = paymentOptions[i].value;
-                    break;
-                }
-            }
-
-            console.log('Selected payment method:', selectedPaymentMethod);
-
-            if (selectedPaymentMethod === 'online') {
-                $.ajax({
-                    url: '/user/create-order',
-                    data: JSON.stringify({ amount: amount }),
-                    contentType: 'application/json',
-                    type: 'POST',
-                    dataType: 'json',
-                    success: function (order) {
-                        console.log(order);
-                        let options = {
-                            key: 'rzp_test_7sGRBU2Gye6g5s',
-                            amount: order.amount,
-                            currency: 'INR',
-                            name: 'Needus',
-                            description: 'Order payment',
-                            order_id: order.id,
-                            handler: function (response) {
-                                console.log(response.razorpay_payment_id);
-                                console.log(response.razorpay_order_id);
-                                console.log(response.razorpay_signature);
-                                console.log('payment_successful!!');
-                                console.log("success");
-                                verifyPayment(response, order)
-                            },
-                            prefill: {
-                                name: "Needus",
-                                email: "needus777@gmail.com",
-                                contact: "9567211741"
-                            },
-                            notes: {
-                                address: "Needus office, Kozhikode, Kerala"
-                            },
-                            theme: {
-                                color: "#3399cc"
-                            }
-                        };
-                        var rzp1 = new Razorpay(options);
-                        rzp1.on('payment.failed', function (response) {
-                            console.log(response.error.code);
-                            console.log(response.error.description);
-                            console.log(response.error.source);
-                            console.log(response.error.step);
-                            console.log(response.error.reason);
-                            console.log(response.error.metadata.order_id);
-                            console.log(response.error.metadata.payment_id);
-                        });
-                        rzp1.open();
-                        e.preventDefault();
-                    },
-                    error: function (error) {
-                        console.error(error);
-                    }
-                });
-                function verifyPayment(payment, order) {
-                    console.log('now in verifyPayment')
-                    $.ajax({
-                        url: '/user/verify-payment',
-                        data: JSON.stringify({
-                            payment,
-                            order
-                        }),
-                        contentType: 'application/json',
-                        method: 'post',
-                        success: (response) => {
-                            if (response.success) {
-                                console.log('response got')
-                                document.getElementById("orderForm").submit();
-                            } else {
-                                console.log('response not get');
-                                location.href = '*'
-                            }
-                        }
-                    })
-                }
-            }
-            else {
-                document.getElementById("orderForm").submit();
-            }
-        };
-        const applyCoupon = () =>{
-            let coupon = $("#coupon").val();
-             $.ajax({
-                     url: '/user/checkout/apply-coupon',
-                     data: JSON.stringify({
-                            coupon
-                     }),
-                     contentType: 'application/json',
-                     method: 'post',
-                     success: (response) => {
-                          if (response.success) {
-                              console.log('response got')
-                              location.reload()
-                          }
-                          else {
-                             $("#coupon_error_msg").html("The total price of your products is not within the range of the selected coupon price limit");
-                          }
-                     }
-             })
-        }
 
 
     </script>

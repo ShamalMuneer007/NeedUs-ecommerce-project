@@ -43,12 +43,10 @@
     margin-bottom: 10px; /* Adjust the space between each checkbox and label */
 }
     </style>
+    <link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
 </head>
 
 <body>
-<div class="welcome-strip ps-5 pb-0 pt-2 text-center">
-    <span class="text-light small">Welcome to Needus & get the best computer product for best price</span>
-</div>
 <div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="logoutModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -74,7 +72,7 @@
         </div>
     </div>
 </div>
-<header class="container-fluid">
+<header class="container-fluid pt-3">
     <nav class="container-fluid navbar navbar-expand-lg mt-0 pe-3 pb-2">
         <div class="container-fluid">
             <div class="navbar-brand">
@@ -117,7 +115,7 @@
                             <a class="reg nav-link" th:href="@{/signup}">Signup</a>
                         </div>
                         <div th:if="${#authorization.expression('isAuthenticated()')}">
-                            <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
+                            <a aria-expanded="false" class="nav-link dropdown-toggle pt-1" data-bs-toggle="dropdown" href="#"
                                role="button">
                                 <span th:text="${username}"></span></a>
                             <ul class="dropdown-menu">
@@ -143,7 +141,10 @@
         </div>
     </nav>
 </header>
-<main class="container">
+<div class="fw-bold mt-5" style="font-size:24px; text-align:center; vertical-align:center;" th:if="${products.isEmpty()}">
+    No products can be found for applied filter options.
+</div>
+<main class="container" th:unless="${products.isEmpty()}">
     <div class="">
         <span class="fw-semibold text-muted">Discover</span>
         <h3>Our Brand New Products</h3>
@@ -209,6 +210,16 @@
                     <span class="text-warning fw-bold" th:if="${product.stock}<10" th:unless="${product.stock}<=1">Low stock</span>
                     <div class="title pt-3 pb-1">
                         <span th:text="${product.productName}"></span>
+                        <div>
+                            <div style="color: gold;" th:if="${product.getAverageRating() == 0}">
+                                <i  class="fas fa-star"></i>
+                                <i class="far fa-star" th:each="star : ${#numbers.sequence(product.getAverageRating(),3)}"></i>
+                            </div>
+                            <div style="color: gold;" th:unless="${product.getAverageRating() == 0}">
+                                <i class="fas fa-star d-inline" th:each="star : ${#numbers.sequence(1, product.getAverageRating())}"></i>
+                                <i class="far fa-star d-inline" th:each="star : ${#numbers.sequence(product.getAverageRating()+1, 5)}" th:unless="${product.getAverageRating() == 5}"></i>
+                            </div>
+                        </div>
                         <div>
                             <div class="price">₹ <span th:text="${product.productPrice}"></span></div>
                             <div class="d-flex gap-3" th:unless="${product.stock}<=1">

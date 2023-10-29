@@ -28,6 +28,7 @@ $(document).ready(function () {
                     $("#error_msg").html("Enter valid mobile number");
                 } else {
                     $("#login-form").submit();
+                document.querySelector('.overlay').style.display = 'block';
                 }
             });
 });

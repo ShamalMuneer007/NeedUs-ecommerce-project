@@ -47,3 +47,19 @@ font-family: 'Poppins', sans-serif;
         .image-container:hover .zoomed-image {
             transform: scale(1.5); /* Zoom in further on hover */
         }
+       .stars {
+         font-size: 36px;
+         cursor: pointer;
+       }
+
+       .star {
+         color: gray;
+         transition: color 0.2s;
+       }
+
+       .star:hover,
+       .star.active {
+         color: gold;
+       }
+
+

@@ -9,17 +9,13 @@ import com.needus.ecommerce.service.verification.ConfirmationTokenService;
 import com.needus.ecommerce.service.user.UserInformationService;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.json.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -43,20 +39,6 @@ public class MainController {
     @Autowired
     OtpService otpService;
 
-//    @Bean
-//    public AuthenticationProvider authenticationProvider(){
-//        return new CustomAuthenticationManager();
-//    }
-//    private void authenticateUserAndSetSession(UserInformation user, HttpServletRequest request) {
-//        String username = user.getUsername();
-//        String password = user.getPassword();
-//        UsernamePasswordAuthenticationToken token =
-//            new UsernamePasswordAuthenticationToken(username, password);
-//        token.setDetails(new WebAuthenticationDetails(request));
-//        Authentication authenticatedUser = authenticationProvider().authenticate(token);
-//        SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
-//        request.getSession().setAttribute("Sample", SecurityContextHolder.getContext().getAuthentication());
-//    }
     @GetMapping("/")
     public String index(){
         return "redirect:/shop/home";
@@ -143,7 +125,8 @@ public class MainController {
     }
 
     @GetMapping("/forgot-password")
-    public String forgotPassword(Model model){
+    public String forgotPassword(Model model,HttpSession session){
+        session.removeAttribute("otp");
         return "forgotPassword";
     }
     @PostMapping("/change-password")
@@ -191,8 +174,6 @@ public class MainController {
        String otp =  session.getAttribute("otp").toString();
        String otpReceived = data.get("otp");
        String username = data.get("user");
-       log.info("username : "+username);
-       log.info("otp : "+otpReceived+" Otp send : "+otp);
        if(!otpReceived.equals(otp)){
            return new ResponseEntity<>(Map.of("success",false), HttpStatus.OK);
        }

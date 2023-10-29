@@ -21,18 +21,14 @@ body {
     font-family: var(--body-font);
     font-size: var(--normal-font-size);
     transition: .5s;
-    background-color  : #f9f9fc;
+    background-color  : #ffffff;
 }
 main{
     padding-top: 15px !important;
     margin: 20px auto !important;
 }
-nav{
-    margin-left: -20px;
-    margin-right: -20px;
-    margin-top: -25px;
-    padding-top : 20px;
-    background-color:#ffffff;
+header{
+box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 .product-box{
     padding-left : 5% !important;
@@ -45,7 +41,6 @@ nav{
 }
 .welcome-strip{
     margin-top : -10px;
-    margin-bottom : 10px;
     background-color: #2F333A;
 }
 .navbar-nav > .active > a {
@@ -91,7 +86,7 @@ nav{
 
 .container .product-item .product .icons .icon:hover {
     background-color: #E73C17;
-    color: #fff
+    color: #ffff
 }
 
 .container .product-item .product .icons .icon:nth-last-of-type(3) {

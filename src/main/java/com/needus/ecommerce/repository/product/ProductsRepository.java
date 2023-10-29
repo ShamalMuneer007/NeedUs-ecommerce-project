@@ -40,4 +40,8 @@ public interface ProductsRepository extends JpaRepository<Products,Long> {
                                             @Param("searchKey") String searchKey, Pageable pageable);
 
     List<Products> findByIsDeletedFalseAndProductStatusTrue();
+
+    List<Products> findByCategories_CategoryIdAndIsDeletedFalse(Long categoryId);
+
+    List<Products> findByBrands_BrandIdAndIsDeletedFalse(Long brandId);
 }

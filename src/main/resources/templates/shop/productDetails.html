@@ -11,6 +11,8 @@
     <link href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" rel="stylesheet">
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous" />
+
     <style>
         .sub-image:hover {
             cursor: pointer;
@@ -28,7 +30,7 @@
 
 <body>
 <header class="container-fluid">
-    <nav class="container-fluid navbar navbar-expand-lg pt-5 pe-3 pb-2">
+    <nav class="container-fluid navbar navbar-expand-lg pt-3 pe-3 pb-2">
         <div class="container-fluid">
             <div class="navbar-brand">
                 <a class="nav_logo pe-5 ps-5" href="#"> <span class="nav_logo-name">Needus</span><span
@@ -108,6 +110,17 @@
                         <form method="post"  th:action="@{'/user/publish-product-review/' + ${product.getProductId()}}">
                             <label for="reviewText" class="form-label"> Your Review  :
                             </label><textarea name="reviewContent" class="form-control" id="reviewText" rows="4" placeholder="Write your review here..."></textarea>
+                            <div class="fw-semibold mt-2">
+                                Rating :
+                                <div class="stars" id="stars">
+                                    <span class="star active" data-rating="1">&#9733;</span>
+                                    <span class="star" data-rating="2">&#9733;</span>
+                                    <span class="star" data-rating="3">&#9733;</span>
+                                    <span class="star" data-rating="4">&#9733;</span>
+                                    <span class="star" data-rating="5">&#9733;</span>
+                                </div>
+                                <input hidden="hidden" id="rating-input" name="rating" value="1">
+                            </div>
                             <div class="d-flex justify-content-end mt-2">
                             <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit Review</button>
                             </div>
@@ -148,9 +161,24 @@
                             <div class="brand-name">
                                 <span>Brand Name : </span><span class="text-muted d-inline" th:text="${product.getBrands().getBrandName()}"></span>
                             </div>
-                            <h4 class="title text-dark mt-4" th:text="${product.productName}">
+                            <h4 class="title text-dark mt-4 fw-bold" th:text="${product.productName}">
                             </h4>
-                            <div class="d-flex flex-row my-3">
+                            <div style="font-size : 22px;">
+                                <div>
+                                    <div th:if="${product.getAverageRating() == 0}" style="color: gold;">
+                                        <i  class="fas fa-star"></i>
+                                        <i th:each="star : ${#numbers.sequence(product.getAverageRating(),3)}" class="far fa-star"></i>
+                                    </div>
+<!--                                    <div th:if="${product.getAverageRating() == 5}" style="color: gold;">-->
+<!--                                        <i th:each="star : ${#numbers.sequence(1,5)}" class="fas fa-star"></i>-->
+<!--                                    </div>-->
+                                    <div th:unless="${product.getAverageRating() == 0}" style="color: gold;">
+                                        <i th:each="star : ${#numbers.sequence(1, product.getAverageRating())}" class="fas fa-star"></i>
+                                        <i th:unless="${product.getAverageRating() == 5}" th:each="star : ${#numbers.sequence(product.getAverageRating()+1, 5)}" class="far fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-row mt-1">
                                 <div class="mb-3">
                                     <div class="text-muted small">INR(incl. of all taxes)</div>
                                     <span class="h5">₹ </span><span class="h5" th:text="${product.productPrice}"></span>
@@ -159,10 +187,11 @@
                                 </div>
                             </div>
                             <span class="text-danger fw-bold" th:if="${product.stock}<=1">Out of stock</span>
-                            <form method="post" th:unless="${product.stock}<=1" th:action="@{'/user/add-to-cart/' + ${product.productId}}">
-                            <button type="submit" class="add-cart-btn btn shadow-0 fw-semibold" href="#"> <i class="me-1 fa fa-shopping-basket"></i> Add
+                            <form method="post" th:unless="${product.stock <=1 || productInCart}" th:action="@{'/user/add-to-cart/' + ${product.productId}}">
+                            <button type="submit" class="add-cart-btn btn shadow-0 fw-semibold" href="#"> <i class="me-1 bx bx-cart"></i> Add
                                 to cart </button>
                             </form>
+                            <div th:if="${productInCart}" class="fw-bold" style="font-size : 19px;">Product in basket</div>
                             <div class="text-warning fw-bold pt-3" th:if="${product.stock}<10" th:unless="${product.stock}<=1">Low stock</div>
                         </div>
                     </main>
@@ -225,6 +254,12 @@
                                                 <div th:each="review : ${reviews}" class="card mb-4">
                                                     <div class="card-body">
                                                         <div style="font-size : 17px;" class="fw-bold"><i class="bx bx-user-circle me-1"></i><span th:text="${review.getUserInformation().getUsername()}"></span></div>
+                                                        <div style="font-size: 12px;" class="ms-4">
+                                                                <span style="color: gold;">
+                                                                    <i th:each="star : ${#numbers.sequence(1, review.rating)}" class="fas fa-star"></i>
+<!--                                                                    <i th:each="star : ${#numbers.sequence(1, review.emptyStars)}" class="far fa-star"></i>-->
+                                                                </span>
+                                                        </div>
                                                         <p style="font-size : 17px;" class="ps-4 pt-2" th:text="${review.reviewContent}"></p>
                                                     </div>
                                                 </div>

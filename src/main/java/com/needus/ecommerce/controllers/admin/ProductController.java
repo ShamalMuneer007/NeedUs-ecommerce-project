@@ -2,6 +2,8 @@ package com.needus.ecommerce.controllers.admin;
 
 import com.needus.ecommerce.entity.product.*;
 import com.needus.ecommerce.entity.user.UserInformation;
+import com.needus.ecommerce.entity.user_order.UserOrder;
+import com.needus.ecommerce.entity.user_order.enums.OrderStatus;
 import com.needus.ecommerce.exceptions.ResourceNotFoundException;
 import com.needus.ecommerce.exceptions.TechnicalIssueException;
 import com.needus.ecommerce.model.product.ProductDto;
@@ -26,10 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 @Slf4j
@@ -300,6 +299,30 @@ public class ProductController {
         productService.deleteProduct(ProductId);
         ra.addFlashAttribute("message","Product is deleted");
         return "redirect:/admin/products/list";
+    }
+
+    @GetMapping("/product-details/{productId}")
+    public String productDetails(@PathVariable(name = "productId")Long productId,
+                                 HttpServletRequest request,
+                                 Model model){
+        log.info("Inside product details method");
+        if(!productService.existsById(productId)){
+            log.error("Product of the given path variable does not exists");
+            throw new ResourceNotFoundException("Product not found");
+        }
+        UserInformation user = userInformationService.getCurrentUser();
+        Products product = productService.findProductById(productId);
+        log.info("product rating : "+product.getAverageRating());
+        List<ProductImages> images = product.getImages();
+        log.info("fetched images");
+        List<ProductReview> productReviews = product.getProductReview();
+        model.addAttribute("requestURI",request.getRequestURI());
+        model.addAttribute("reviews",productReviews);
+        model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
+        model.addAttribute("image",images.get(0));
+        model.addAttribute("images",images);
+        model.addAttribute("product",product);
+        return "admin/productDetails";
     }
     // Image upload directory method
     private String fileUploadDir(MultipartFile file) throws IOException {

@@ -69,7 +69,7 @@
     </div>
 </div>
 <header class="container-fluid">
-    <nav class="navbar navbar-expand-lg pt-5 pe-3 pb-2">
+    <nav class="navbar navbar-expand-lg pt-3 pe-3 pb-2">
         <div class="container-fluid">
             <div class="navbar-brand">
                 <a class="nav_logo pe-5 ps-5" href="#"> <span class="nav_logo-name">Needus</span><span
@@ -111,7 +111,7 @@
                             <a class="reg nav-link" th:href="@{/signup}">Signup</a>
                         </div>
                         <div th:if="${#authorization.expression('isAuthenticated()')}">
-                            <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
+                            <a aria-expanded="false" class="nav-link dropdown-toggle pt-2" data-bs-toggle="dropdown" href="#"
                                role="button">
                                <span th:text="${username}"></span>
                             </a>

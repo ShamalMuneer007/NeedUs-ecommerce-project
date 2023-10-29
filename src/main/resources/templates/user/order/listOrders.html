@@ -17,12 +17,41 @@
         font-weight: bold;
         background-color : #E73C17 !important;
     }
+        header{
+        background-color : #ffffff;
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
     </style>
 </head>
 
 <body class="container-fluid">
+<div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="logoutModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Logout Confirmation</h5>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+            </div>
+
+            <!-- Modal Body with the Form -->
+            <div class="modal-body">
+                <form method="post" th:action="@{/logout}">
+                    <p>Are you sure you want to logout?</p>
+                    <!-- Add any additional content or form elements here if needed -->
+                    <div class="modal-footer">
+                        <!-- Form Submit Button -->
+                        <input class="btn btn-danger" type="submit" value="Logout">
+                        <!-- Close Modal Button -->
+                        <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <header class="container-fluid">
-    <nav class="navbar navbar-expand-lg mt-0 pt-3 pe-3 pb-2">
+    <nav class="navbar navbar-expand-lg mt-0 pt-4 pe-3 pb-2">
         <div class="container-fluid">
             <div class="navbar-brand">
                 <a class="nav_logo pe-5 ps-5" href="#"> <span class="nav_logo-name">Needus</span><span
@@ -53,13 +82,13 @@
                             <a class="reg nav-link" th:href="@{/signup}">Signup</a>
                         </div>
                         <div th:if="${#authorization.expression('isAuthenticated()')}">
-                            <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
-                               role="button">
-                                <span th:text="${username}"></span>
-                            </a>
+                            <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
+                               href="#" role="button">
+                                <span th:text="${username}"></span></a>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a class="dropdown-item">Profile settings</a>
+                                    <a class="dropdown-item" th:href="@{/user/profile-settings}">Profile
+                                        settings</a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item" th:href="@{/user/cart-items}">Cart</a>
@@ -68,9 +97,10 @@
                                     <a class="dropdown-item" th:href="@{/user/my-orders}">My Orders</a>
                                 </li>
                                 <li>
-                                    <form method="post" th:action="@{/logout}">
-                                        <input class="btn" type="submit" value="Logout">
-                                    </form>
+                                    <button class="btn btn-danger mt-2 ms-3" data-bs-target="#logoutModal"
+                                            data-bs-toggle="modal" type="button">
+                                        Logout
+                                    </button>
                                 </li>
                             </ul>
                         </div>
@@ -97,7 +127,8 @@
             <tbody>
                 <tr th:each="order : ${orders.content}">
                     <td style="text-align: center; vertical-align: middle;">
-                        <div class="fw-semibold" th:text="${order.orderId}">
+                        <div class="fw-semibold">
+                            #<span th:text="${order.orderId}"></span>
                         </div>
                     </td>
                     <td>

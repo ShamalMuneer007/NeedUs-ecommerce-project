@@ -1,0 +1,128 @@
+var combinedChart;
+$(document).ready(function() {
+    year();
+});
+function graph(amount,xAxis) {
+    var data = {
+        labels: xAxis,
+        datasets: [{
+            label: 'Revenue',
+            data: amount,
+            fill: true,
+            borderColor: '#ff6384',
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderWidth: 2,
+            lineTension: 0.2
+        }]
+    };
+    $('#downloadGraph').click(function() {
+         downloadCSV(data);
+    });
+    if (combinedChart) {
+        combinedChart.destroy();
+    }
+    combinedChart = new Chart(document.getElementById('combinedChart').getContext('2d'), {
+        type: 'bar',
+        data: data,
+        options: {
+            scales: {
+                x: {
+                    grid: {
+                        display: true,
+                    }
+                },
+                y: {
+                    grid: {
+                        display: true,
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                },
+            }
+        }
+    });
+}
+function month() {
+    $.ajax({
+        url: "/admin/dashboard/sales-report/monthly",
+        type: "GET",
+        dataType: "json",
+        success: function(responseData) {
+            let amount = responseData;
+            let xAxis = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September','October', 'November', 'December'];
+            graph(amount,xAxis);
+            $("#graph-message").text("The displayed result represents the data of the months of the current year.");
+            console.log(responseData);
+        },
+        error: function(xhr, status, error) {
+            console.error("Request failed with status: " + xhr.status);
+        }
+    });
+}
+function week() {
+    $.ajax({
+        url: "/admin/dashboard/sales-report/weekly",
+        type: "GET",
+        dataType: "json",
+        success: function(responseData) {
+            let amount = responseData;
+            let xAxis = ['Week 1','Week 2','Week 3','Week 4','Week 5','Week 6'];
+            graph(amount,xAxis);
+            $("#graph-message").text("The displayed result represents the data of the weeks of the current month.");
+            console.log(responseData);
+        },
+        error: function(xhr, status, error) {
+            console.error("Request failed with status: " + xhr.status);
+        }
+    });
+}
+
+
+function year() {
+    $.ajax({
+        url: "/admin/dashboard/sales-report/yearly",
+        type: "GET",
+        dataType: "json",
+        success: function(responseData) {
+            let amount = responseData;
+            let xAxis = ['2023','2024','2025','2026','2027','2028','2029','2030','2031','2032','2033'];
+            graph(amount,xAxis);
+            $("#graph-message").text("");
+            console.log(responseData);
+        },
+        error: function(xhr, status, error) {
+            console.error("Request failed with status: " + xhr.status);
+        }
+    });
+}
+ function convertToCSV(data) {
+            var csv = [];
+            csv.push('Label,Revenue');
+
+            for (var i = 0; i < data.labels.length; i++) {
+                csv.push(data.labels[i] + ',' + data.datasets[0].data[i]);
+            }
+
+            return csv.join('\n');
+        }
+
+        // Function to download CSV file
+        function downloadCSV(data){
+            var csvContent = convertToCSV(data);
+            var blob = new Blob([csvContent], { type: 'text/csv' });
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'data.csv';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }

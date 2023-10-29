@@ -2,6 +2,7 @@ package com.needus.ecommerce.service.product;
 
 import com.needus.ecommerce.entity.product.Brands;
 import com.needus.ecommerce.entity.product.ProductFilters;
+import com.needus.ecommerce.entity.product.ProductReview;
 import com.needus.ecommerce.entity.product.Products;
 import org.springframework.data.domain.Page;
 
@@ -36,4 +37,11 @@ public interface ProductService {
     Page<Products> findProductBySearchKey(int pageNo, int pageSize, Long categoryId, String searchKey);
 
     List<Products> findAllProducts();
+
+    void setProductAverageRating(Products product, int rating);
+
+
+    void deleteProductsOfCategory(Long categoryId);
+
+    void deleteProductsOfBrand(Long brandId);
 }

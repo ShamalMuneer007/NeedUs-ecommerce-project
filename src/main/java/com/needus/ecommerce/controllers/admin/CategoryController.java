@@ -2,8 +2,10 @@ package com.needus.ecommerce.controllers.admin;
 
 import com.needus.ecommerce.entity.product.Brands;
 import com.needus.ecommerce.entity.product.Categories;
+import com.needus.ecommerce.exceptions.TechnicalIssueException;
 import com.needus.ecommerce.service.product.BrandService;
 import com.needus.ecommerce.service.product.CategoryService;
+import com.needus.ecommerce.service.product.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Slf4j
 @RequestMapping("/admin/categories")
 public class CategoryController {
+    @Autowired
+    ProductService productService;
     @Autowired
     private CategoryService categoryService;
     @Autowired
@@ -63,13 +67,27 @@ public class CategoryController {
     }
     @PostMapping("/deleteBrand/{id}")
     public String deleteBrand(@PathVariable(name="id") Long brandId,RedirectAttributes ra){
-        brandService.deleteBrandById(brandId);
+        try {
+            brandService.deleteBrandById(brandId);
+            productService.deleteProductsOfBrand(brandId);
+        }
+        catch (Exception e){
+            log.error("Error happened while deleting the brand");
+            throw new TechnicalIssueException("Error happened while deleting the brand");
+        }
         ra.addFlashAttribute("message","Brand removed from the list successfully");
         return "redirect:/admin/categories/list";
     }
     @PostMapping("/deleteCategory/{id}")
     public String deleteCategory(@PathVariable(name="id") Long categoryId,RedirectAttributes ra){
-        categoryService.deleteCategoryById(categoryId);
+        try {
+            categoryService.deleteCategoryById(categoryId);
+            productService.deleteProductsOfCategory(categoryId);
+        }
+        catch (Exception e){
+            log.error("Something went wrong while deleting the category");
+            throw new TechnicalIssueException("Something went wrong while deleting the category");
+        }
         ra.addFlashAttribute("message","Category removed from the list successfully");
         return "redirect:/admin/categories/list";
     }

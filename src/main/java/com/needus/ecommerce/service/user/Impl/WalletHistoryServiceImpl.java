@@ -8,9 +8,11 @@ import com.needus.ecommerce.service.user.WalletHistoryService;
 import com.needus.ecommerce.service.user.WalletService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -36,5 +38,11 @@ public class WalletHistoryServiceImpl implements WalletHistoryService {
         walletHistory.setWalletTransactionTime(LocalDateTime.now());
         walletHistory.setWallet(userWallet);
         return walletHistoryRepository.save(walletHistory);
+    }
+
+    @Override
+    public List<WalletHistory> findAllUserWalletTransactions(Wallet wallet) {
+        Sort sort = Sort.by(Sort.Order.desc("walletTransactionTime"));
+        return walletHistoryRepository.findByWallet_WalletId(wallet.getWalletId(),sort);
     }
 }

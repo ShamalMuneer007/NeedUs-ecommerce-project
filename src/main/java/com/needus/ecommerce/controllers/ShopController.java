@@ -40,6 +40,9 @@ public class ShopController {
     UserInformationService userService;
     @Autowired
     ProductFilterService filterService;
+
+    @Autowired
+    ProductReviewService productReviewService;
     @Autowired
     BrandService brandService;
     @GetMapping("/home")
@@ -53,10 +56,6 @@ public class ShopController {
         log.info("fetched categories");
         session.removeAttribute("coupon");
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        int userCartSize = 0;
-        if(userService.getCurrentUser()!=null){
-            userCartSize = userService.getCurrentUser().getCart().getCartItems().size();
-        }
         Page<Products> products;
         try {
             if(Objects.isNull(searchKey)) {
@@ -75,6 +74,10 @@ public class ShopController {
         }
         Page<ProductDto> productsDto = products.map(ProductDto::new);
         log.info("fetched products");
+        int userCartSize = 0;
+        if(userService.getCurrentUser()!=null){
+            userCartSize = userService.getCurrentUser().getCart().getCartItems().size();
+        }
         model.addAttribute("cartSize",userCartSize);
         model.addAttribute("filters",filterService.findAllFilters());
         model.addAttribute("brands",brandService.findAllNonDeletedBrands());
@@ -93,29 +96,44 @@ public class ShopController {
             log.error("Product of the given path variable does not exists");
             throw new ResourceNotFoundException("Product not found");
         }
-        UserInformation user = userService.getCurrentUser();
-        Products product = productService.findProductById(productId);
+        UserInformation user;
+        Products product;
         boolean isPurchased = false;
-        if(Objects.nonNull(user)) {
-            Set<UserOrder> userOrders = user.getUserOrders();
-            isPurchased =
-                userOrders.stream()
-                    .filter(userOrder -> userOrder.getOrderStatus().equals(OrderStatus.DELIVERED))
-                    .anyMatch(userOrder -> userOrder
-                        .getOrderItems()
-                        .stream()
-                        .anyMatch(orderItem -> orderItem.getProduct().equals(product)));
+        boolean productExistsInCart = false;
+        try {
+            user = userService.getCurrentUser();
+            product = productService.findProductById(productId);
+            if(Objects.nonNull(user)){
+                productExistsInCart = user.getCart()
+                    .getCartItems().stream()
+                    .anyMatch(cartItem -> cartItem.getProduct().equals(product));
+            }
+            if(Objects.nonNull(user)) {
+                Set<UserOrder> userOrders = user.getUserOrders();
+                isPurchased =
+                    userOrders.stream()
+                        .filter(userOrder -> userOrder.getOrderStatus().equals(OrderStatus.DELIVERED))
+                        .anyMatch(userOrder -> userOrder
+                            .getOrderItems()
+                            .stream()
+                            .anyMatch(orderItem -> orderItem.getProduct().equals(product)));
+            }
         }
+        catch (Exception e){
+            log.error("error while fetching product details");
+            throw new TechnicalIssueException("Something went wrong while getting the product information");
+        }
+        log.info("product rating : "+product.getAverageRating());
         List<ProductImages> images = product.getImages();
         log.info("fetched images");
-        List<ProductReview> productReviews = product.getProductReview();
+        List<ProductReview> productReviews = productReviewService.findAllProductReviews(product);
+        model.addAttribute("productInCart",productExistsInCart);
         model.addAttribute("reviews",productReviews);
         model.addAttribute("isPurchased",isPurchased);
         model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         model.addAttribute("image",images.get(0));
         model.addAttribute("images",images);
         model.addAttribute("product",product);
-
         return "shop/productDetails";
     }
     @GetMapping("/categories/{id}")

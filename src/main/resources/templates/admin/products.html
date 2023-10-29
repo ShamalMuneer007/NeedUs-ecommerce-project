@@ -80,13 +80,17 @@
         </tr>
       </thead>
       <tbody class="text-center" th:each="product : ${products}">
-        <tr>
-            <td>
-                <img height="60px" style="display: inline-block;"  th:src="@{${product.ImageFilePath}}" width="60px">
-            </td>
-          <td>
-              <div style="display: inline-block;"  th:text="${product.productName}"></div>
-          </td>
+        <tr class="pointer">
+                <td>
+                    <a style="color : black;" th:href="'/admin/products/product-details/'+${product.productId}">
+                    <img height="60px" style="display: inline-block;"  th:src="@{${product.ImageFilePath}}" width="60px">
+                    </a>
+                </td>
+              <td>
+                  <a style="color : black;" th:href="'/admin/products/product-details/'+${product.productId}">
+                  <div class="pt-3" style="display: inline-block;"   th:text="${product.productName}"></div>
+                  </a>
+              </td>
           <td th:text="${product.productId}"></td>
             <td th:text="${product.productPrice}"></td>
           <td th:text="${product.stock}"></td>

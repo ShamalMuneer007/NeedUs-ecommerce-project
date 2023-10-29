@@ -10,6 +10,11 @@
     <link href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/styles/user/userSettingsStyle.css}" type="text/css">
     <meta content="width=device-width, initial-scale=1" name="viewport">
+    <style>
+            header{
+box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+    </style>
 </head>
 <body class="container-fluid">
 <header class="container-fluid">
@@ -72,7 +77,9 @@
                         <a class="nav-link" th:href="@{/shop/home}">Home</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link" th:href="@{/user/cart-items}"><i class="bx bx-cart pe-2"></i><span class="">Cart</span></a>
+                    <a class="nav-link icon-button" th:href="@{/user/cart-items}">
+                        <span class="icon-button__badge" th:text="${cartSize}" th:unless="${cartSize} == 0"></span>
+                        <i class="bx bx-cart pe-2"></i>Cart</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a  class="nav-link" th:href="@{/user/wishlist-items}"><i
@@ -249,9 +256,11 @@
                                                         <div class="text-primary fw-bold" th:if="${order.orderStatus.name() == 'SHIPPED'}" th:text="${order.orderStatus}">
 
                                                         </div>
+                                                        <div class="fw-bold" style="color: orange;" th:if="${order.orderStatus.name() == 'RETURN_REQUESTED'}" th:text="${order.orderStatus}"></div>
                                                         <div class="text-success fw-bold" th:if="${order.orderStatus.name() == 'DELIVERED'}" th:text="${order.orderStatus}">
 
                                                         </div>
+                                                        <div class="fw-bold" style="color: red" th:if="${order.orderStatus.name() == 'RETURNED'}" th:text="${order.orderStatus}"></div>
                                                         <div class="fw-bold" style="color: orange;" th:if="${order.orderStatus.name() == 'PROCESSING'}" th:text="${order.orderStatus}"></div>
                                                     </td>
                                             </tr>
@@ -343,7 +352,7 @@
                                             You didn't do any purchases using the wallet
                                         </div>
                                     </div>
-                                    <div class="col-lg-12 mb-3" th:each="transaction : ${wallet.walletHistories}">
+                                    <div class="col-lg-12 mb-3" th:each="transaction : ${walletHistories}">
                                         <div class="h-100 border rounded-3 d-flex justify-content-between">
                                             <div>
                                                 <div class="p-3 ps-1">

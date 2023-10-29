@@ -4,6 +4,7 @@ import com.needus.ecommerce.entity.product.Categories;
 import com.needus.ecommerce.entity.product.Products;
 import com.needus.ecommerce.repository.product.CategoryRepository;
 import com.needus.ecommerce.service.product.CategoryService;
+import com.needus.ecommerce.service.product.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
+
     @Override
     public void saveCategory(Categories categories) {
         categoryRepository.save(categories);
@@ -41,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void deleteCategoryById(Long categoryId) {
+    public void deleteCategoryById(Long categoryId)  {
         Categories categories = findCatgeoryById(categoryId);
         categories.setDeleted(true);
         categoryRepository.save(categories);
