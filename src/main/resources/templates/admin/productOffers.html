@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/styles/admin/style.css}">
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" rel="stylesheet">
+    <style>
+         .box {
+     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+          background-color: white;
+  }
+    </style>
+    <title>Needus. | Offers</title>
+</head>
+<body id="body-pd" style= "background-color  : #f9f9fc;">
+<div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="logoutModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Logout Confirmation</h5>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+            </div>
+
+            <!-- Modal Body with the Form -->
+            <div class="modal-body">
+                <form method="post" th:action="@{/logout}">
+                    <p>Are you sure you want to logout?</p>
+                    <!-- Add any additional content or form elements here if needed -->
+                    <div class="modal-footer">
+                        <!-- Form Submit Button -->
+                        <input class="btn btn-danger" type="submit" value="Logout">
+                        <!-- Close Modal Button -->
+                        <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:include="~{admin/fragments/navFragment :: navigation}"></div>
+<main class="container-fluid ms-sm-3 ps-5">
+    <h3>Category Offers</h3>
+    <div class="d-flex justify-content-between">
+        <div class="directory mt-2 ms-2">
+            <span class="dashboard-indicator">Dashboard > Offers > </span> Category Offers
+        </div>
+        <div class="bg-success mt-2 pt-1 text-white text-center fw-semibold" style="height:30px;border-radius:5px;" th:if="${message}" th:text="${message}"></div>
+    </div>
+    <hr>
+    <form id="discountForm" method="post" th:action="@{/admin/products/offers/apply-product-offer}">
+        <div class="box p-5 mt-5">
+            <h4>Select a product of which you want to apply offer for</h4>
+            <div class="col-3 mt-3 mb-5 item-key words">
+                <label class="form-label" for="searchInput">Product</label>
+                <input class="form-control mb-2" id="searchInput" placeholder="Search products" type="text">
+                <div class="fw-semibold" id="results"></div>
+                <div id="productList"></div>
+            </div>
+        </div>
+        <div class="box p-5 mt-5" id="offerDetails">
+            <h4>Offer details</h4>
+            <div class="col-3 mt-3 mb-5 item-key words">
+                <label class="form-label" for="discountInput">Category discount offer percentage : </label>
+                <input class="form-control col-3" id="discountInput" max="90" min="1" name="discount" placeholder="Discount percentage %" required type="number">
+            </div>
+            <div class="col-3 mt-3 mb-5 item-key words">
+                <label class="form-label" for="dateInput">Set an expiration Date:</label>
+                <input class="form-control" id="dateInput" min="<?php echo date('Y-m-d'); ?>" name="expirationDate" required type="date">
+            </div>
+            <div class="fw-semibold text-danger" id="error-message"></div>
+            <div class="product-button-div ms-2 mb-5 mt-5">
+                <input class="add-product-btn" type="submit" value="Apply Offer">
+            </div>
+        </div>
+    </form>
+</main>
+<script crossorigin="anonymous" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+
+    //Discount verification
+    var discountForm = document.getElementById("discountForm");
+    var discountInput = document.getElementById("discountInput");
+    var errorMessage = document.getElementById("error-message");
+    var results = document.getElementById("results");
+
+    discountForm.addEventListener("submit", function(event) {
+        // Parse the input value as a number
+        var discountValue = parseInt(discountInput.value, 10);
+
+        // Check if the value is greater than 100
+        if (discountValue > 100) {
+            // Prevent form submission
+            event.preventDefault();
+            // Display an error message
+            errorMessage.textContent = "Discount percentage cannot be more than 100%";
+        } else {
+            // Clear the error message if the input is valid
+            errorMessage.textContent = "";
+        }
+    });
+
+    //Date verification
+
+    var today = new Date();
+    var year = today.getFullYear();
+    var month = String(today.getMonth() + 1).padStart(2, '0');
+    var day = String(today.getDate()).padStart(2, '0');
+    var minDate = year + '-' + month + '-' + day;
+    document.getElementById("dateInput").min = minDate;
+    //Search fetch
+    var searchInput = $('#searchInput');
+    var productList = $('#productList');
+
+    searchInput.on('input', function() {
+    productList.empty();
+    var keyword = searchInput.val();
+    if (keyword.length >= 3) {
+        $.ajax({
+            url: `/admin/products/offers/search`,
+            method: 'GET',
+             data: {
+                    keyword: keyword
+            },
+            dataType: 'json',
+            success: function(data) {
+            displayProducts(data);
+            console.log(data)
+                  $.each(data, function(index, product) {
+            // Access individual properties of each JSON object
+            var productName = product.productName;
+            var productId = product.productId;
+            // Do something with productName and productId
+            console.log("Product Name: " + productName);
+            console.log("Product ID: " + productId);
+        });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    } else {
+        results.textContent = "";
+        productList.append($('<span class="text-danger fw-semibold">No such products</span>'));
+    }
+});
+
+  function displayProducts(products) {
+    productList.empty(); // Use jQuery's empty() method to clear the productList
+    var selectInput = $('<select class="form-select" onchange="selectCategory()" name="product" id="product" required></select>'); // Create a new select element
+    if( Object.keys(products).length === 0){
+        results.textContent = "";
+        productList.append($('<span class="text-danger fw-semibold">No such products</span>'));
+        return;
+    }
+    products.forEach(product => {
+        var optionItem = $('<option></option>');
+        optionItem.text(product.productName);
+        optionItem.val(product.productId);
+        selectInput.append(optionItem);
+    });
+    results.textContent = "Result :";
+    productList.append(selectInput); // Append the select element to the productList
+}
+</script>
+</body>
+</html>

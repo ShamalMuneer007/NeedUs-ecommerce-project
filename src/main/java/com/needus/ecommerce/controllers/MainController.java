@@ -5,6 +5,8 @@ import com.needus.ecommerce.entity.user.UserInformation;
 import com.needus.ecommerce.exceptions.TechnicalIssueException;
 import com.needus.ecommerce.repository.user.UserInformationRepository;
 import com.needus.ecommerce.service.security.OtpService;
+import com.needus.ecommerce.service.user.ReferralOfferService;
+import com.needus.ecommerce.service.user.WalletService;
 import com.needus.ecommerce.service.verification.ConfirmationTokenService;
 import com.needus.ecommerce.service.user.UserInformationService;
 import jakarta.servlet.http.HttpSession;
@@ -26,6 +28,7 @@ import java.sql.Timestamp;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 @Controller
 @Slf4j
@@ -36,6 +39,10 @@ public class MainController {
     ConfirmationTokenService tokenService;
     @Autowired
     UserInformationRepository repository;
+    @Autowired
+    ReferralOfferService referralOfferService;
+    @Autowired
+    WalletService walletService;
     @Autowired
     OtpService otpService;
 
@@ -49,10 +56,10 @@ public class MainController {
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
         if (!(authentication instanceof AnonymousAuthenticationToken)){
             if(roles.contains("ADMIN")){
-                return "redirect:/admin/dashboard/sales-report";
+                return "redirect:/admin/dashboard/sales-report"; //Redirects admin to his dashboard if he tries to go back to log-in page
             }
             if(roles.contains("USER")){
-                return "redirect:/shop/home";
+                return "redirect:/shop/home";//Redirects authenticated user to home page if he tries to go back to log-in page
             }
         }
         log.info("Inside login");
@@ -64,10 +71,10 @@ public class MainController {
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
         if (!(authentication instanceof AnonymousAuthenticationToken)){
             if(roles.contains("ADMIN")){
-                return "redirect:/admin/dashboard/sales-report";
+                return "redirect:/admin/dashboard/sales-report"; //Redirects admin to the dashboard if he tries to go back to sign-up page
             }
             if(roles.contains("USER")){
-                return "redirect:/shop/home";
+                return "redirect:/shop/home";//Redirects authenticated user to the home page if he tries to go back to sign-up page
             }
         }
         log.info("Inside signup");
@@ -76,7 +83,9 @@ public class MainController {
 
     @PostMapping ("/register")
     public String register
-        (@ModelAttribute UserInformation user, Model model, RedirectAttributes ra) {
+        (@ModelAttribute UserInformation user,
+         @RequestParam(name = "referrerId",required = false) String referrerId,
+         Model model, RedirectAttributes ra) {
         log.info("registering the user");
         if(repository.existsByUsername(user.getUsername())){
             return "redirect:/signup?userNameError=true";
@@ -84,12 +93,22 @@ public class MainController {
         if(repository.existsByEmail(user.getEmail())){
             return "redirect:/signup?emailError=true";
         }
+        UserInformation savedUser;
         try {
-            userInformationService.register(user);
+            savedUser = userInformationService.register(user);
         }
         catch (Exception e){
             e.printStackTrace();
             throw new TechnicalIssueException("Something went wrong while saving the user in the userService side",e);
+        }
+        log.info(referrerId);
+        if(Objects.nonNull(referrerId)&&!referrerId.isEmpty()){
+            UUID userId = UUID.fromString(referrerId);
+            if(userInformationService.usersExistsByUserId(userId)){
+                UserInformation userInformation = userInformationService.findUserById(userId);
+                walletService.walletCredit(userInformation,referralOfferService.getReferrerOfferAmount());//referrer gets the referrer offer prize
+                walletService.walletCredit(savedUser,referralOfferService.getRefereeOfferAmount());//referee gets the referee offer prize
+            }
         }
         log.info("user registered");
         ra.addFlashAttribute("message","Success! A verification email has been sent to your email");

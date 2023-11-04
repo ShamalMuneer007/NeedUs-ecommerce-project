@@ -259,7 +259,7 @@ main {
   }
   }
 
-  @media (max-width:550) {
+  @media (max-width:550px) {
     .add-product-btn {
       width: 30px;
     }

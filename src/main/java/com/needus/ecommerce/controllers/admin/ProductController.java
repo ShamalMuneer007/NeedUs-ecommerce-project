@@ -149,7 +149,15 @@ public class ProductController {
         product.setDescription(description);
         product.setBrands(brand);
         product.setCategories(category);
-        product.setProductPrice(price);
+        product.setProductBasePrice(price);
+        if(!category.isDiscountOfferExpired()){
+            product
+                .setProductPrice(
+                    product.getProductBasePrice()-(product.getProductBasePrice()*category.getDiscountOfferPercentage()/100));
+        }
+        else{
+            product.setProductPrice(product.getProductBasePrice());
+        }
         product.setUserInformation(currentUserInfo);
         product.setStock(stock);
         product.setProductFilters(filters);
@@ -194,6 +202,7 @@ public class ProductController {
         Brands productBrand = product.getBrands();
         Categories productCategories = product.getCategories();
         List<Brands> brands = brandService.findAllNonDeletedBrands();
+        List<ProductImages> images  = product.getImages();
         List<Categories> categories = categoryService.findAllNonDeletedCategories();
         List<ProductFilters> filters = filterService.findAllFilters();
         model.addAttribute("productCategory",productCategories);
@@ -203,6 +212,7 @@ public class ProductController {
         model.addAttribute("filter",filters);
         model.addAttribute("product", product);
         model.addAttribute("productBrand",productBrand);
+        model.addAttribute("images",images);
         return "admin/editProducts";
     }
     @PostMapping("/editProduct/edit/{id}")
@@ -247,7 +257,7 @@ public class ProductController {
         try {
             if (!imageFiles.isEmpty()) {
                 for (MultipartFile imageFile : imageFiles) {
-                    if (!imageFile.isEmpty()) {
+                    if(!imageFile.isEmpty()) {
                         productImageService.removeProductImages(productDetails.getImages());
                         String fileName = fileUploadDir(imageFile);
                         ProductImages imageObj = new ProductImages(fileName, tempProduct);
@@ -274,16 +284,24 @@ public class ProductController {
             log.warn("Brand has been changed");
             productDetails.setBrands(brand);
         }
-        if(!productDetails.getCategories().equals(category)) {
-            log.warn("Category has been changed");
-            productDetails.setCategories(category);
-        }
-        if(Objects.nonNull(stock)&&productDetails.getStock().equals(stock)) {
+        if(Objects.nonNull(stock)&&!productDetails.getStock().equals(stock)) {
             log.warn("Stock has been changed");
             productDetails.setStock(stock);
         }
-        if(Objects.nonNull(price)&&productDetails.getProductPrice().equals(price)) {
-            productDetails.setProductPrice(price);
+        if(Objects.nonNull(price)&&!productDetails.getProductBasePrice().equals(price)) {
+            productDetails.setProductBasePrice(price);
+        }
+        if(!productDetails.getCategories().equals(category)) {
+            productDetails.setCategories(category);
+            if(!category.isDiscountOfferExpired()){
+                productDetails
+                    .setProductPrice(
+                        productDetails.getProductBasePrice()-(productDetails.getProductBasePrice()*category.getDiscountOfferPercentage()/100));
+            }
+            else{
+                productDetails.setProductPrice(productDetails.getProductBasePrice());
+            }
+            log.warn("Category has been changed");
         }
         if(Objects.nonNull(filters)) {
             log.warn("product filter tags has been changed");

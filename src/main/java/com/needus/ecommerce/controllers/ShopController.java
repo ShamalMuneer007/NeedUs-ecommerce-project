@@ -99,6 +99,7 @@ public class ShopController {
         UserInformation user;
         Products product;
         boolean isPurchased = false;
+        boolean productReviewed = false;
         boolean productExistsInCart = false;
         try {
             user = userService.getCurrentUser();
@@ -117,6 +118,10 @@ public class ShopController {
                             .getOrderItems()
                             .stream()
                             .anyMatch(orderItem -> orderItem.getProduct().equals(product)));
+                productReviewed = product.getProductReview()
+                        .stream()
+                        .anyMatch(productReview ->
+                        productReview.getUserInformation().equals(user));
             }
         }
         catch (Exception e){
@@ -125,10 +130,15 @@ public class ShopController {
         }
         log.info("product rating : "+product.getAverageRating());
         List<ProductImages> images = product.getImages();
+        images.forEach(
+                image ->
+                log.info("file name : "+image.getFileName())
+        );
         log.info("fetched images");
         List<ProductReview> productReviews = productReviewService.findAllProductReviews(product);
         model.addAttribute("productInCart",productExistsInCart);
         model.addAttribute("reviews",productReviews);
+        model.addAttribute("productReviewed",productReviewed);
         model.addAttribute("isPurchased",isPurchased);
         model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         model.addAttribute("image",images.get(0));

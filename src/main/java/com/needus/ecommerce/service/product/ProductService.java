@@ -1,9 +1,6 @@
 package com.needus.ecommerce.service.product;
 
-import com.needus.ecommerce.entity.product.Brands;
-import com.needus.ecommerce.entity.product.ProductFilters;
-import com.needus.ecommerce.entity.product.ProductReview;
-import com.needus.ecommerce.entity.product.Products;
+import com.needus.ecommerce.entity.product.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -23,11 +20,15 @@ public interface ProductService {
 
     Page<Products> findAllNonBlockedProducts(int pageNo, int pageSize);
 
+    List<Products> findAllNonBlockedProducts();
+
     boolean existsById(Long productId);
 
     Page<Products> findProductsOfCategory(Long categoryId, int pageNo, int pageSize);
 
-    void reduceStock(Long productId,int quantity);
+    List<Products> findProductsOfCategory(Long categoryId);
+
+    void reduceStock(Long productId, int quantity);
 
     Page<Products> findAllProductsWithtinParams(Long maxPrice, Long minPrice,
                                                 List<ProductFilters> productFilters, List<Brands> brands, int pageNo, int pageSize);
@@ -44,4 +45,10 @@ public interface ProductService {
     void deleteProductsOfCategory(Long categoryId);
 
     void deleteProductsOfBrand(Long brandId);
+
+    void applyOfferForCategory(Long categoryId, Float discountPercentage);
+
+    void applyOfferForProduct(Long productId, Float discountPercentage, String expiryDate);
+
+    List<Products> searchProducts(String keyword);
 }

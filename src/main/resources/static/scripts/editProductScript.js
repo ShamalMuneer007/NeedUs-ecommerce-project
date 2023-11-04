@@ -1,33 +1,35 @@
-const fileInput = document.getElementById('imageInput');
-const imagePreview = document.getElementById('imagePreview');
-
-// Event listener for file input change
-fileInput.addEventListener('change', function() {
-    // Get the selected files
-    const files = fileInput.files;
-
-    // Clear previous previews
-    imagePreview.innerHTML = '';
-
-    // Loop through the selected files and display previews
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
+function previewImage(inputId,imgId,labelId,deleteButtonId){
+    const file = document.getElementById(inputId);
+    const image = document.getElementById(imgId);
+    const label = document.getElementById(labelId);
+    const dltButton = document.getElementById(deleteButtonId);
+    if(file.files && file.files[0]){
         const reader = new FileReader();
-
-        // Closure to capture the file information
-        reader.onload = (function(file) {
-            return function(e) {
-                // Create an image element for the preview
-                const imgElement = document.createElement('img');
-                imgElement.className = 'preview-image';
-                imgElement.src = e.target.result;
-
-                // Append the image element to the preview container
-                imagePreview.appendChild(imgElement);
-            };
-        })(file);
-
-        // Read in the image file as a data URL
-        reader.readAsDataURL(file);
+        reader.onload = function (e){
+            image.src = e.target.result;
+            image.style.height = "125px";
+            image.style.width = "125px";
+            label.style.display = "none";
+            dltButton.style.display = "flex";
+            dltButton.style.alignItems = "center";
+            dltButton.style.justifyContent = "center";
+        };
+        reader.readAsDataURL(file.files[0]);
     }
-})
+    else{
+        image.src="";
+    }
+}
+function deleteImage(inputId, imgId, labelId,deleteButtonId) {
+    const fileInput = document.getElementById(inputId);
+    const image = document.getElementById(imgId);
+    const label = document.getElementById(labelId);
+    const dltButton = document.getElementById(deleteButtonId);
+    fileInput.value = "";
+
+    image.src = "";
+    image.style.height = "0";
+    image.style.width = "0";
+    dltButton.style.display = "none";
+    label.style.display = "inline-block";
+}

@@ -80,10 +80,11 @@ public class UserInformationServiceImpl implements UserInformationService {
             user.setRole(Role.USER);
         }
         UserInformation userInformation = save(user);
-        Wallet wallet  = walletService.createWallet(user);
+        Wallet wallet  = walletService.createWallet(user);//Creates wallet for the user
         user.setWallet(wallet);
         Optional<UserInformation> saved = Optional.of(save(user));
         saved.ifPresent( mail -> {
+            //sends mail to the user's email for confirmation
                 try {
                     String token = UUID.randomUUID().toString();
                     confirmationTokenService.save(saved.get(),token);
@@ -95,11 +96,6 @@ public class UserInformationServiceImpl implements UserInformationService {
             });
         return saved.get();
     }
-
-//    private UserInformation saveAndFlush(UserInformation user) {
-//        user.setUserCreatedAt(LocalDateTime.now());
-//        return userRepository.saveAndFlush(user);
-//    }
 
     @Override
     public UserInformation findUserById(UUID id) {
@@ -114,7 +110,7 @@ public class UserInformationServiceImpl implements UserInformationService {
         for (Object principal : allPrincipals) {
             if (principal instanceof UserDetails otherUserDetails) {
                 if (otherUserDetails.getUsername().equals(user.getUsername())) {
-                    // This user is logged in, so let's log them out.
+                    // Logging out the logged-in user
                     List<SessionInformation> sessions = sessionRegistry.getAllSessions(principal, false);
                     for (SessionInformation session : sessions) {
                         session.expireNow();
@@ -165,12 +161,6 @@ public class UserInformationServiceImpl implements UserInformationService {
 
     @Override
     public UserInformation save(UserInformation user) {
-//        if(userRepository.count()<1){
-//            user.setRole(Role.ADMIN);
-//        }
-//        else {
-//            user.setRole(Role.USER);
-//        }
         user.setUserCreatedAt(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MINUTES));
         return userRepository.save(user);
     }
@@ -186,5 +176,10 @@ public class UserInformationServiceImpl implements UserInformationService {
     public void changePassword(UserInformation user, String password) {
         user.setPassword(encoder.encode(password));
         userRepository.save(user);
+    }
+
+    @Override
+    public boolean usersExistsByUserId(UUID userId) {
+        return userRepository.existsByUserIdAndIsDeletedFalseAndIsEnabledTrue(userId);
     }
 }

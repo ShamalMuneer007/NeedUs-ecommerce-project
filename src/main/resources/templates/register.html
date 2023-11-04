@@ -47,7 +47,10 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
+        .input::placeholder{
+            font-size : 17px;
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body>
@@ -67,34 +70,30 @@
                                 th:action="@{/register}">
                                 <h3 class="login-text fw-semibold mb-4 pb-3 pt-0" style="letter-spacing: 1px;">Sign up</h3>
                                 <div class="form-outline mb-4">
-                                    <label class="form-label" for="username">Username</label>
-                                    <input class="form-control form-control-lg" id="username" name="username"
-                                        required type="text" />
+<!--                                    <label class="form-label" for="username">Username</label>-->
+                                    <input class="form-control form-control-lg input" id="username" name="username"
+                                        placeholder="Username" required type="text" />
                                     <span id="user_error_msg" style="color:red"></span>
 
                                 </div>
                                 <div class="form-outline mb-4">
-                                    <label class="form-label" for="email">E-mail</label>
-                                    <input class="form-control form-control-lg" id="email" name="email" required
+                                    <input class="form-control form-control-lg input" id="email" name="email" placeholder="E-mail" required
                                         type="email" />
                                     <span id="email_error_msg" style="color:red"></span>
                                 </div>
                                 <div class="form-outline mb-4">
-                                    <label class="form-label" for="password">Password</label>
-                                    <input class="form-control form-control-lg" id="password" name="password"
+                                    <input class="form-control form-control-lg input" id="password" name="password" placeholder="Password"
                                         required type="password" />
                                     <span id="pass_error_msg" style="color:red"></span>
                                 </div>
                                 <div class="form-outline mb-4">
-                                    <label class="form-label" for="confirm-password">Confirm Password</label>
-                                    <input class="form-control form-control-lg" id="confirm-password"
+                                    <input class="form-control form-control-lg input" id="confirm-password" placeholder="Confirm Password"
                                         required type="password" />
                                     <span id="confirm_error_msg" style="color:red"></span>
                                 </div>
                                 <div class="form-outline mb-4">
-                                    <label class="form-label" for="mobile">Mobile number</label>
-                                    <input class="form-control form-control-lg" id="mobile" maxlength="10"
-                                        name="phoneNumber" required type="tel"  />
+                                    <input class="form-control form-control-lg input" id="mobile" maxlength="10" name="phoneNumber"
+                                        placeholder="Mobile number" required type="tel"  />
                                     <span id="error_msg" style="color:red"></span>
                                 </div>
                                 <div class="usererr-msg" th:if="${param.userNameError}">
@@ -103,6 +102,7 @@
                                 <div class="emailerr-msg" th:if="${param.emailError}">
                                     <span>Email already taken</span>
                                 </div>
+                                <input hidden="hidden" name="referrerId" th:value="${param.referrer}">
                                 <div class="pt-1">
                                     <input class="login-button" id="validate" type="submit" value="Register">
                                 </div>

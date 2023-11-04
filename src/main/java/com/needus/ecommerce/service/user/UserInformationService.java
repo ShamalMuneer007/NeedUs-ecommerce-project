@@ -30,4 +30,6 @@ public interface UserInformationService {
     public UserInformation getCurrentUser();
 
     void changePassword(UserInformation user, String password);
+
+    boolean usersExistsByUserId(UUID userId);
 }

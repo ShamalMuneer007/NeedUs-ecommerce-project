@@ -24,6 +24,7 @@ public class ProductDto {
     private LocalDateTime publishedAt;
     private String description;
     private Float productPrice;
+    private Float basePrice;
     private boolean productStatus;
     private int stock;
     private int averageRating;
@@ -34,6 +35,7 @@ public class ProductDto {
             this.userInformation = product.getUserInformation();
             this.averageRating = product.getAverageRating();
             this.productPrice = product.getProductPrice();
+            this.basePrice = product.getProductBasePrice();
             this.description = product.getDescription();
             this.productName = product.getProductName();
             this.stock = product.getStock();

@@ -19,4 +19,6 @@ public interface UserInformationRepository extends JpaRepository<UserInformation
     public List<UserInformation> findAllNonDeleted();
 
     UserInformation findByEmail(String email);
+
+    boolean existsByUserIdAndIsDeletedFalseAndIsEnabledTrue(UUID userId);
 }

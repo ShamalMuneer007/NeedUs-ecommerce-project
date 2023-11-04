@@ -7,9 +7,13 @@ import com.needus.ecommerce.service.product.CategoryService;
 import com.needus.ecommerce.service.product.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -65,16 +69,25 @@ public class ProductServiceImpl implements ProductService {
         PageRequest pageable = PageRequest.of(pageNo - 1, pageSize,sort);
         return repository.findByIsDeletedFalseAndProductStatusTrue(pageable);
     }
+    @Override
+    public List<Products> findAllNonBlockedProducts() {
+        Sort sort = Sort.by(Sort.Order.desc("publishedAt"));
+        return repository.findByIsDeletedFalseAndProductStatusTrue(sort);
+    }
 
     @Override
     public boolean existsById(Long productId) {
-        return repository.existsById(productId);
+        return repository.existsByProductIdAndIsDeletedFalse(productId);
     }
 
     @Override
     public Page<Products> findProductsOfCategory(Long categoryId,int pageNo,int pageSize) {
         PageRequest pageable = PageRequest.of(pageNo - 1, pageSize);
         return repository.findByCategories_CategoryIdAndIsDeletedFalse(categoryId,pageable);
+    }
+    @Override
+    public List<Products> findProductsOfCategory(Long categoryId) {
+        return repository.findByCategories_CategoryIdAndIsDeletedFalse(categoryId);
     }
 
     @Override
@@ -175,6 +188,44 @@ public class ProductServiceImpl implements ProductService {
         List<Products> products = repository.findByBrands_BrandIdAndIsDeletedFalse(brandId);
         products.forEach(product -> {product.setDeleted(true);repository.save(product);});
     }
+
+    @Override
+    public void applyOfferForCategory(Long categoryId, Float discountPercentage) {
+        List<Products> products = findProductsOfCategory(categoryId);
+        products.forEach(product ->{
+            product.setProductPrice(product.getProductBasePrice() - (product.getProductBasePrice()*(discountPercentage/100)));
+            repository.save(product);
+        });
+    }
+
+    @Override
+    public void applyOfferForProduct(Long productId, Float discountPercentage, String expiryDate) {
+        Products product = findProductById(productId);
+        product.setProductPrice(product.getProductBasePrice()-(product.getProductBasePrice()*discountPercentage/100));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        product.setDiscountOfferExpired(false);
+        product.setDiscountOfferExpiryDate(LocalDate.parse(expiryDate,formatter));
+        repository.save(product);
+    }
+
+    @Override
+    public List<Products> searchProducts(String keyword) {
+        return repository.searchAllNonBlockedAndNonDeletedProducts(keyword);
+    }
+
+//    @EventListener(ApplicationReadyEvent.class)
+//    @Scheduled(cron = "0 0 0 * * ?")
+//    public void checkProductOfferExpiration(){
+//        List<Products> products = findAllProducts();
+//        products.forEach(product -> {
+//            if(!product.isDiscountOfferExpired()&&LocalDate.now().isAfter(product.getDiscountOfferExpiryDate())){
+//                product.setProductPrice(product.getProductBasePrice());
+//                product.setDiscountOfferExpired(true);
+//                product.setDiscountOfferExpiryDate(null);
+//        }
+//        });
+//        log.info("Product offer expiration validated");
+//    }
 
 
 }

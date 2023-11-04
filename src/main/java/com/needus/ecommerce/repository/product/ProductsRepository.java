@@ -3,6 +3,7 @@ package com.needus.ecommerce.repository.product;
 import com.needus.ecommerce.entity.product.Products;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -44,4 +45,8 @@ public interface ProductsRepository extends JpaRepository<Products,Long> {
     List<Products> findByCategories_CategoryIdAndIsDeletedFalse(Long categoryId);
 
     List<Products> findByBrands_BrandIdAndIsDeletedFalse(Long brandId);
+
+    List<Products> findByIsDeletedFalseAndProductStatusTrue(Sort sort);
+
+    boolean existsByProductIdAndIsDeletedFalse(Long productId);
 }

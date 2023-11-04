@@ -47,6 +47,9 @@
             <a class="nav_link"
                th:classappend="${requestURI.startsWith('/admin/order/')? 'active' : ''}"
                th:href="@{/admin/order/list}"><i class='bx bx-cart nav_icon'></i><span class="nav_name">Orders</span></a>
+            <a class="nav_link"
+               th:classappend="${requestURI.startsWith('/admin/products/offers')? 'active' : ''}"
+               th:href="@{/admin/products/offers/offer-options}"><i class='bx bxs-offer nav_icon'></i><span class="nav_name">Offers</span></a>
           <a class="nav_link"
             th:classappend="${requestURI == '/admin/categories/list' || requestURI == '/admin/categories/addCategory' ? 'active' : ''}"
             th:href="@{/admin/categories/list}">

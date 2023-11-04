@@ -35,6 +35,12 @@
       background-color: white;
 
   }
+    .truncate {
+        width: 250px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
     </style>
     <title>Needus. | Dashboard</title>
 </head>
@@ -195,7 +201,7 @@
                         <td>
                             <img class="img-sm rounded ms-5 border d-inline" style="height: 60px; width: 60px;"
                                  th:src="@{'/uploads/' + ${product.key.getImages().get(0).getFileName()}}" />
-                            <div class="d-inline ms-5" th:text="${product.key.productName}"></div>
+                            <div class="d-inline ms-5 truncate" th:text="${product.key.productName}"></div>
                         </td>
                         <td class="text-center" style="width:10%;" th:text="${product.value}">
                         </td>

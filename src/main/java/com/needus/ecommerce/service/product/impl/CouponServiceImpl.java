@@ -76,11 +76,11 @@ public class CouponServiceImpl implements CouponService {
     @EventListener(ApplicationReadyEvent.class)
     @Scheduled(cron = "0 0 0 * * ?")
     public void checkAndUpdateCouponValidity(){
-        log.info("Coupon Validity Checked");
         List<Coupon> coupons = couponRepository.findByIsValidTrueAndExpirationDateBefore(LocalDate.now());
         for (Coupon coupon : coupons) {
             coupon.setValid(false);
             couponRepository.save(coupon);
         }
+        log.info("Coupon Validity Checked");
     }
 }

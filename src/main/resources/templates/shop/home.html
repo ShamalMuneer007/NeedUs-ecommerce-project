@@ -330,7 +330,11 @@
                                 </div>
                             </div>
                             <div>
-                                <div class="price">₹ <span th:text="${product.productPrice}"></span></div>
+                                <div th:unless="${product.productPrice == product.basePrice}">
+                                    <div class="text-decoration-line-through text-muted" style="margin-bottom : 0px;">₹ <span th:text="${product.basePrice}"></span></div>
+                                    <div class="price" style="margin-top : 0px;">₹ <span th:text="${product.productPrice}"></span></div>
+                                </div>
+                                <div class="price" th:if="${product.productPrice == product.basePrice}">₹ <span th:text="${product.productPrice}"></span></div>
                                 <div class="d-flex gap-3" th:unless="${product.stock}<=1">
                                     <form method="post" th:action="@{'/user/add-to-cart/' + ${product.productId}}">
                                         <button class="btn add-to-cart-btn" type="submit">

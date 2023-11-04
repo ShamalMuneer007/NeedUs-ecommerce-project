@@ -42,4 +42,4 @@ spring:
 
 twilio:
   accountSid: AC856fbb94f16ea317ada40cebf881a551
-  authToken: 3a15b9b5f53dcd5ed5c5c42ad2a0c955
+  authToken: 4dc6b448c6da5c24d094b79c3cfe7169

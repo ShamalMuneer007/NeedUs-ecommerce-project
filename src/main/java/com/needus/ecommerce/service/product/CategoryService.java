@@ -18,4 +18,6 @@ public interface CategoryService {
     List<Categories> findAllNonDeletedCategories();
 
     List<Categories> searchAllNonDeletedProductsBasedOnCategorySearchKey(String searchKey);
+
+    void applyOffer(String expiryDate, Float discountPercentage, Long categoryId);
 }
