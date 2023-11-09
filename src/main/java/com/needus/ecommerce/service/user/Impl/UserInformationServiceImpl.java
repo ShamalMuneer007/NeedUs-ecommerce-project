@@ -182,4 +182,9 @@ public class UserInformationServiceImpl implements UserInformationService {
     public boolean usersExistsByUserId(UUID userId) {
         return userRepository.existsByUserIdAndIsDeletedFalseAndIsEnabledTrue(userId);
     }
+
+    @Override
+    public boolean userExistsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }

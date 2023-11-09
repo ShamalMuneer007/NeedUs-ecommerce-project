@@ -32,4 +32,6 @@ public interface UserInformationService {
     void changePassword(UserInformation user, String password);
 
     boolean usersExistsByUserId(UUID userId);
+
+    boolean userExistsByEmail(String email);
 }

@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Email Confirmation</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
+        <h1 class="text-center">NEEDUS <span style="color:#E73C17;">.</span></h1>
         <h3 th:text="${title}"></h3>
         <p class="">Thank you for signing up. Please click on the link to verify your email address </p>
-        <a th:href="${link}" th:text="${link}"></a>
+        <a style="color:#E73C17; text-decoration: none;" th:href="${link}" th:text="${link}">></a>
     </div>
 </body>
 </html>

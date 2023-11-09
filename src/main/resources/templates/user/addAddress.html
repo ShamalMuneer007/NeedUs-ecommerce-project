@@ -12,77 +12,119 @@
 </head>
 
 <body>
-<main class="container-fluid    ">
-    <header class="container-fluid">
-        <nav class="navbar navbar-expand-lg pt-5 pe-3 pb-2">
-            <div class="container-fluid">
-                <div class="navbar-brand">
-                    <a class="nav_logo pe-5 ps-5" href="#"> <span class="nav_logo-name">Needus</span><span
-                            class="logo-dot">.</span>
-                    </a>
+<header class="container-fluid pt-2">
+    <div aria-hidden="true" aria-labelledby="searchModalLabel" class="modal fade" id="searchModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="searchModalLabel">Search</h5>
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
                 </div>
-                <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
-                        class="navbar-toggler" data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse"
-                        type="button">
-                    <span><i class="bx bx-menu"></i></span>
-                </button>
-                <div class="collapse navbar-collapse ps-5" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 gap-3 mb-lg-0">
-                        <li class="nav-item">
-                            <a aria-current="page" class="nav-link" id="home-nav" th:href="@{/shop/home}">Home</a>
-                        </li>
-                        <!--                    <li class="nav-item dropdown">-->
-                        <!--                        <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"-->
-                        <!--                           role="button">-->
-                        <!--                            Categories-->
-                        <!--                        </a>-->
-                        <!--                        <ul class="dropdown-menu">-->
-                        <!--                            <li th:each="category : ${categories}">-->
-                        <!--                                <a class="dropdown-item" th:href="@{'/shop/categories/' + ${category.categoryId}}" th:text="${category.categoryName}"></a>-->
-                        <!--                            </li>-->
-                        <!--                        </ul>-->
-                        <!--                    </li>-->
 
-                    </ul>
-                    <div class="d-flex gap-5 justify-content-between me-5">
-                        <form class="d-flex me-5 pe-5" role="search">
-                            <input aria-label="Search" class="form-control me-2" placeholder="Search" type="search">
-                        </form>
-                        <div class="d-flex gap-3 nav-item dropdown">
-                            <div th:if="${not #authorization.expression('isAuthenticated()')}">
-                                <a class="reg nav-link" th:href="@{/login}">Login</a>
-                            </div>
-                            <div th:if="${not #authorization.expression('isAuthenticated()')}">
-                                <a class="reg nav-link" th:href="@{/signup}">Signup</a>
-                            </div>
-                            <div th:if="${#authorization.expression('isAuthenticated()')}">
-                                <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
-                                   role="button">
-                                    <span th:text="${username}"></span>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a class="dropdown-item">Profile settings</a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="#">Cart</a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" th:href="@{/user/my-orders}">My Orders</a>
-                                    </li>
-                                    <li>
-                                        <form method="post" th:action="@{/logout}">
-                                            <input class="btn" type="submit" value="Logout">
-                                        </form>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form class="d-flex me-lg-3 pe-0 me-0 pe-lg-5 " method="get" role="search"
+                          th:action="@{/shop/home}">
+                        <input aria-label="Search" class="form-control me-2" name="search"
+                               placeholder="Search Products" type="search">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <nav class="container-fluid navbar navbar-expand-lg pe-3 pb-2">
+        <div class="container-fluid">
+            <div class="navbar-brand ms-sm-0 d-none d-md-inline-block">
+                <a class="nav_logo pe-lg-5 pe-0 ps-5" href="#"> <span class="nav_logo-name">Needus</span><span
+                        class="logo-dot">.</span>
+                </a>
+            </div>
+            <div class="navbar-brand ms-sm-0 d-inline-block d-md-none">
+                <a class="nav_logo pe-lg-5 pe-0 ps-5" href="#"> <span class="nav_logo-name">N</span><span
+                        class="logo-dot">.</span>
+                </a>
+            </div>
+            <form class="d-sm-flex me-lg-3 pe-0 me-0 d-none pe-lg-5 " method="get" role="search"
+                  th:action="@{/shop/home}">
+                <input aria-label="Search" class="form-control me-2" name="search" placeholder="Search Products"
+                       type="search">
+            </form>
+            <a aria-expanded="false" class="nav-link d-sm-none" data-bs-target="#searchModal" data-bs-toggle="modal"
+               role="button">
+                <i class="bx bx-search"></i>
+            </a>
+            <ul class="dropdown-menu">
+            </ul>
+            <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"
+                    data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse" id="nav-toggle"
+                    type="button">
+                <span><i class="bx bx-menu"></i></span>
+            </button>
+            <div class="collapse navbar-collapse ps-5" id="navbarSupportedContent">
+                <ul class="navbar-nav mb-lg-2 gap-3 mb-lg-0">
+                    <li class="nav-item">
+                        <a aria-current="page" class="nav-link" th:href="@{/shop/home}">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
+                           role="button">
+                            Categories
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li th:each="category : ${categories}">
+                                <a class="dropdown-item" th:href="@{'/shop/categories/' + ${category.categoryId}}"
+                                   th:text="${category.categoryName}"></a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link icon-button" th:href="@{/user/cart-items}">
+                            <i class="bx bx-cart pe-2"></i>Cart</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link" th:href="@{/user/wishlist-items}"><i
+                                class="bx bx-heart pe-2"></i>Wishlist</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="d-lg-flex ms-5 gap-5 hide-on-collapse mt-4 mt-lg-0 pt-lg-0 d-none me-3 justify-content-end col-12 col-lg-2">
+                <div class="d-flex gap-3 me-5 nav-item dropdown">
+                    <div th:if="${not #authorization.expression('isAuthenticated()')}">
+                        <a class="reg nav-link" th:href="@{/login}">Login</a>
+                    </div>
+                    <div th:if="${not #authorization.expression('isAuthenticated()')}">
+                        <a class="reg nav-link" th:href="@{/signup}">Signup</a>
+                    </div>
+                    <div th:if="${#authorization.expression('isAuthenticated()')}">
+                        <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
+                           href="#" role="button">
+                            <span th:text="${username}"></span></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" th:href="@{/user/profile-settings}">Profile
+                                    settings</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" th:href="@{/user/cart-items}">Cart</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" th:href="@{/user/my-orders}">My Orders</a>
+                            </li>
+                            <li>
+                                <button class="btn btn-danger mt-2 ms-3" data-bs-target="#logoutModal"
+                                        data-bs-toggle="modal" type="button">
+                                    Logout
+                                </button>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
-        </nav>
-    </header>
+        </div>
+    </nav>
+</header>
+<main class="container-fluid    ">
     <section>
         <div class="container">
             <div class="row gap-5">
@@ -91,10 +133,10 @@
                         <form class="needs-validation" id="login-form" method="post"
                               th:action="@{'/user/addAddress/saveAddress/' + ${userId}}">
                             <h2 class="login-text fw-bold mb-4 pb-3 pt-0" style="letter-spacing: 1px;">Please Enter Your Shipping Address</h2>
-                            <h4 class="mt-5 fw-semibold ps-4">Shipping Address</h4>
+                            <h4 class="mt-5 fw-semibold ps-md-4">Shipping Address</h4>
                             <hr>
                             <div class="container">
-                            <div class="col-6 ms-5 ps-5">
+                            <div class="col-12 col-md-6 ms-md-3 ps-md-3">
                             <div class="form-outline mt-5 mb-4">
                                 <label class="form-label fw-bold" for="firstName">First Name</label>
                                 <input class="form-control form-control-lg mt-2" id="firstName" name="firstName"
@@ -134,14 +176,11 @@
                                     <label class="form-label fw-bold" for="contactNumber">Contact Number</label>
                                     <input class="form-control form-control-lg" id="contactNumber" name="contactNumber" required type="tel" />
                                 </div>
-                            <div class="emailerr-msg" th:if="${param.emailError}">
-                                <span>Email already taken</span>
-                            </div>
                             </div>
                                 <hr class="mt-2">
 
-                            <div class="d-flex justify-content-end me-5">
-                                <button class="btn login-button" id="validate" type="submit">Next</button>
+                            <div class="d-flex justify-content-end me-md-5">
+                                <button class="btn login-button d-flex justify-content-center px-5 p-md-0" id="validate" type="submit">Next</button>
                             </div>
                             </div>
                         </form>

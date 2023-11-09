@@ -53,7 +53,6 @@ public class UserController {
     CartService cartService;
     @Autowired
     CouponService couponService;
-
     @Autowired
     WalletHistoryService walletHistoryService;
     @Autowired

@@ -34,18 +34,19 @@
                     <div class="col-lg-5">
                         <div class="login-card card mt-5 pt-xl-0 mt-xl-n5">
                             <form class="card-body pt-0" method="post" th:action="@{/login}">
-                                <div class="successful-msg fw-semibold mb-2" th:if="${param.registrationSuccess}">
-                                    Registration Successful. Activation Mail is sent to you email!
+                                <div class="successful-msg pt-1 fw-semibold mb-2"  style="margin-left: -4%; width: 108%" th:if="${param.registrationSuccess}">
+                                   <div class="text-center">Registration Successful!</div>
+                                    <div class="text-center">Activation link has been sent to your Email address.</div>
                                 </div>
-                                <div class="successful-msg fw-semibold mb-2" th:if="${successMessage}" th:text="${successMessage}">
+                                <div class="successful-msg fw-semibold mb-2"  style="margin-left: -4%; width: 108%" th:if="${successMessage}" th:text="${successMessage}">
                                 </div>
-                                <div class="disabled-msg fw-semibold mb-2" th:if="${param.disabled}">
+                                <div class="disabled-msg fw-semibold mb-2"  style="margin-left: -4%; width: 108%" th:if="${param.disabled}">
                                     User is disabled.
                                 </div>
-                                <div class="disabled-msg fw-semibold mb-2 ms" th:if="${param.error}">
+                                <div class="disabled-msg fw-semibold mb-2 ms"  style="margin-left: -4%; width: 108%" th:if="${param.error}">
                                     Invalid Username or Password
                                 </div>
-                                <div class="disabled-msg fw-semibold mb-2" th:if="${param.sessionExpired}">
+                                <div class="disabled-msg fw-semibold mb-2"  style="margin-left: -4%; width: 108%" th:if="${param.sessionExpired}">
                                     Your Session Expired.
                                 </div>
                                 <h3 class="login-text fw-semibold mb-4 pb-3" style="letter-spacing: 1px;">Sign in</h3>

@@ -60,7 +60,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
             SecureRandom random = new SecureRandom();
             String generatedPassword = new BigInteger(130, random).toString(32);
             String email = OauthUser.getAttribute("email");
-            if(!repository.existsByEmail(email)) {
+            if(!service.userExistsByEmail(email)) {
                 Wishlist wishlist =  new Wishlist();
                 Cart cart = cartService.createCart();
                 wishlistService.createWishlist(wishlist);

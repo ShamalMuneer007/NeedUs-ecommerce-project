@@ -6,6 +6,7 @@ import com.needus.ecommerce.repository.product.CategoryRepository;
 import com.needus.ecommerce.repository.product.ProductsRepository;
 import com.needus.ecommerce.service.product.CategoryService;
 import com.needus.ecommerce.service.product.ProductService;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -78,28 +79,30 @@ public class CategoryServiceImpl implements CategoryService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         category.setDiscountOfferExpiryDate(LocalDate.parse(expiryDate,formatter));
     }
-//    @EventListener(ApplicationReadyEvent.class)
-//    @Scheduled(cron = "0 0 0 * * ?")
-//    public void expireCategoryOffers() {
-//        List<Categories> categories = findAllNonDeletedCategories();
-//        categories.forEach(this::expireCategoryOffer);
-//        log.info("Category offer expiration validated");
-//    }
-//
-//    private void expireCategoryOffer(Categories category) {
-//        if (!category.isDiscountOfferExpired() && LocalDate.now().isAfter(category.getDiscountOfferExpiryDate())) {
-//            resetProductPrices(category.getProducts());
-//            category.setDiscountOfferExpiryDate(null);
-//            category.setDiscountOfferExpired(true);
-//            category.setDiscountOfferPercentage(null);
-//            categoryRepository.save(category);
-//        }
-//    }
-//
-//    private void resetProductPrices(List<Products> products) {
-//        products.forEach(product -> {
-//            product.setProductPrice(product.getProductBasePrice());
-//            productsRepository.save(product);
-//        });
-//    }
+    @EventListener(ApplicationReadyEvent.class)
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void expireCategoryOffers() {
+        List<Categories> categories = findAllNonDeletedCategories();
+        categories.forEach(this::expireCategoryOffer);
+        log.info("Category offer expiration validated");
+    }
+
+    @Transactional
+    public void expireCategoryOffer(Categories category) {
+        if (!category.isDiscountOfferExpired() && LocalDate.now().isAfter(category.getDiscountOfferExpiryDate())) {
+            resetProductPrices(category.getProducts());
+            category.setDiscountOfferExpiryDate(null);
+            category.setDiscountOfferExpired(true);
+            category.setDiscountOfferPercentage(null);
+            categoryRepository.save(category);
+        }
+    }
+
+    @Transactional
+    public void resetProductPrices(List<Products> products) {
+        products.forEach(product -> {
+            product.setProductPrice(product.getProductBasePrice());
+            productsRepository.save(product);
+        });
+    }
 }

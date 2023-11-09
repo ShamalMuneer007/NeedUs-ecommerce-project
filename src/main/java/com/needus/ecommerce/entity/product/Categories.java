@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Categories {
-    @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "categories")
+    @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "categories", fetch = FetchType.EAGER)
     List<Products> products;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

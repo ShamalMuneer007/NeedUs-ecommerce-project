@@ -50,60 +50,113 @@
         </div>
     </div>
 </div>
-<header class="container-fluid">
-    <nav class="navbar navbar-expand-lg mt-0 pt-4 pe-3 pb-2">
+<header class="container-fluid pt-2">
+    <div aria-hidden="true" aria-labelledby="searchModalLabel" class="modal fade" id="searchModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="searchModalLabel">Search</h5>
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form class="d-flex me-lg-3 pe-0 me-0 pe-lg-5 " method="get" role="search"
+                          th:action="@{/shop/home}">
+                        <input aria-label="Search" class="form-control me-2" name="search"
+                               placeholder="Search Products" type="search">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <nav class="container-fluid navbar navbar-expand-lg pe-3 pb-2">
         <div class="container-fluid">
-            <div class="navbar-brand">
-                <a class="nav_logo pe-5 ps-5" href="#"> <span class="nav_logo-name">Needus</span><span
+            <div class="navbar-brand ms-sm-0 d-none d-md-inline-block">
+                <a class="nav_logo pe-lg-5 pe-0 ps-5" href="#"> <span class="nav_logo-name">Needus</span><span
                         class="logo-dot">.</span>
                 </a>
             </div>
-            <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
-                    class="navbar-toggler" data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse"
+            <div class="navbar-brand ms-sm-0 d-inline-block d-md-none">
+                <a class="nav_logo pe-lg-5 pe-0 ps-5" href="#"> <span class="nav_logo-name">N</span><span
+                        class="logo-dot">.</span>
+                </a>
+            </div>
+            <form class="d-sm-flex me-lg-3 pe-0 me-0 d-none pe-lg-5 " method="get" role="search"
+                  th:action="@{/shop/home}">
+                <input aria-label="Search" class="form-control me-2" name="search" placeholder="Search Products"
+                       type="search">
+            </form>
+            <a aria-expanded="false" class="nav-link d-sm-none" data-bs-target="#searchModal" data-bs-toggle="modal"
+               role="button">
+                <i class="bx bx-search"></i>
+            </a>
+            <ul class="dropdown-menu">
+            </ul>
+            <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"
+                    data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse" id="nav-toggle"
                     type="button">
                 <span><i class="bx bx-menu"></i></span>
             </button>
             <div class="collapse navbar-collapse ps-5" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 gap-3 mb-lg-0">
+                <ul class="navbar-nav mb-lg-2 gap-3 mb-lg-0">
                     <li class="nav-item">
                         <a aria-current="page" class="nav-link" th:href="@{/shop/home}">Home</a>
                     </li>
-
+                    <li class="nav-item dropdown">
+                        <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
+                           role="button">
+                            Categories
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li th:each="category : ${categories}">
+                                <a class="dropdown-item" th:href="@{'/shop/categories/' + ${category.categoryId}}"
+                                   th:text="${category.categoryName}"></a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link icon-button" th:href="@{/user/cart-items}">
+                            <span class="icon-button__badge" th:text="${cartSize}" th:unless="${cartSize} == 0"></span>
+                            <i class="bx bx-cart pe-2"></i>Cart</a>
+                    </li>
+                    <li class="nav-item active  dropdown">
+                        <a class="nav-link" th:href="@{/user/wishlist-items}"><i
+                                class="bx bx-heart pe-2"></i>Wishlist</a>
+                    </li>
                 </ul>
-                <div class="d-flex gap-5 justify-content-between me-5">
-                    <form class="d-flex me-5 pe-5" role="search">
-                        <input aria-label="Search" class="form-control me-2" placeholder="Search Products" type="search">
-                    </form>
-                    <div class="d-flex gap-3 nav-item dropdown">
-                        <div th:if="${not #authorization.expression('isAuthenticated()')}">
-                            <a class="reg nav-link" th:href="@{/login}">Login</a>
-                        </div>
-                        <div th:if="${not #authorization.expression('isAuthenticated()')}">
-                            <a class="reg nav-link" th:href="@{/signup}">Signup</a>
-                        </div>
-                        <div th:if="${#authorization.expression('isAuthenticated()')}">
-                            <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
-                               href="#" role="button">
-                                <span th:text="${username}"></span></a>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item" th:href="@{/user/profile-settings}">Profile
-                                        settings</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" th:href="@{/user/cart-items}">Cart</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" th:href="@{/user/my-orders}">My Orders</a>
-                                </li>
-                                <li>
-                                    <button class="btn btn-danger mt-2 ms-3" data-bs-target="#logoutModal"
-                                            data-bs-toggle="modal" type="button">
-                                        Logout
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
+            </div>
+            <div class="d-lg-flex ms-5 gap-5 hide-on-collapse mt-4 mt-lg-0 pt-lg-0 d-none me-3 justify-content-end col-12 col-lg-2">
+                <div class="d-flex gap-3 me-5 nav-item dropdown">
+                    <div th:if="${not #authorization.expression('isAuthenticated()')}">
+                        <a class="reg nav-link" th:href="@{/login}">Login</a>
+                    </div>
+                    <div th:if="${not #authorization.expression('isAuthenticated()')}">
+                        <a class="reg nav-link" th:href="@{/signup}">Signup</a>
+                    </div>
+                    <div th:if="${#authorization.expression('isAuthenticated()')}">
+                        <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
+                           href="#" role="button">
+                            <span th:text="${username}"></span></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" th:href="@{/user/profile-settings}">Profile
+                                    settings</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" th:href="@{/user/cart-items}">Cart</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" th:href="@{/user/my-orders}">My Orders</a>
+                            </li>
+                            <li>
+                                <button class="btn btn-danger mt-2 ms-3" data-bs-target="#logoutModal"
+                                        data-bs-toggle="modal" type="button">
+                                    Logout
+                                </button>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -198,5 +251,15 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" type="text/javascript"></script>
 <script crossorigin="anonymous" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $('#nav-toggle').on('click', function() {
+        console.log($(this).attr('aria-expanded'))
+        if ($(this).attr('aria-expanded') === "true") {
+            $('.hide-on-collapse').toggleClass('d-none');
+        } else {
+            $('.hide-on-collapse').toggleClass('d-none');
+        }
+    });
+</script>
 </body>
 </html>

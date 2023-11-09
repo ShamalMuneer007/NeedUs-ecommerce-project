@@ -217,20 +217,21 @@
     </div>
     <main class="bg-light">
         <div class="container">
-            <h3 class="fw-semibold ps-4" style="font-size:35px;">Checkout</h3>
+            <h3 class="fw-semibold ps-md-4" style="font-size:35px;">Checkout</h3>
             <hr>
             <div class="row justify-content-center">
-                <div class="col-12 col-lg-7">
+                <div class="col-12 col-lg-7 order-2 order-md-1">
+                    <hr class="d-block d-md-none mb-4">
                     <div class="">
-                        <div class="p-4">
+                        <div class="p-md-4">
                             <h5 class="mb-3 fw-bold">Shipping info</h5>
                             <form id="orderForm" method="post" th:action="@{/user/order/checkout/order-item}">
-                                <div class="card p-4 row mb-3">
+                                <div class="card p-4 ps-0 pe-0 pe-md-4 ps-md-4 row mb-3">
                                     <div class="col-lg-12 mb-3" th:each="address : ${addresses}">
 
                                         <div class="form-check h-100 border rounded-3 d-flex justify-content-between">
                                             <div>
-                                                <div class="p-3 ps-5">
+                                                <div class="p-3 ps-md-5">
 
                                                     <input checked class="form-check-input mt-2" id="flexRadioDefault1"
                                                         name="address" th:value="${address.id}" type="radio" />
@@ -319,13 +320,16 @@
                         </div>
                     </div>
                 </div>
-                <div class="order-summary col-12 col-md-12 col-lg-4 mt-3 mt-lg-5 ms-lg-5 d-flex justify-content-center"
+                <div class="order-summary order-1 order-md-2 mb-3 mb-md-0 col-12 col-md-12 col-lg-4 mt-3 mt-lg-5 ms-lg-5 d-flex justify-content-center"
                     style="background-color:#ddffe2; height: 50%; border-radius : 15px;">
                     <div class="ms-lg-4 mt-4 mt-lg-0">
-                        <h5 class="text-dark fw-bold"
-                            style="font-size : 20px; margin-top:10%; margin-left:-10%; margin-bottom : 5%;">Order
-                            Summary</h5>
-                        <h6 class="mb-3"><span class="fw-semibold" th:text="${items.size()}"></span> Items in cart</h6>
+                        <div class="mt-0 mt-md-4 mb-4"
+                            style="font-size : 20px; margin-left:-20%; margin-bottom : 5%;">
+                            <h5 class="text-dark fw-bold">Order Summary</h5>
+                            <span class="fw-semibold" th:text="${items.size()}"></span> Items in cart
+                        </div>
+                        <hr>
+                        <h6 class="mb-3"></h6>
                         <div class="d-flex align-items-center mb-4" th:each="item : ${items}">
                             <div class="me-3 position-relative">
                                 <img class="img-sm rounded border" style="height: 60px; width: 60px;"

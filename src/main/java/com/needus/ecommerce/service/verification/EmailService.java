@@ -33,7 +33,7 @@ public class EmailService {
             String token = confirmationToken.getToken();
             Context context = new Context();
             context.setVariable("title","Verify Your Email Address");
-            context.setVariable("link","http://localhost:8080/activation?token="+token);
+            context.setVariable("link","https://needus.store/activation?token="+token);
             String body = templateEngine.process("confirmation",context);
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message,true);

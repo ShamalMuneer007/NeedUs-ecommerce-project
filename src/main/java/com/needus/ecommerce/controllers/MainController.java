@@ -87,10 +87,10 @@ public class MainController {
          @RequestParam(name = "referrerId",required = false) String referrerId,
          Model model, RedirectAttributes ra) {
         log.info("registering the user");
-        if(repository.existsByUsername(user.getUsername())){
+        if(userInformationService.usersExistsByUsername(user.getUsername())){
             return "redirect:/signup?userNameError=true";
         }
-        if(repository.existsByEmail(user.getEmail())){
+        if(userInformationService.userExistsByEmail(user.getEmail())){
             return "redirect:/signup?emailError=true";
         }
         UserInformation savedUser;

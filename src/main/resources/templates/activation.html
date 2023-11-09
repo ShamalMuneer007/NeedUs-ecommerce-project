@@ -9,11 +9,19 @@
     <meta content="width=device-width, initial-scale=1" name="viewport">
 </head>
 <body>
-<div class="container my-5">
+<div class="container-fluid p-5 bg-body-tertiary">
+        <div>
+            <h1 class="LOGO">Needus<span class="logo-dot">.</span></h1>
+        </div>
     <div class="row justify-content-center">
-        <div class="col col-md-8">
-            <p th:if="${message}" th:text="${message}">MESSAGE</p>
-            <a class="btn btn-success" th:href="@{/login}">LOGIN</a>
+        <h3 class="mt-3">Account activation</h3>
+        <hr class="mb-3">
+        <div class="card col col-md-4">
+            <div class="card-body d-flex justify-content-center flex-column align-items-center">
+            <p class="fw-semibold" th:if="${message}" th:text="${message}"></p>
+                <hr>
+            <a class="btn text-white fw-bold" style="background: #E73C17;" th:href="@{/login}">LOGIN</a>
+            </div>
         </div>
     </div>
 </div>

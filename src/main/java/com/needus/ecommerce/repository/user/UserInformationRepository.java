@@ -13,12 +13,16 @@ public interface UserInformationRepository extends JpaRepository<UserInformation
     public boolean existsByUsername(String username);
     public UserInformation findByUsername(String username);
 
-    public boolean existsByEmail(String username);
+    public boolean existsByEmail(String email);
+    public boolean existsByEmailAndIsDeletedFalse(String username);
 
-    @Query(value = "SELECT * FROM Users WHERE is_deleted = false",nativeQuery = true)
+
+    @Query(value = "SELECT * FROM users WHERE is_deleted = false",nativeQuery = true)
     public List<UserInformation> findAllNonDeleted();
 
     UserInformation findByEmail(String email);
 
     boolean existsByUserIdAndIsDeletedFalseAndIsEnabledTrue(UUID userId);
+
+    boolean existsByUsernameAndIsDeletedFalse(String username);
 }

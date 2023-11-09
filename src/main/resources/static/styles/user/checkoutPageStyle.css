@@ -36,7 +36,7 @@ nav{
     margin-left: -20px;
     margin-right: -20px;
     padding-top : 20px;
-    padding-left 20px;
+    padding-left : 20px;
     background-color:#ffffff;
 }
 #home-nav:hover{
@@ -89,7 +89,6 @@ nav{
         margin: 0.8rem 0;
         display: flex;
         border-radius: 10px;
-        justify-content: center
     }
 }
 

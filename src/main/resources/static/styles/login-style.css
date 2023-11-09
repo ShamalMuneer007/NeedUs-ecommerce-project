@@ -36,9 +36,6 @@
     margin-bottom: 20px;
     background-color: rgb(10, 206, 10);
     color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     border-top-left-radius: 8px;
     border-top-right-radius: 5px;
     font-size: 14px;
