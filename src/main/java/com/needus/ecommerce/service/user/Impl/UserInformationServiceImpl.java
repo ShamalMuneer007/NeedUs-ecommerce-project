@@ -5,6 +5,7 @@ import com.needus.ecommerce.entity.user.Wallet;
 import com.needus.ecommerce.entity.user.Wishlist;
 import com.needus.ecommerce.entity.user.enums.Role;
 import com.needus.ecommerce.entity.user.UserInformation;
+import com.needus.ecommerce.exceptions.TechnicalIssueException;
 import com.needus.ecommerce.repository.user.ConfirmationTokenRepository;
 import com.needus.ecommerce.repository.user.UserInformationRepository;
 import com.needus.ecommerce.service.user.CartService;
@@ -18,12 +19,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -46,11 +51,12 @@ public class UserInformationServiceImpl implements UserInformationService {
     private final CartService cartService;
     private final WishlistService wishlistService;
     private final WalletService walletService;
+    private final UserDetailsService userDetailsService;
     @Autowired
     public UserInformationServiceImpl(
         BCryptPasswordEncoder encoder, UserInformationRepository userRepository,
         ConfirmationTokenRepository confirmationTokenRepository, ConfirmationTokenService confirmationTokenService,
-        EmailService emailService, SessionRegistry sessionRegistry, CartService cartService, WishlistService wishlistService, WalletService walletService){
+        EmailService emailService, SessionRegistry sessionRegistry, CartService cartService, WishlistService wishlistService, WalletService walletService, UserDetailsService userDetailsService){
         this.encoder = encoder;
         this.userRepository = userRepository;
         this.confirmationTokenRepository = confirmationTokenRepository;
@@ -60,6 +66,7 @@ public class UserInformationServiceImpl implements UserInformationService {
         this.cartService = cartService;
         this.wishlistService = wishlistService;
         this.walletService = walletService;
+        this.userDetailsService = userDetailsService;
     }
 
 
@@ -186,5 +193,38 @@ public class UserInformationServiceImpl implements UserInformationService {
     @Override
     public boolean userExistsByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public void editUserDetails(UUID userId, String username, String email, String phoneNumber) {
+        try{
+           UserInformation user = findUserById(userId);
+           if(!user.getEmail().equals(username)||
+               !username.replaceAll("\\s", "").equals("")){
+               user.setUsername(username);
+           }
+            if(!user.getEmail().equals(email)||
+                !email.replaceAll("\\s", "").equals("")){
+                user.setEmail(email);
+            }
+            if(!user.getPhoneNumber().equals(phoneNumber)||
+                !phoneNumber.replaceAll("\\s", "").equals("")){
+                user.setPhoneNumber(phoneNumber);
+            }
+            UserInformation updatedUser = userRepository.save(user);
+            UserDetails updatedUserDetails =
+                userDetailsService.loadUserByUsername(updatedUser.getUsername());
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if(authentication instanceof OAuth2AuthenticationToken){
+                return;
+            }
+            UsernamePasswordAuthenticationToken updatedAuth =
+                new UsernamePasswordAuthenticationToken(updatedUserDetails,null,updatedUserDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(updatedAuth);
+        }
+        catch (Exception e){
+            log.error("Something went wrong while editing the user");
+            throw new TechnicalIssueException("Something went wrong while editing the user");
+        }
     }
 }

@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -215,6 +217,13 @@ public class ProductController {
         model.addAttribute("images",images);
         return "admin/editProducts";
     }
+    @ResponseBody
+    @PostMapping("/delete-image")
+    public ResponseEntity<Map<String,Boolean>> deleteImage(@RequestBody Map<String,Object> data){
+        Long imageId = Long.parseLong(data.get("imageId").toString());
+        productImageService.removeProductImageById(imageId);
+        return new ResponseEntity<>(Map.of("Success",true), HttpStatus.OK);
+    }
     @PostMapping("/editProduct/edit/{id}")
     public String productUpdate(
         @PathVariable(name="id") Long productId,
@@ -258,14 +267,12 @@ public class ProductController {
             if (!imageFiles.isEmpty()) {
                 for (MultipartFile imageFile : imageFiles) {
                     if(!imageFile.isEmpty()) {
-                        productImageService.removeProductImages(productDetails.getImages());
                         String fileName = fileUploadDir(imageFile);
                         ProductImages imageObj = new ProductImages(fileName, tempProduct);
                         imageObj = productImageService.save(imageObj);
                         images.add(imageObj);
                     }
                 }
-                productDetails.getImages().clear();
             }
         }
         catch (Exception e){

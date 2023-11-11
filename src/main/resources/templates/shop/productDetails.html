@@ -11,8 +11,8 @@
     <link href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" rel="stylesheet">
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous" />
-
+    <link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet" type="text/css">
     <style>
         .sub-image:hover {
             cursor: pointer;
@@ -77,7 +77,7 @@
                                 <span th:text="${username}"></span></a>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a th:href="@{/user/profile-settings}" class="dropdown-item">Profile settings</a>
+                                    <a class="dropdown-item" th:href="@{/user/profile-settings}">Profile settings</a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item" th:href="@{/user/cart-items}">Cart</a>
@@ -99,17 +99,17 @@
     </nav>
 </header>
     <main>
-        <div class="modal" tabindex="-1" id="reviewModal">
+        <div class="modal" id="reviewModal" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Add Review</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
                     </div>
                     <div class="modal-body">
                         <form method="post"  th:action="@{'/user/publish-product-review/' + ${product.getProductId()}}">
-                            <label for="reviewText" class="form-label"> Your Review  :
-                            </label><textarea name="reviewContent" class="form-control" id="reviewText" rows="4" placeholder="Write your review here..."></textarea>
+                            <label class="form-label" for="reviewText"> Your Review  :
+                            </label><textarea class="form-control" id="reviewText" name="reviewContent" placeholder="Write your review here..." rows="4"></textarea>
                             <div class="fw-semibold mt-2">
                                 Rating :
                                 <div class="stars" id="stars">
@@ -122,7 +122,7 @@
                                 <input hidden="hidden" id="rating-input" name="rating" value="1">
                             </div>
                             <div class="d-flex justify-content-end mt-2">
-                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit Review</button>
+                            <button class="btn btn-primary" data-bs-dismiss="modal" type="submit">Submit Review</button>
                             </div>
                         </form>
                     </div>
@@ -165,16 +165,16 @@
                             </h4>
                             <div style="font-size : 22px;">
                                 <div>
-                                    <div th:if="${product.getAverageRating() == 0}" style="color: gold;">
+                                    <div style="color: gold;" th:if="${product.getAverageRating() == 0}">
                                         <i  class="fas fa-star"></i>
-                                        <i th:each="star : ${#numbers.sequence(product.getAverageRating(),3)}" class="far fa-star"></i>
+                                        <i class="far fa-star" th:each="star : ${#numbers.sequence(product.getAverageRating(),3)}"></i>
                                     </div>
 <!--                                    <div th:if="${product.getAverageRating() == 5}" style="color: gold;">-->
 <!--                                        <i th:each="star : ${#numbers.sequence(1,5)}" class="fas fa-star"></i>-->
 <!--                                    </div>-->
-                                    <div th:unless="${product.getAverageRating() == 0}" style="color: gold;">
-                                        <i th:each="star : ${#numbers.sequence(1, product.getAverageRating())}" class="fas fa-star"></i>
-                                        <i th:unless="${product.getAverageRating() == 5}" th:each="star : ${#numbers.sequence(product.getAverageRating()+1, 5)}" class="far fa-star"></i>
+                                    <div style="color: gold;" th:unless="${product.getAverageRating() == 0}">
+                                        <i class="fas fa-star" th:each="star : ${#numbers.sequence(1, product.getAverageRating())}"></i>
+                                        <i class="far fa-star" th:each="star : ${#numbers.sequence(product.getAverageRating()+1, 5)}" th:unless="${product.getAverageRating() == 5}"></i>
                                     </div>
                                 </div>
                             </div>
@@ -187,11 +187,9 @@
                                 </div>
                             </div>
                             <span class="text-danger fw-bold" th:if="${product.stock}<=1">Out of stock</span>
-                            <form method="post" th:unless="${product.stock <=1 || productInCart}" th:action="@{'/user/add-to-cart/' + ${product.productId}}">
-                            <button type="submit" class="add-cart-btn btn shadow-0 fw-semibold" href="#"> <i class="me-1 bx bx-cart"></i> Add
+                            <button class="add-cart-btn btn shadow-0 fw-semibold" href="#"  id="cart-button" onclick="addToCart(this.value)" th:unless="${product.stock <=1 || productInCart}" th:value="${product.productId}" type="submit"> <i class="me-1 bx bx-cart"></i> Add
                                 to cart </button>
-                            </form>
-                            <div th:if="${productInCart}" class="fw-bold" style="font-size : 19px;">Product in basket</div>
+                            <div class="fw-bold d-none" id="cart-indication" style="font-size : 19px;">Product in basket</div>
                             <div class="text-warning fw-bold pt-3" th:if="${product.stock}<10" th:unless="${product.stock}<=1">Low stock</div>
                         </div>
                     </main>
@@ -247,17 +245,17 @@
                                     <div>
                                         <div aria-labelledby="ex1-tab-1" class="tab-pane fade show active"
                                              role="tabpanel">
-                                            <div th:unless="${reviews.size() == 0}" class="col-11 ms-md-5 ms-4">
-                                                <div th:each="review : ${reviews}" class="card mb-4">
+                                            <div class="col-11 ms-md-5 ms-4" th:unless="${reviews.size() == 0}">
+                                                <div class="card mb-4" th:each="review : ${reviews}">
                                                     <div class="card-body">
-                                                        <div style="font-size : 17px;" class="fw-bold"><i class="bx bx-user-circle me-1"></i><span th:text="${review.getUserInformation().getUsername()}"></span></div>
-                                                        <div style="font-size: 12px;" class="ms-4">
+                                                        <div class="fw-bold" style="font-size : 17px;"><i class="bx bx-user-circle me-1"></i><span th:text="${review.getUserInformation().getUsername()}"></span></div>
+                                                        <div class="ms-4" style="font-size: 12px;">
                                                                 <span style="color: gold;">
-                                                                    <i th:each="star : ${#numbers.sequence(1, review.rating)}" class="fas fa-star"></i>
+                                                                    <i class="fas fa-star" th:each="star : ${#numbers.sequence(1, review.rating)}"></i>
 <!--                                                                    <i th:each="star : ${#numbers.sequence(1, review.emptyStars)}" class="far fa-star"></i>-->
                                                                 </span>
                                                         </div>
-                                                        <p style="font-size : 17px;" class="ps-4 pt-2" th:text="${review.reviewContent}"></p>
+                                                        <p class="ps-4 pt-2" style="font-size : 17px;" th:text="${review.reviewContent}"></p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -282,10 +280,48 @@
 <script crossorigin="anonymous"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</main>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js" type="text/javascript"></script>
+<script>
+    if([[${productInCart}]]){
+        $('#cart-indication').removeClass('d-none')
+    }
+    function addToCart(productId){
+        console.log(productId);
+        $.ajax({
+            url: '/user/add-to-cart',
+            data: JSON.stringify({ productId: productId }),
+            contentType: 'application/json',
+            type: 'POST',
+            dataType: 'json',
+            success: function(response) {
+                if(response.success){
+                    Toastify({
+                        text: 'Item added to the cart ',
+                        duration: 3000,
+                        destination: "https://github.com/apvarun/toastify-js",
+                        newWindow: true,
+                        close: true,
+                        gravity: "bottom", // `top` or `bottom`
+                        position: "center", // `left`, `center` or `right`
+                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        style: {
+                            background: "linear-gradient(to right, #fb4f14, #ff4500)",
+                        },
+                        onClick: function(){} // Callback after click
+                    }).showToast();
+                }
+                $('#cart-button').addClass('d-none')
+                $('#cart-indication').removeClass('d-none')
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                // Handle errors
+                window.location.href = '/login'
+            }
+        });
+    }
+</script>
 <script th:src="@{/scripts/productDetails.js}" type="text/javascript"></script>
-
 </body>
 
 </html>

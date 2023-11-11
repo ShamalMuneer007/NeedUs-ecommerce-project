@@ -5,6 +5,7 @@ import com.needus.ecommerce.entity.user.Wallet;
 import com.needus.ecommerce.entity.user.enums.Role;
 import com.needus.ecommerce.entity.user.UserInformation;
 import com.needus.ecommerce.entity.user.Wishlist;
+import com.needus.ecommerce.exceptions.TechnicalIssueException;
 import com.needus.ecommerce.repository.user.UserInformationRepository;
 import com.needus.ecommerce.service.user.*;
 import jakarta.servlet.ServletException;
@@ -54,41 +55,48 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
         throws IOException, ServletException {
         Collection<? extends GrantedAuthority> roles = authentication.getAuthorities();
         UserInformation userInformation = new UserInformation();
-        if(authentication.getPrincipal() instanceof DefaultOAuth2User){
-            DefaultOAuth2User OauthUser = (DefaultOAuth2User) authentication.getPrincipal();
-            String username = OauthUser.getAttribute("name");
-            SecureRandom random = new SecureRandom();
-            String generatedPassword = new BigInteger(130, random).toString(32);
-            String email = OauthUser.getAttribute("email");
-            if(!service.userExistsByEmail(email)) {
-                Wishlist wishlist =  new Wishlist();
-                Cart cart = cartService.createCart();
-                wishlistService.createWishlist(wishlist);
-                userInformation.setUsername(username);
-                userInformation.setPassword(encoder.encode(generatedPassword));
-                userInformation.setEmail(email);
-                userInformation.setEnabled(true);
-                userInformation.setRole(Role.USER);
-                userInformation.setUserWishlist(wishlist);
-                userInformation.setCart(cart);
-                userInformation = service.save(userInformation);
-                Wallet wallet  = walletService.createWallet(userInformation);
-                userInformation.setWallet(wallet);
-                service.save(userInformation);
+        try {
+            if (authentication.getPrincipal() instanceof DefaultOAuth2User) {
+                DefaultOAuth2User OauthUser = (DefaultOAuth2User) authentication.getPrincipal();
+                String username = OauthUser.getAttribute("name");
+                SecureRandom random = new SecureRandom();
+                String generatedPassword = new BigInteger(130, random).toString(32);
+                String email = OauthUser.getAttribute("email");
+                if (!service.userExistsByEmail(email)) {
+                    Wishlist wishlist = new Wishlist();
+                    Cart cart = cartService.createCart();
+                    wishlistService.createWishlist(wishlist);
+                    userInformation.setUsername(username);
+                    userInformation.setPassword(encoder.encode(generatedPassword));
+                    userInformation.setEmail(email);
+                    userInformation.setEnabled(true);
+                    userInformation.setRole(Role.USER);
+                    userInformation.setUserWishlist(wishlist);
+                    userInformation.setCart(cart);
+                    userInformation = service.save(userInformation);
+                    Wallet wallet = walletService.createWallet(userInformation);
+                    userInformation.setWallet(wallet);
+                    service.save(userInformation);
 
+                }
+                UserInformation userInfo = service.findUserByName(username);
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userInfo.getUsername(), userInfo.getPassword(), List.of(new SimpleGrantedAuthority(Role.USER.name())));
+                log.info("authToken : " + authToken);
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                log.info("Security Context holder : " + SecurityContextHolder.getContext().getAuthentication().getPrincipal());
             }
-            UserInformation userInfo = service.findUserByName(username);
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                userInfo.getUsername(),userInfo.getPassword(), List.of(new SimpleGrantedAuthority(Role.USER.name())));
-            log.info("authToken : "+authToken);
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-
-            log.info("Security Context holder : "+SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         }
-        userLogService.logUser(userInformation.getUsername(),request.getRemoteAddr());
-        if(roles.contains(new SimpleGrantedAuthority(Role.ADMIN.name())))
+        catch (Exception e){
+            log.error("Something went wrong while user logging in using google oauth");
+            throw new TechnicalIssueException("Something went wrong while user logging in using google oauth");
+        }
+        userLogService.logUser(userInformation.getUsername(), request.getRemoteAddr());
+        if (roles.contains(new SimpleGrantedAuthority(Role.ADMIN.name())))
             response.sendRedirect("/admin/dashboard/sales-report");
         else
             response.sendRedirect("/shop/home");
     }
+
 }

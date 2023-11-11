@@ -132,6 +132,7 @@
                     <div class="login-card mt-5 pt-xl-0 mt-xl-n5">
                         <form class="needs-validation" id="login-form" method="post"
                               th:action="@{'/user/addAddress/saveAddress/' + ${userId}}">
+                            <input name="source" th:value="${source}" type="hidden">
                             <h2 class="login-text fw-bold mb-4 pb-3 pt-0" style="letter-spacing: 1px;">Please Enter Your Shipping Address</h2>
                             <h4 class="mt-5 fw-semibold ps-md-4">Shipping Address</h4>
                             <hr>
@@ -150,7 +151,7 @@
                                 <span id="email_error_msg" style="color:red"></span>
                             </div>
                             <div class="form-outline mb-4">
-                                <label class="form-label fw-bold" for="company">Company</label>
+                                <label class="form-label fw-bold" for="company">Building name</label>
                                 <input class="form-control form-control-lg" id="company" name="company" required />
 
                             </div>

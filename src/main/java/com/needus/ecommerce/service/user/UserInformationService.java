@@ -34,4 +34,6 @@ public interface UserInformationService {
     boolean usersExistsByUserId(UUID userId);
 
     boolean userExistsByEmail(String email);
+
+    void editUserDetails(UUID userId, String username, String email, String phoneNumber);
 }

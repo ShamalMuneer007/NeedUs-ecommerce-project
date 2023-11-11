@@ -1,4 +1,4 @@
- var options = {
+var options = {
         width: 400,
         zoomWidth: 500,
         offset: {vertical: 200, horizontal: -100}

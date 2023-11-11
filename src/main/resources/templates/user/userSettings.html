@@ -189,7 +189,7 @@ box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="pill" href="#messages"><i class="bx bx-envelope-open"></i> <span class="d-none d-sm-inline">Addresses</span></a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" th:unless="${isNotValid}">
                             <a class="nav-link" data-bs-toggle="pill" href="#edit"><i class="bx bx-pen"></i> <span class="d-none d-sm-inline">Edit</span></a>
                         </li>
                         <li class="nav-item">
@@ -310,13 +310,13 @@ box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="d-flex  justify-content-end"><a style="color : #E73C17;" th:href="@{/user/addAddress}">Add address</a></div>
+                                    <div class="d-flex  justify-content-end"><a style="color : #E73C17;" th:href="@{/user/addAddress?source=userSettingsPage}">Add address</a></div>
                                 </div>
                             </div>
-                            <div class="tab-pane" id="edit">
+                            <div class="tab-pane" id="edit" th:unless="${isNotValid}">
                                 <h5 class="fw-bold mt-2" style="font-size:25px;">Edit User Details</h5>
                                 <hr>
-                                <form>
+                                <form method="post" th:action="@{'/user/save-user-changes/'+${user.getUserId()}}">
                                     <div class="form-group row mt-3">
                                         <label class="col-lg-3 col-form-label form-control-label">Username</label>
                                         <div class="col-lg-9">
@@ -332,14 +332,14 @@ box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
                                     <div class="form-group row mt-1">
                                         <label class="col-lg-3 col-form-label form-control-label">Phone Number</label>
                                         <div class="col-lg-9">
-                                            <input class="form-control" name="phoneNumber" th:value="${user.phoneNumber}">
+                                            <input class="form-control" maxlength="10" minlength="10" name="phoneNumber" th:value="${user.phoneNumber}" type="tel">
                                         </div>
                                     </div>
                                     <div class="form-group row mt-4 d-flex justify-content-end">
                                         <label class="col-lg-3 col-form-label form-control-label"></label>
                                         <div class="col-lg-9">
                                             <input class="btn btn-secondary" type="reset" value="Cancel">
-                                            <input class="btn btn-primary" type="button" value="Save Changes">
+                                            <input class="btn btn-primary" type="submit" value="Save Changes">
                                         </div>
                                     </div>
                                 </form>

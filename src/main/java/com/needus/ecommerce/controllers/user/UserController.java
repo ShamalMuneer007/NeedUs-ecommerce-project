@@ -10,6 +10,7 @@ import com.needus.ecommerce.exceptions.ResourceNotFoundException;
 import com.needus.ecommerce.exceptions.TechnicalIssueException;
 import com.needus.ecommerce.exceptions.UnknownException;
 import com.needus.ecommerce.model.user_order.UserOrderDto;
+import com.needus.ecommerce.service.product.CategoryService;
 import com.needus.ecommerce.service.product.CouponService;
 import com.needus.ecommerce.service.product.ProductReviewService;
 import com.needus.ecommerce.service.product.ProductService;
@@ -25,7 +26,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticatedPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -57,6 +61,9 @@ public class UserController {
     WalletHistoryService walletHistoryService;
     @Autowired
     ProductReviewService productReviewService;
+    @Autowired
+    private CategoryService categoryService;
+
     //wishlists
     @GetMapping("/wishlist-items")
     public String redirectWishlist(HttpSession session) {
@@ -81,6 +88,7 @@ public class UserController {
         }
         model.addAttribute("cartSize",userCartSize);
         model.addAttribute("products", products);
+        model.addAttribute("categories",categoryService.findAllNonDeletedCategories());
         model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         return "user/wishlist";
     }
@@ -138,26 +146,28 @@ public class UserController {
         return "user/cart";
     }
 
-    @PostMapping("/add-to-cart/{productId}")
-    public String addToCart(@PathVariable(name = "productId") Long productId,
+    @PostMapping("/add-to-cart")
+    @ResponseBody
+    public ResponseEntity<Map<String,Boolean>> addToCart(@RequestBody Map<String,Object> data,
                             RedirectAttributes ra){
         try {
-
+            Long productId = Long.parseLong(data.get("productId").toString());
+            log.info(" " +productId);
             UserInformation user = userService.getCurrentUser();
             Products product = productService.findProductById(productId);
             if (cartService.productExists(user, product)) {
-                ra.addFlashAttribute("message", "Item already present in the cart");
-                return "redirect:/shop/home";
+//                ra.addFlashAttribute("message", "Item already present in the cart");
+                return new ResponseEntity<>(Map.of("success",false),HttpStatus.OK);
             }
 
             cartService.addItemtoCart(user, product);
         }
         catch (Exception e){
-            log.error("Something went wrong while addint=g the product to the cart");
-            throw new TechnicalIssueException("Something went wrong while addint=g the product to the cart");
+            log.error("Something went wrong while adding the product to the cart");
+            throw new TechnicalIssueException("Something went wrong while adding the product to the cart");
         }
-        ra.addFlashAttribute("message", "Item added to the cart");
-        return "redirect:/shop/home";
+//        ra.addFlashAttribute("message", "Item added to the cart");
+        return new ResponseEntity<>(Map.of("success",true),HttpStatus.OK);
     }
 
     @PostMapping("/remove-cart-item/{itemId}")
@@ -249,22 +259,31 @@ public class UserController {
     }
 
     @GetMapping("/addAddress")
-    public String addUserAddress(Model model) {
+    public String addUserAddress(Model model,@RequestParam(name="source") String source) {
         UserInformation user = userService.getCurrentUser();
         model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         model.addAttribute("userId", user.getUserId());
+        model.addAttribute("source",source);
         return "user/addAddress";
     }
 
     @PostMapping("/addAddress/saveAddress/{userId}")
     public String saveUserAddress(@PathVariable(name = "userId") UUID userId,
                                   @ModelAttribute UserAddress userAddress,
+                                  @RequestParam(name = "source") String source,
                                   RedirectAttributes ra) {
         UserInformation user = userService.findUserById(userId);
         userAddress.setUserInformation(user);
         userAddressService.saveAddress(userAddress);
-        ra.addFlashAttribute("message", "Address added successfully");
-        return "redirect:/user/order/checkout";
+        log.info("Source : "+source);
+        if(Objects.equals(source, "userSettingsPage")){
+            ra.addFlashAttribute("message", "Address added successfully");
+            return "redirect:/user/profile-settings";
+        }
+        else {
+            ra.addFlashAttribute("message", "Address added successfully");
+            return "redirect:/user/order/checkout";
+        }
     }
 
     @GetMapping("/changeAddress/{addressId}")
@@ -348,6 +367,7 @@ public class UserController {
         UserInformation userInformation = userService.getCurrentUser();
         Page<UserOrder> userOrderInfo = orderService.findUserOrderByUserId(userInformation.getUserId(),page,pageSize);
         Page<UserOrderDto> userOrders = userOrderInfo.map(UserOrderDto::new);
+        model.addAttribute("categories",categoryService.findAllNonDeletedCategories());
         model.addAttribute("orders", userOrders);
         model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         return "user/order/listOrders";
@@ -417,6 +437,17 @@ public class UserController {
         model.addAttribute("walletHistories",walletHistories);
         return "user/userSettings";
     }
+
+    @PostMapping("/save-user-changes/{userId}")
+    public String changeUserDetails(@RequestParam(name="username",required = false)String username,
+                                    @RequestParam(name = "email",required = false)String email,
+                                    @RequestParam(name = "phoneNumber")String phoneNumber,
+                                    @PathVariable(name="userId") UUID userId,
+                                    RedirectAttributes ra, Model model){
+        userService.editUserDetails(userId,username,email,phoneNumber);
+        ra.addFlashAttribute("message","User edited successfully");
+        return "redirect:/user/profile-settings";
+    }
     @PostMapping("/deleteAddress/{addressId}")
     public String deleteAddress(@PathVariable(name = "addressId") Long addressId,
                                 RedirectAttributes ra){
@@ -430,7 +461,6 @@ public class UserController {
         ra.addFlashAttribute("message","address deleted successfully");
         return "redirect:/user/profile-settings";
     }
-
     @PostMapping("/publish-product-review/{productId}")
     public String  publishProductReview(@ModelAttribute ProductReview productReview,
                                         @PathVariable(name = "productId") Long productId,

@@ -3,6 +3,7 @@ package com.needus.ecommerce.controllers.admin;
 import com.needus.ecommerce.entity.product.Categories;
 import com.needus.ecommerce.entity.product.Products;
 import com.needus.ecommerce.exceptions.ResourceNotFoundException;
+import com.needus.ecommerce.exceptions.TechnicalIssueException;
 import com.needus.ecommerce.model.product.ProductInfoDto;
 import com.needus.ecommerce.service.product.BrandService;
 import com.needus.ecommerce.service.product.CategoryService;
@@ -53,10 +54,16 @@ public class ProductOfferController {
                                      @RequestParam(name = "discount") Float discountPercentage,
                                      @RequestParam(name = "expirationDate") String expiryDate,
                                      RedirectAttributes ra){
-        categoryService.applyOffer(expiryDate,discountPercentage,categoryId);
-        productService.applyOfferForCategory(categoryId,discountPercentage);
-        ra.addFlashAttribute("message","Category Offer Applied Successfully");
-        return "redirect:/admin/products/offers/offer-options";
+        try {
+            categoryService.applyOffer(expiryDate, discountPercentage, categoryId);
+            productService.applyOfferForCategory(categoryId, discountPercentage);
+            ra.addFlashAttribute("message", "Category Offer Applied Successfully");
+            return "redirect:/admin/products/offers/offer-options";
+        }
+        catch (Exception e){
+            log.error("Something went wrong while category referral offer");
+            throw new TechnicalIssueException("Something went wrong while category referral offer");
+        }
     }
     @GetMapping("/product-offers")
     public String productOffers(HttpServletRequest request,
@@ -89,20 +96,26 @@ public class ProductOfferController {
     public String applyReferralOffers(@RequestParam(name = "referrer") Float referrerAmount,
                                       @RequestParam(name = "referee") Float refereeAmount,
                                       RedirectAttributes ra){
-        referralOfferService.updateOffer(referrerAmount,refereeAmount);
-        ra.addFlashAttribute("message","Referral Offer Applied Successfully");
-        return "redirect:/admin/products/offers/offer-options";
+        try {
+            referralOfferService.updateOffer(referrerAmount, refereeAmount);
+            ra.addFlashAttribute("message", "Referral Offer Applied Successfully");
+            return "redirect:/admin/products/offers/offer-options";
+        }
+        catch (Exception e){
+            log.error("Something went wrong while applying referral offer");
+            throw new TechnicalIssueException("Something went wrong while applying referral offer");
+        }
     }
 
     @GetMapping("/search")
     @ResponseBody
     public ResponseEntity<List<ProductInfoDto>> searchProducts(@RequestParam String keyword) {
-        List<Products> searchedProducts = productService.searchProducts(keyword);
-        List<ProductInfoDto> productInfoDtos = new ArrayList<>();
-        searchedProducts.forEach(product -> {
-            ProductInfoDto productInfoDto = new ProductInfoDto(product.getProductName(),product.getProductId());
-            productInfoDtos.add(productInfoDto);
-        });
-        return new ResponseEntity<>(productInfoDtos, HttpStatus.OK);
+            List<Products> searchedProducts = productService.searchProducts(keyword);
+            List<ProductInfoDto> productInfoDtos = new ArrayList<>();
+            searchedProducts.forEach(product -> {
+                ProductInfoDto productInfoDto = new ProductInfoDto(product.getProductName(), product.getProductId());
+                productInfoDtos.add(productInfoDto);
+            });
+            return new ResponseEntity<>(productInfoDtos, HttpStatus.OK);
     }
 }

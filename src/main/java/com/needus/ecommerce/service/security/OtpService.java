@@ -1,4 +1,5 @@
 package com.needus.ecommerce.service.security;
+import com.needus.ecommerce.exceptions.TechnicalIssueException;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
@@ -20,15 +21,21 @@ public class OtpService {
     private String twilioAuthToken;
 
     public String sendOtp(String phoneNumber) {
-        String otp = String.format("%04d", new Random().nextInt(9999));
-        Twilio.init(twilioAccountSid, twilioAuthToken);
-        Message message = Message.creator(
-                new PhoneNumber(phoneNumber),
-                new PhoneNumber("+12293982399"),
-                "Your OTP is: " + otp)
-            .create();
+        try {
+            String otp = String.format("%04d", new Random().nextInt(9999));
+            Twilio.init(twilioAccountSid, twilioAuthToken);
+            Message message = Message.creator(
+                    new PhoneNumber(phoneNumber),
+                    new PhoneNumber("+12293982399"),
+                    "Your OTP is: " + otp)
+                .create();
 
-        log.info("OTP sent successfully: " + message.getSid());
-        return otp;
+            log.info("OTP sent successfully: " + message.getSid());
+            return otp;
+        }
+        catch (Exception e){
+            log.error("Something went wrong while sending otp");
+            throw new TechnicalIssueException("Something went wrong while sending otp");
+        }
     }
 }

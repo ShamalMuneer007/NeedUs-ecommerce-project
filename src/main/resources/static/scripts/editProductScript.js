@@ -20,13 +20,30 @@ function previewImage(inputId,imgId,labelId,deleteButtonId){
         image.src="";
     }
 }
-function deleteImage(inputId, imgId, labelId,deleteButtonId) {
+function deleteImage(inputId, imgId,labelId,deleteButtonId) {
     const fileInput = document.getElementById(inputId);
     const image = document.getElementById(imgId);
     const label = document.getElementById(labelId);
     const dltButton = document.getElementById(deleteButtonId);
-    fileInput.value = "";
+    console.log('deleting image..')
+    if(dltButton.getAttribute('value') !== null){
+        console.log(dltButton.getAttribute('value'))
+        $.ajax({
+            url: '/admin/products/delete-image',
+            contentType: 'application/json',
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify({'imageId' : dltButton.getAttribute('value')}),
+            success: (response) =>{
+                fileInput.setAttribute('required','');
+                dltButton.removeAttribute('value');
+            },
+            error:{
 
+            }
+        });
+    }
+    fileInput.value = "";
     image.src = "";
     image.style.height = "0";
     image.style.width = "0";

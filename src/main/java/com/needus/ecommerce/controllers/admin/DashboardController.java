@@ -4,6 +4,7 @@ import com.needus.ecommerce.entity.product.Products;
 import com.needus.ecommerce.entity.user_order.OrderItem;
 import com.needus.ecommerce.entity.user_order.UserOrder;
 import com.needus.ecommerce.entity.user_order.enums.OrderStatus;
+import com.needus.ecommerce.exceptions.TechnicalIssueException;
 import com.needus.ecommerce.model.user_order.OrderItemDao;
 import com.needus.ecommerce.model.user_order.OrderItemProjection;
 import com.needus.ecommerce.service.product.ProductService;
@@ -75,111 +76,129 @@ public class DashboardController {
     @GetMapping("/sales-report/monthly")
     @ResponseBody
     public ResponseEntity<Map<String,List>> calculateMonthlyTotalAmount(){
-        Map<Integer, Float> totalAmountOfEachMonth = new HashMap<>();
-        Map<Integer,Long> totalQuantityOfEachMonth = new HashMap<>();
-        for (int i = 1; i <= 12; i++) {
-            totalAmountOfEachMonth.put(i, 0f);
-            totalQuantityOfEachMonth.put(i,0L);
-        }
-
-        orderService.findAllOrders().forEach(orders -> {
-            if(orders.getOrderStatus().equals(OrderStatus.DELIVERED)) {
-                int month = orders.getOrderPlacedAt().getMonthValue();
-                float currentTotal = totalAmountOfEachMonth.get(month);
-                long currentQuantity = totalQuantityOfEachMonth.get(month);
-                totalAmountOfEachMonth.put(month, currentTotal + orders.getTotalAmount());
-                totalQuantityOfEachMonth.put(month,currentQuantity+orders.getOrderItems().stream()
-                    .map(OrderItem::getQuantity).reduce(0,Integer::sum));
+        try {
+            Map<Integer, Float> totalAmountOfEachMonth = new HashMap<>();
+            Map<Integer, Long> totalQuantityOfEachMonth = new HashMap<>();
+            for (int i = 1; i <= 12; i++) {
+                totalAmountOfEachMonth.put(i, 0f);
+                totalQuantityOfEachMonth.put(i, 0L);
             }
-        });
-        ArrayList<Float> totalAmountOfMonth = new ArrayList<>();
-        ArrayList<Long> totalQuantityOfMonth = new ArrayList<>();
-        for(int month : totalAmountOfEachMonth.keySet()){
-            totalAmountOfMonth.add(totalAmountOfEachMonth.get(month));
-            totalQuantityOfMonth.add(totalQuantityOfEachMonth.get(month));
+
+            orderService.findAllOrders().forEach(orders -> {
+                if (orders.getOrderStatus().equals(OrderStatus.DELIVERED)) {
+                    int month = orders.getOrderPlacedAt().getMonthValue();
+                    float currentTotal = totalAmountOfEachMonth.get(month);
+                    long currentQuantity = totalQuantityOfEachMonth.get(month);
+                    totalAmountOfEachMonth.put(month, currentTotal + orders.getTotalAmount());
+                    totalQuantityOfEachMonth.put(month, currentQuantity + orders.getOrderItems().stream()
+                        .map(OrderItem::getQuantity).reduce(0, Integer::sum));
+                }
+            });
+            ArrayList<Float> totalAmountOfMonth = new ArrayList<>();
+            ArrayList<Long> totalQuantityOfMonth = new ArrayList<>();
+            for (int month : totalAmountOfEachMonth.keySet()) {
+                totalAmountOfMonth.add(totalAmountOfEachMonth.get(month));
+                totalQuantityOfMonth.add(totalQuantityOfEachMonth.get(month));
+            }
+            Map<String, List> result = new HashMap<>();
+            result.put("amount", totalAmountOfMonth);
+            result.put("quantity", totalQuantityOfMonth);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         }
-        Map<String,List> result = new HashMap<>();
-        result.put("amount",totalAmountOfMonth);
-        result.put("quantity",totalQuantityOfMonth);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        catch (Exception e){
+            log.error("Something went wrong while calculating Monthly Total Amount");
+            throw new TechnicalIssueException("Something went wrong while calculating Monthly Total Amount");
+        }
     }
     @GetMapping("/sales-report/yearly")
     @ResponseBody
     public ResponseEntity<Map<String,List>> calculateYearlyTotalAmount(){
-        Map<Integer, Float> totalAmountOfEachYear = new HashMap<>();
-        Map<Integer, Long> totalQuantitySoldEachYear = new HashMap<>();
-        for (int i = 2023; i <= 2033; i++) {
-            totalAmountOfEachYear.put(i, 0f);
-            totalQuantitySoldEachYear.put(i,0L);
-        }
-
-        orderService.findAllOrders().forEach(orders -> {
-            if(orders.getOrderStatus().equals(OrderStatus.DELIVERED)) {
-                int year = orders.getOrderPlacedAt().getYear();
-                float currentTotal = totalAmountOfEachYear.get(year);
-                long currentTotalQuantity = totalQuantitySoldEachYear.get(year);
-                totalAmountOfEachYear.put(year, currentTotal + orders.getTotalAmount());
-                totalQuantitySoldEachYear.put(year,
-                    currentTotalQuantity+orders.getOrderItems()
-                        .stream()
-                        .map(OrderItem::getQuantity).reduce(0,Integer::sum));
+        try {
+            Map<Integer, Float> totalAmountOfEachYear = new HashMap<>();
+            Map<Integer, Long> totalQuantitySoldEachYear = new HashMap<>();
+            for (int i = 2023; i <= 2033; i++) {
+                totalAmountOfEachYear.put(i, 0f);
+                totalQuantitySoldEachYear.put(i, 0L);
             }
-        });
-        List<Integer> sortedYears = new ArrayList<>(totalAmountOfEachYear.keySet());
-        sortedYears.sort(Comparator.naturalOrder());
-        ArrayList<Float> totalAmountOfYear = new ArrayList<>();
-        ArrayList<Long> totalQuantitySoldInTheYear = new ArrayList<>();
-        for(int year : sortedYears){
-            totalAmountOfYear.add(totalAmountOfEachYear.get(year));
-            totalQuantitySoldInTheYear.add(totalQuantitySoldEachYear.get(year));
+
+            orderService.findAllOrders().forEach(orders -> {
+                if (orders.getOrderStatus().equals(OrderStatus.DELIVERED)) {
+                    int year = orders.getOrderPlacedAt().getYear();
+                    float currentTotal = totalAmountOfEachYear.get(year);
+                    long currentTotalQuantity = totalQuantitySoldEachYear.get(year);
+                    totalAmountOfEachYear.put(year, currentTotal + orders.getTotalAmount());
+                    totalQuantitySoldEachYear.put(year,
+                        currentTotalQuantity + orders.getOrderItems()
+                            .stream()
+                            .map(OrderItem::getQuantity).reduce(0, Integer::sum));
+                }
+            });
+            List<Integer> sortedYears = new ArrayList<>(totalAmountOfEachYear.keySet());
+            sortedYears.sort(Comparator.naturalOrder());
+            ArrayList<Float> totalAmountOfYear = new ArrayList<>();
+            ArrayList<Long> totalQuantitySoldInTheYear = new ArrayList<>();
+            for (int year : sortedYears) {
+                totalAmountOfYear.add(totalAmountOfEachYear.get(year));
+                totalQuantitySoldInTheYear.add(totalQuantitySoldEachYear.get(year));
+            }
+            Map<String, List> result = new HashMap<>();
+            result.put("amount", totalAmountOfYear);
+            result.put("quantity", totalQuantitySoldInTheYear);
+            log.info(" " + totalAmountOfEachYear.keySet());
+            return new ResponseEntity<>(result, HttpStatus.OK);
         }
-        Map<String,List> result = new HashMap<>();
-        result.put("amount",totalAmountOfYear);
-        result.put("quantity",totalQuantitySoldInTheYear);
-        log.info(" "+totalAmountOfEachYear.keySet());
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        catch (Exception e){
+            log.error("Something went wrong while calculating Yearly Total Amount");
+            throw new TechnicalIssueException("Something went wrong while calculating Yearly Total Amount");
+        }
     }
     @GetMapping("/sales-report/weekly")
     @ResponseBody
     public ResponseEntity<Map<String,List>> calculateWeeklyTotalAmount() {
-        Map<Integer, Float> totalAmountOfEachWeek = new HashMap<>();
-        Map<Integer,Long> totalQuantityOfEachWeek = new HashMap<>();
-        // Get the current year and month
-        YearMonth currentYearMonth = YearMonth.now();
+        try {
+            Map<Integer, Float> totalAmountOfEachWeek = new HashMap<>();
+            Map<Integer, Long> totalQuantityOfEachWeek = new HashMap<>();
+            // Get the current year and month
+            YearMonth currentYearMonth = YearMonth.now();
 
-        // Iterate over the days of the current month
-        for (int day = 1; day <= currentYearMonth.lengthOfMonth(); day++) {
-            LocalDate currentDate = currentYearMonth.atDay(day);
-            log.info(""+currentDate);
-            // Get the week number for the current date
-            int weekNumberWithinYear = currentDate.get(WeekFields.ISO.weekOfWeekBasedYear());
-            int weekNumberWithinMonth = weekNumberWithinYear - currentDate.withDayOfMonth(1).get(WeekFields.ISO.weekOfWeekBasedYear()) + 1;
-            // Calculate total amount for the current week
-            float currentTotalAmount = totalAmountOfEachWeek.getOrDefault(weekNumberWithinMonth, 0f);
-            long currentTotalQuantity = totalQuantityOfEachWeek.getOrDefault(weekNumberWithinMonth,0L);
-            // Get orders placed on the current date
-            List<UserOrder> ordersOnDate = orderService.findOrdersByDate(currentDate);
-            // Calculate total amount for the current date and update the total for the week
-            float totalAmountOnDate = ordersOnDate.stream()
-                .filter(order -> order.getOrderStatus().equals(OrderStatus.DELIVERED))
-                .map(UserOrder::getTotalAmount)
-                .reduce(0f, Float::sum);
-            long totalQuantityOnDate = ordersOnDate.stream()
-                .filter(order -> order.getOrderStatus().equals(OrderStatus.DELIVERED))
-                .flatMapToInt(order -> order.getOrderItems().stream().mapToInt(OrderItem::getQuantity))
-                .sum();
-            log.info(""+totalAmountOnDate);
-            totalAmountOfEachWeek.put(weekNumberWithinMonth, currentTotalAmount + totalAmountOnDate);
-            totalQuantityOfEachWeek.put(weekNumberWithinMonth,currentTotalQuantity+totalQuantityOnDate);
+            // Iterate over the days of the current month
+            for (int day = 1; day <= currentYearMonth.lengthOfMonth(); day++) {
+                LocalDate currentDate = currentYearMonth.atDay(day);
+                log.info("" + currentDate);
+                // Get the week number for the current date
+                int weekNumberWithinYear = currentDate.get(WeekFields.ISO.weekOfWeekBasedYear());
+                int weekNumberWithinMonth = weekNumberWithinYear - currentDate.withDayOfMonth(1).get(WeekFields.ISO.weekOfWeekBasedYear()) + 1;
+                // Calculate total amount for the current week
+                float currentTotalAmount = totalAmountOfEachWeek.getOrDefault(weekNumberWithinMonth, 0f);
+                long currentTotalQuantity = totalQuantityOfEachWeek.getOrDefault(weekNumberWithinMonth, 0L);
+                // Get orders placed on the current date
+                List<UserOrder> ordersOnDate = orderService.findOrdersByDate(currentDate);
+                // Calculate total amount for the current date and update the total for the week
+                float totalAmountOnDate = ordersOnDate.stream()
+                    .filter(order -> order.getOrderStatus().equals(OrderStatus.DELIVERED))
+                    .map(UserOrder::getTotalAmount)
+                    .reduce(0f, Float::sum);
+                long totalQuantityOnDate = ordersOnDate.stream()
+                    .filter(order -> order.getOrderStatus().equals(OrderStatus.DELIVERED))
+                    .flatMapToInt(order -> order.getOrderItems().stream().mapToInt(OrderItem::getQuantity))
+                    .sum();
+                log.info("" + totalAmountOnDate);
+                totalAmountOfEachWeek.put(weekNumberWithinMonth, currentTotalAmount + totalAmountOnDate);
+                totalQuantityOfEachWeek.put(weekNumberWithinMonth, currentTotalQuantity + totalQuantityOnDate);
+            }
+
+            // Convert the map values to a list
+            List<Float> totalAmountOfWeeks = new ArrayList<>(totalAmountOfEachWeek.values());
+            List<Long> totalQuantityOfWeeks = new ArrayList<>(totalQuantityOfEachWeek.values());
+            Map<String, List> result = new HashMap<>();
+            result.put("quantity", totalQuantityOfWeeks);
+            result.put("amount", totalAmountOfWeeks);
+            log.info("" + totalAmountOfWeeks);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         }
-
-        // Convert the map values to a list
-        List<Float> totalAmountOfWeeks = new ArrayList<>(totalAmountOfEachWeek.values());
-        List<Long> totalQuantityOfWeeks = new ArrayList<>(totalQuantityOfEachWeek.values());
-        Map<String,List> result = new HashMap<>();
-        result.put("quantity",totalQuantityOfWeeks);
-        result.put("amount",totalAmountOfWeeks);
-        log.info(""+totalAmountOfWeeks);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        catch (Exception e){
+            log.error("Something went wrong while calculating Weekly Total Amount");
+            throw new TechnicalIssueException("Something went wrong while calculating Weekly Total Amount");
+        }
     }
 }

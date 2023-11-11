@@ -13,4 +13,6 @@ public interface ProductImageService {
     ProductImages findImageById(Long imageId);
 
     void removeProductImages(List<ProductImages> images);
+
+    void removeProductImageById(Long imageId);
 }

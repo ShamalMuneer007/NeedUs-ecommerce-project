@@ -33,4 +33,9 @@ public class ProductImageServiceImpl implements ProductImageService {
     public void removeProductImages(List<ProductImages> imagesList) {
         repository.deleteAllInBatch(imagesList);
     }
+
+    @Override
+    public void removeProductImageById(Long imageId) {
+        repository.deleteById(imageId);
+    }
 }

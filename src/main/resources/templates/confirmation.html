@@ -13,7 +13,29 @@
         <h1 class="text-center">NEEDUS <span style="color:#E73C17;">.</span></h1>
         <h3 th:text="${title}"></h3>
         <p class="">Thank you for signing up. Please click on the link to verify your email address </p>
-        <a style="color:#E73C17; text-decoration: none;" th:href="${link}" th:text="${link}">></a>
+        <hr>
+        <a style="text-decoration: none; cursor: pointer; display: flex; justify-content: center; align-items: center;" th:href="${link}">
+            <button class="button-2" role="button" style="background-color: #E73C17;
+            border-radius: 8px;
+            border-width: 0;
+            color: #FFFFFF;
+            cursor: pointer;
+            display: inline-block;
+            font-family: 'nunito', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+            list-style: none;
+            margin: 0;
+            padding: 10px 12px;
+            text-align: center;
+            transition: all 200ms;
+            vertical-align: baseline;
+            white-space: nowrap;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;">Activate</button>
+        </a>
     </div>
 </body>
 </html>
