@@ -8,4 +8,6 @@ public interface CartItemService {
     void deleteItemById(Long itemId);
 
     void addQuantity(Long itemId, int quantity);
+
+    Float cartItemTotalAmount(Long itemId);
 }

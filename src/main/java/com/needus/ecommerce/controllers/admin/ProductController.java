@@ -297,15 +297,25 @@ public class ProductController {
         }
         if(Objects.nonNull(price)&&!productDetails.getProductBasePrice().equals(price)) {
             productDetails.setProductBasePrice(price);
+            if(productDetails.getCategories().isDiscountOfferExpired()){
+                productDetails.setProductPrice(price);
+            }
+            else{
+                    productDetails
+                            .setProductPrice(
+                                    productDetails.getProductBasePrice()-(productDetails.getProductBasePrice()*productDetails.getCategories().getDiscountOfferPercentage()/100));
+            }
         }
         if(!productDetails.getCategories().equals(category)) {
             productDetails.setCategories(category);
             if(!category.isDiscountOfferExpired()){
+                log.info("product price has  changed");
                 productDetails
                     .setProductPrice(
                         productDetails.getProductBasePrice()-(productDetails.getProductBasePrice()*category.getDiscountOfferPercentage()/100));
             }
             else{
+                log.info("product price has not changed");
                 productDetails.setProductPrice(productDetails.getProductBasePrice());
             }
             log.warn("Category has been changed");

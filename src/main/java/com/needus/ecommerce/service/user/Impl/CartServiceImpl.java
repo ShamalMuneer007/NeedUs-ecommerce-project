@@ -56,8 +56,9 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void addCartItem(Long itemId, int quantity) {
+    public Float addCartItem(Long itemId, int quantity) {
         cartItemService.addQuantity(itemId,quantity);
+        return cartItemService.cartItemTotalAmount(itemId);
     }
 
     @Override

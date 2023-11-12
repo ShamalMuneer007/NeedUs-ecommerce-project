@@ -35,7 +35,7 @@ public class Products {
     private String description;
     private Float productPrice;
     private Float productBasePrice;
-    private LocalDate discountOfferExpiryDate;
+    private LocalDate discountOfferExpiryDate = null;
     private boolean isDiscountOfferExpired;
     @Column(name="product_status")
     private boolean productStatus;

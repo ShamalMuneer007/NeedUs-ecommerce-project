@@ -28,10 +28,11 @@ public class UserOrder {
     private Long orderId;
     @OneToMany
     private List<OrderItem> orderItems;
-    @ManyToOne
-    @JoinColumn(name="user_id")
+    @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @JoinColumn(name="user_id",updatable = false,referencedColumnName = "user_id")
     private UserInformation userInformation;
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @JoinColumn(name = "user_address",updatable = false,referencedColumnName = "id")
     private UserAddress userAddress;
     @CreatedDate
     private LocalDateTime orderPlacedAt;

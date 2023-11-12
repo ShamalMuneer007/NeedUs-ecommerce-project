@@ -20,7 +20,7 @@ public class Categories {
     private Long categoryId;
     private String categoryName;
     private Float discountOfferPercentage = 0F;
-    private LocalDate discountOfferExpiryDate;
+    private LocalDate discountOfferExpiryDate = null;
     private boolean isDiscountOfferExpired = true;
     private boolean isDeleted = false;
 }

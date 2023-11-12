@@ -201,7 +201,7 @@
             </form>
         </div>
         <div class="mt-md-0 mt-sm-2 mt-2 col-6 order-1 order-md-2 text-muted align-item-center justify-content-center d-flex flex-md-row flex-column gap-4">
-            <div class="text-center pt-md-2">Total Amount : ₹ <span th:text="${totalAmount}"></span></div>
+            <div class="text-center pt-md-2">Total Amount : ₹ <span id="totalCartAmount" th:text="${totalAmount}"></span></div>
             <div class="d-flex justify-content-center">
                 <a class="checkout-button-div" th:href="@{/user/order/checkout}">
                     <button class="checkout-btn">
@@ -218,15 +218,6 @@
                 src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    var xhr = new XMLHttpRequest();
-
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            var response = JSON.parse(xhr.responseText);
-        }
-    };
-$(document).ready(function() {
-    // Decrease quantity button click event
     $('.button-minus').click(function() {
         var index = $(this).siblings('.quantity-input').attr('id').split('-')[2];
         updateQuantity(index, -1);
@@ -237,15 +228,6 @@ $(document).ready(function() {
         var index = $(this).siblings('.quantity-input').attr('id').split('-')[2];
         updateQuantity(index, 1);
     });
-/*     function reloadContent(index) {
-            $.ajax({
-                url: location.href,
-                method: 'GET',
-                success: function (data) {
-                    console.log("Hello");
-                }
-            });
-        } */
     function updateQuantity(index, change) {
         var quantityInput = $('#quantity-input-' + index);
         var currentQuantity = parseInt(quantityInput.val());
@@ -256,8 +238,12 @@ $(document).ready(function() {
                 url: '/user/cart-items/add-quantity/' + index,
                 data: { quantity: newQuantity },
                 success: function(response) {
+                    var totalElementID = 'total-'+index;
+                    console.log(response);
+                    document.getElementById(totalElementID).innerText = response.totalItemAmount;
+                    document.getElementById('totalCartAmount').innerText = response.totalAmount;
+                    // location.href = window.location.pathname;
                     quantityInput.val(newQuantity);
-                    location.reload(true)
                 },
                 error: function(error) {
                     console.error('Error updating quantity: ' + error);
@@ -265,8 +251,6 @@ $(document).ready(function() {
             });
         }
     }
-
-});
 </script>
 <script>
     $('#nav-toggle').on('click', function() {

@@ -20,3 +20,7 @@ services:
       MYSQL_DATABASE: trial
       MYSQL_USER: admin
       MYSQL_PASSWORD: root
+    volumes:
+      - mysql_data:/var/lib/mysql
+  volumes:
+      mysql_data:

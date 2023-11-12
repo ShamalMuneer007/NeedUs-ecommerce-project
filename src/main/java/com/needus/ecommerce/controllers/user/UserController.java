@@ -141,6 +141,7 @@ public class UserController {
         List<CartItem> items = cartService.findUserCartById(cartId).getCartItems();
         float totalAmount = cartService.calculateTotalAmount(user);
         model.addAttribute("totalAmount", totalAmount);
+        model.addAttribute("categories",categoryService.findAllNonDeletedCategories());
         model.addAttribute("items", items);
         model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         return "user/cart";
@@ -182,20 +183,25 @@ public class UserController {
         return "redirect:/user/cart-items";
     }
 
-    @PostMapping("/cart-items/add-quantity/{itemId}")
-    public String addCartItem(
+    @PostMapping("/cart-items/add-quantity/{cartItemId}")
+    @ResponseBody
+    public ResponseEntity<Map<String,Float>> addCartItem(
         @RequestParam(name = "quantity") String qty,
-        @PathVariable(name = "itemId") Long itemId, RedirectAttributes ra) {
-        log.info("adding item");
+        @PathVariable(name = "cartItemId") Long cartItemId, RedirectAttributes ra) {
+        log.info("adding cart item");
+        UserInformation user = userService.getCurrentUser();
         int quantity = Integer.parseInt(qty);
         try {
-            cartService.addCartItem(itemId, quantity);
+            Map<String,Float> cartDetails = new HashMap<>();
+            Float totalAmountOfCartItem = cartService.addCartItem(cartItemId, quantity);
+            cartDetails.put("totalAmount",cartService.calculateTotalAmount(user));
+            cartDetails.put("totalItemAmount",totalAmountOfCartItem);
+            return new ResponseEntity<>(cartDetails,HttpStatus.OK);
         }
         catch (Exception e){
             log.error("Something went wrong while adding the quantity of the item in the cart");
             throw new TechnicalIssueException("Something went wrong while adding the quantity of the item in the cart");
         }
-        return "redirect:/user/cart-items";
     }
 
     @PostMapping("/cart-items/remove-all")
@@ -259,7 +265,7 @@ public class UserController {
     }
 
     @GetMapping("/addAddress")
-    public String addUserAddress(Model model,@RequestParam(name="source") String source) {
+    public String addUserAddress(Model model,@RequestParam(name="source",required = false) String source) {
         UserInformation user = userService.getCurrentUser();
         model.addAttribute("username", SecurityContextHolder.getContext().getAuthentication().getName());
         model.addAttribute("userId", user.getUserId());
@@ -270,13 +276,13 @@ public class UserController {
     @PostMapping("/addAddress/saveAddress/{userId}")
     public String saveUserAddress(@PathVariable(name = "userId") UUID userId,
                                   @ModelAttribute UserAddress userAddress,
-                                  @RequestParam(name = "source") String source,
+                                  @RequestParam(name = "source",required = false) String source,
                                   RedirectAttributes ra) {
         UserInformation user = userService.findUserById(userId);
         userAddress.setUserInformation(user);
         userAddressService.saveAddress(userAddress);
         log.info("Source : "+source);
-        if(Objects.equals(source, "userSettingsPage")){
+        if(Objects.nonNull(source) && Objects.equals(source, "userSettingsPage")){
             ra.addFlashAttribute("message", "Address added successfully");
             return "redirect:/user/profile-settings";
         }

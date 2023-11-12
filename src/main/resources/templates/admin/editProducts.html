@@ -225,10 +225,14 @@
                 <div class="box p-5 mt-5">
                     <h4>Pricing</h4>
                     <div class="col-8 mt-3 mb-5">
-                        <label class="form-label" for="price">Product price</label>
+                        <label class="form-label" for="price">Product Base price</label>
                         <input class="form-control bg-body-tertiary" id="price" name="productPrice"
                             placeholder="Enter price for your product" required step="0.01"
-                            th:value="${product.productPrice}" type="number">
+                            th:value="${product.productBasePrice}" type="number">
+                    </div>
+                    <div class="col-8 mt-3 mb-5">
+                        <label class="form-label">Product price</label>
+                        <div th:text="${product.productPrice}" ></div>
                     </div>
                 </div>
                 <div class="box p-5 mt-5">

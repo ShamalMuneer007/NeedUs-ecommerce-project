@@ -28,4 +28,10 @@ public class CartItemServiceImpl implements CartItemService {
         item.setQuantity(quantity);
         cartItemRepository.save(item);
     }
+
+    @Override
+    public Float cartItemTotalAmount(Long itemId) {
+        CartItem item  = cartItemRepository.findById(itemId).get();
+        return item.getProduct().getProductPrice()*item.getQuantity();
+    }
 }
